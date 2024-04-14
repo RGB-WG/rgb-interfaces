@@ -1,5 +1,5 @@
 {-
-  Id: urn:ubideco:stl:3fBnXip46niMT1D8QMxdjpndX4gunQHYBHQo8Ln65GXy#armada-piano-shine
+  Id: urn:ubideco:stl:21bXsRAYrobA45mJpFu1T2ZNkoDXCk9gZk8TBwy3FsgA#jungle-swing-bruno
   Name: RGB21
   Version: 0.1.0
   Description: Types for RGB21 interfaces
@@ -11,12 +11,15 @@
 @context
 typelib RGB21
 
-import RGBContract#62pJgRAEXfW3WDNXsx2UsoRpAMrrYBXWvDouGd59rxNs#prefix-flute-jordan
+import RGBContract#7isbv9C7vzzuNUvpPPbxnLFj7V6XZHP8kWPAZezjvaqx#barbara-limit-cricket
   use ProofOfReserves#liquid-owner-london
+  use Allocation#igor-baboon-leonid
+  use OwnedFraction#vital-edgar-quota
   use Attachment#barcode-newton-fashion
   use Name#ruby-tennis-lotus
   use MediaRegName#telecom-pixel-initial
   use Details#network-kayak-adam
+  use TokenIndex#connect-farmer-havana
   use MediaType#gossip-beach-manila
   use Ticker#proton-logic-weekend
 
@@ -31,9 +34,6 @@ import Bitcoin#HX2UBak8vPsTokug1DGMDvTpzns3xUdwZ7QJdyt4qBA9#speed-atlanta-trilog
   use Outpoint#dinner-yoga-danube
 
 
-@mnemonic(break-tunnel-gray)
-data Allocation        : TokenIndex, OwnedFraction
-
 @mnemonic(banjo-arizona-camel)
 data AttachmentName    : [Std.AsciiPrintable#prize-solar-driver ^ 1..0x14]
 
@@ -43,17 +43,14 @@ data AttachmentType    : id U8, name AttachmentName
 @mnemonic(montana-yoyo-llama)
 data EmbeddedMedia     : type RGBContract.MediaType#gossip-beach-manila, data [Byte]
 
-@mnemonic(royal-career-axiom)
-data EngravingData     : appliedTo TokenIndex, content EmbeddedMedia
+@mnemonic(trumpet-crown-waiter)
+data EngravingData     : appliedTo RGBContract.TokenIndex#connect-farmer-havana, content EmbeddedMedia
 
 @mnemonic(capital-conduct-aspect)
 data ItemsCount        : U32
 
-@mnemonic(vital-edgar-quota)
-data OwnedFraction     : U64
-
-@mnemonic(stand-guide-doctor)
-data TokenData         : index TokenIndex
+@mnemonic(lima-philips-fortune)
+data TokenData         : index RGBContract.TokenIndex#connect-farmer-havana
                        , ticker RGBContract.Ticker#proton-logic-weekend?
                        , name RGBContract.Name#ruby-tennis-lotus?
                        , details RGBContract.Details#network-kayak-adam?
@@ -61,8 +58,5 @@ data TokenData         : index TokenIndex
                        , media RGBContract.Attachment#barcode-newton-fashion?
                        , attachments {U8 -> ^ ..0x14 RGBContract.Attachment#barcode-newton-fashion}
                        , reserves RGBContract.ProofOfReserves#liquid-owner-london?
-
-@mnemonic(connect-farmer-havana)
-data TokenIndex        : U32
 
 

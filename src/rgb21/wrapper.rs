@@ -21,13 +21,13 @@
 
 use rgbstd::interface::{ContractIface, DataAllocation, Iface, IfaceId, OutpointFilter};
 use rgbstd::stl::{bp_tx_stl, rgb_contract_stl, AssetSpec, AssetTerms};
+use rgbstd::Allocation;
 use strict_types::stl::std_stl;
 use strict_types::{CompileError, LibBuilder, TypeLib};
 
 use super::iface::*;
 use super::{
-    Allocation, AttachmentType, EngravingData, Features, Issues, ItemsCount, TokenData,
-    LIB_NAME_RGB21,
+    AttachmentType, EngravingData, Features, Issues, ItemsCount, TokenData, LIB_NAME_RGB21,
 };
 use crate::rgb20::iface::{named_asset, renameable, reservable};
 use crate::IfaceWrapper;

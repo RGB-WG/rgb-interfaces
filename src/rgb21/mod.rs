@@ -24,8 +24,8 @@ mod types;
 mod wrapper;
 
 pub use types::{
-    Allocation, AttachmentName, AttachmentType, EmbeddedMedia, EngravingData, ItemsCount,
-    OwnedFraction, TokenData, TokenIndex, LIB_ID_RGB21, LIB_NAME_RGB21,
+    AttachmentName, AttachmentType, EmbeddedMedia, EngravingData, ItemsCount, TokenData,
+    LIB_ID_RGB21, LIB_NAME_RGB21,
 };
 pub use wrapper::{Rgb21, RGB21_UNIQUE_IFACE_ID};
 

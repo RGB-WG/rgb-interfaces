@@ -42,7 +42,7 @@ pub fn nft() -> Iface {
             fname!("attachmentTypes") => GlobalIface::none_or_many(types.get("RGB21.AttachmentType")),
         },
         assignments: tiny_bmap! {
-            fname!("assetOwner") => AssignIface::private(OwnedIface::Data(types.get("RGB21.Allocation")), Req::NoneOrMore),
+            fname!("assetOwner") => AssignIface::private(OwnedIface::Data(types.get("RGBContract.Allocation")), Req::NoneOrMore),
         },
         valencies: none!(),
         genesis: GenesisIface {
@@ -113,7 +113,7 @@ pub fn unique() -> Iface {
             fname!("attachmentTypes") => GlobalIface::required(types.get("RGB21.AttachmentType")),
         },
         assignments: tiny_bmap! {
-            fname!("assetOwner") => AssignIface::private(OwnedIface::Data(types.get("RGB21.Allocation")), Req::OneOrMore),
+            fname!("assetOwner") => AssignIface::private(OwnedIface::Data(types.get("RGBContract.Allocation")), Req::OneOrMore),
         },
         valencies: none!(),
         genesis: GenesisIface {
@@ -149,7 +149,7 @@ pub fn limited() -> Iface {
             fname!("attachmentTypes") => GlobalIface::one_or_many(types.get("RGB21.AttachmentType")),
         },
         assignments: tiny_bmap! {
-            fname!("assetOwner") => AssignIface::private(OwnedIface::Data(types.get("RGB21.Allocation")), Req::OneOrMore),
+            fname!("assetOwner") => AssignIface::private(OwnedIface::Data(types.get("RGBContract.Allocation")), Req::OneOrMore),
         },
         valencies: none!(),
         genesis: GenesisIface {

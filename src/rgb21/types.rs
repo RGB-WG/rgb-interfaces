@@ -29,6 +29,7 @@ use std::str::FromStr;
 use amplify::ascii::AsciiString;
 use amplify::confinement::{Confined, NonEmptyVec, SmallBlob};
 use rgbstd::stl::{Attachment, Details, MediaType, Name, ProofOfReserves, Ticker};
+use rgbstd::TokenIndex;
 use strict_encoding::stl::AsciiPrintable;
 use strict_encoding::{
     InvalidRString, StrictDeserialize, StrictEncode, StrictSerialize, TypedWrite,
@@ -54,54 +55,6 @@ pub const LIB_ID_RGB21: &str =
 )]
 pub struct ItemsCount(u32);
 
-#[derive(
-    Wrapper, WrapperMut, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default, From
-)]
-#[wrapper(Display, FromStr, Add, Sub, Mul, Div, Rem)]
-#[wrapper_mut(AddAssign, SubAssign, MulAssign, DivAssign, RemAssign)]
-#[derive(StrictType, StrictEncode, StrictDecode)]
-#[strict_type(lib = LIB_NAME_RGB21)]
-#[cfg_attr(
-    feature = "serde",
-    derive(Serialize, Deserialize),
-    serde(crate = "serde_crate", transparent)
-)]
-pub struct TokenIndex(u32);
-
-#[derive(
-    Wrapper, WrapperMut, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default, From
-)]
-#[wrapper(Display, FromStr, Add, Sub, Mul, Div, Rem)]
-#[wrapper_mut(AddAssign, SubAssign, MulAssign, DivAssign, RemAssign)]
-#[derive(StrictType, StrictEncode, StrictDecode)]
-#[strict_type(lib = LIB_NAME_RGB21)]
-#[cfg_attr(
-    feature = "serde",
-    derive(Serialize, Deserialize),
-    serde(crate = "serde_crate", transparent)
-)]
-pub struct OwnedFraction(u64);
-
-// TODO: Move allocation structure to invoice library
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
-#[derive(StrictType, StrictEncode, StrictDecode)]
-#[strict_type(lib = LIB_NAME_RGB21)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(crate = "serde_crate"))]
-pub struct Allocation(TokenIndex, OwnedFraction);
-
-impl Allocation {
-    pub fn with(index: TokenIndex, fraction: OwnedFraction) -> Allocation {
-        Allocation(index, fraction)
-    }
-
-    pub fn token_index(self) -> TokenIndex { self.0 }
-
-    pub fn fraction(self) -> OwnedFraction { self.1 }
-}
-
-impl StrictSerialize for Allocation {}
-impl StrictDeserialize for Allocation {}
-
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 #[derive(StrictType, StrictDumb, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
@@ -117,7 +70,12 @@ pub struct EngravingData {
 
 impl EngravingData {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
-        let index = TokenIndex(value.unwrap_struct("index").unwrap_num().unwrap_uint());
+        let index = TokenIndex::from(
+            value
+                .unwrap_struct("index")
+                .unwrap_num()
+                .unwrap_uint::<u32>(),
+        );
         let content = EmbeddedMedia::from_strict_val_unchecked(value.unwrap_struct("content"));
 
         Self {
@@ -253,7 +211,12 @@ impl StrictDeserialize for TokenData {}
 
 impl TokenData {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
-        let index = TokenIndex(value.unwrap_struct("index").unwrap_num().unwrap_uint());
+        let index = TokenIndex::from(
+            value
+                .unwrap_struct("index")
+                .unwrap_num()
+                .unwrap_uint::<u32>(),
+        );
         let ticker = value
             .unwrap_struct("ticker")
             .unwrap_option()
