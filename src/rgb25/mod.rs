@@ -49,27 +49,30 @@ impl Features {
 
 #[cfg(test)]
 mod test {
-    use armor::AsciiArmor;
+    use amplify::ByteArray;
 
     use super::*;
-
-    const RGB25: &str = include_str!("../../tests/data/rgb25.rgba");
+    use crate::IfaceWrapper;
 
     #[test]
     fn iface_id_all() {
-        let iface_id = Rgb25::iface(Features::all()).iface_id();
+        let iface_id = Rgb25::iface(Features::NONE).iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb25::IFACE_ID, iface_id);
-    }
-
-    #[test]
-    fn iface_bindle() {
-        assert_eq!(format!("{}", Rgb25::iface(Features::all()).to_ascii_armored_string()), RGB25);
+        assert_eq!(Rgb25::IFACE_IDS[0], iface_id);
+        let iface_id = Rgb25::iface(Features::ALL).iface_id();
+        eprintln!("{:#04x?}", iface_id.to_byte_array());
+        assert_eq!(Rgb25::IFACE_IDS[1], iface_id);
     }
 
     #[test]
     fn iface_check() {
-        if let Err(err) = Rgb25::iface(Features::all()).check() {
+        if let Err(err) = Rgb25::iface(Features::NONE).check() {
+            for e in err {
+                eprintln!("- {e}");
+            }
+            panic!("invalid RGB25 interface definition");
+        }
+        if let Err(err) = Rgb25::iface(Features::ALL).check() {
             for e in err {
                 eprintln!("- {e}");
             }

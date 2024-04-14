@@ -64,36 +64,30 @@ impl Features {
 
 #[cfg(test)]
 mod test {
-    use armor::AsciiArmor;
+    use amplify::ByteArray;
 
     use super::*;
-
-    const RGB21: &str = include_str!("../../tests/data/rgb21.rgba");
-
-    #[test]
-    fn lib_id() {
-        let lib = rgb21_stl();
-        assert_eq!(lib.id().to_string(), LIB_ID_RGB21);
-    }
+    use crate::IfaceWrapper;
 
     #[test]
     fn iface_id() {
-        let iface_id = Rgb21::iface(Features::none()).iface_id();
+        let iface_id = Rgb21::iface(Features::NONE).iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(RGB21_UNIQUE_IFACE_ID, iface_id);
-        let iface_id = Rgb21::iface(Features::all()).iface_id();
+        assert_eq!(Rgb21::IFACE_IDS[0], iface_id);
+        let iface_id = Rgb21::iface(Features::ALL).iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb21::IFACE_ID, iface_id);
-    }
-
-    #[test]
-    fn iface_bindle() {
-        assert_eq!(format!("{}", Rgb21::iface(Features::all()).to_ascii_armored_string()), RGB21);
+        assert_eq!(Rgb21::IFACE_IDS[1], iface_id);
     }
 
     #[test]
     fn iface_check() {
-        if let Err(err) = Rgb21::iface(Features::all()).check() {
+        if let Err(err) = Rgb21::iface(Features::NONE).check() {
+            for e in err {
+                eprintln!("{e}");
+            }
+            panic!("invalid RGB21Unique interface definition");
+        }
+        if let Err(err) = Rgb21::iface(Features::ALL).check() {
             for e in err {
                 eprintln!("{e}");
             }

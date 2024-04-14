@@ -135,8 +135,6 @@ pub fn fungible() -> Iface {
             valencies: none!(),
             errors: tiny_bset! {
                 vname!("supplyMismatch"),
-                vname!("invalidProof"),
-                vname!("insufficientReserves")
             },
         },
         transitions: tiny_bmap! {
@@ -242,8 +240,6 @@ pub fn fixed() -> Iface {
             valencies: none!(),
             errors: tiny_bset! {
                 vname!("supplyMismatch"),
-                vname!("invalidProof"),
-                vname!("insufficientReserves")
             },
         },
         transitions: none!(),

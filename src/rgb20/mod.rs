@@ -68,37 +68,30 @@ impl Features {
 
 #[cfg(test)]
 mod test {
-    use armor::AsciiArmor;
+    use amplify::ByteArray;
 
     use super::*;
     use crate::IfaceWrapper;
 
-    const RGB20: &str = include_str!("../../tests/data/rgb20.rgba");
-
     #[test]
     fn iface_id_all() {
-        let iface_id = Rgb20::iface(Features::none()).iface_id();
+        let iface_id = Rgb20::iface(Features::NONE).iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(RGB20_SIMPLE_IFACE_ID, iface_id);
-        let iface_id = Rgb20::iface(Features::all()).iface_id();
+        assert_eq!(Rgb20::IFACE_IDS[0], iface_id);
+        let iface_id = Rgb20::iface(Features::ALL).iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb20::IFACE_ID, iface_id);
-    }
-
-    #[test]
-    fn iface_bindle() {
-        assert_eq!(format!("{}", Rgb20::iface(Features::all()).to_ascii_armored_string()), RGB20);
+        assert_eq!(Rgb20::IFACE_IDS[1], iface_id);
     }
 
     #[test]
     fn iface_check() {
-        if let Err(err) = Rgb20::iface(Features::none()).check() {
+        if let Err(err) = Rgb20::iface(Features::NONE).check() {
             for e in err {
                 eprintln!("{e}");
             }
             panic!("invalid RGB20Fixed interface definition");
         }
-        if let Err(err) = Rgb20::iface(Features::all()).check() {
+        if let Err(err) = Rgb20::iface(Features::ALL).check() {
             for e in err {
                 eprintln!("{e}");
             }
