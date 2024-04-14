@@ -26,7 +26,7 @@ use rgbstd::interface::{
     RightsAllocation, WitnessFilter,
 };
 use rgbstd::invoice::{Amount, Precision};
-use rgbstd::stl::{rgb_std_stl, AssetSpec, AssetTerms};
+use rgbstd::stl::{rgb_contract_stl, AssetSpec, AssetTerms};
 use rgbstd::{AssetTag, XWitnessId};
 use strict_encoding::InvalidRString;
 use strict_types::TypeLib;
@@ -87,7 +87,7 @@ impl IfaceWrapper for Rgb20 {
         iface
     }
 
-    fn stl() -> TypeLib { rgb_std_stl() }
+    fn stl() -> TypeLib { rgb_contract_stl() }
 }
 
 impl Rgb20 {

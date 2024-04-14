@@ -64,7 +64,7 @@ impl IfaceWrapper for Rgb25 {
         if features.burnable {
             iface = iface.expect_extended(burnable(), "RGB25Burnable");
         }
-        if features == Features::all() {
+        if features == Features::ALL {
             iface.name = Self::IFACE_NAME.into();
         }
         iface
