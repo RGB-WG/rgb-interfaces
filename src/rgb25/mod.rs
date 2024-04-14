@@ -18,3 +18,64 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+mod wrapper;
+mod issuer;
+
+pub use issuer::Issue;
+pub use wrapper::{Rgb25, RGB25_IFACE_ID};
+
+#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
+pub struct Features {
+    pub renaming: bool,
+    pub reserves: bool,
+    pub burnable: bool,
+}
+
+impl Features {
+    pub fn none() -> Self {
+        Features {
+            renaming: false,
+            reserves: false,
+            burnable: false,
+        }
+    }
+    pub fn all() -> Self {
+        Features {
+            renaming: true,
+            reserves: true,
+            burnable: true,
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use armor::AsciiArmor;
+
+    use super::*;
+
+    const RGB25: &str = include_str!("../../tests/data/rgb25.rgba");
+
+    #[test]
+    fn iface_id_all() {
+        let iface_id = Rgb25::iface(Features::all()).iface_id();
+        eprintln!("{:#04x?}", iface_id.to_byte_array());
+        assert_eq!(Rgb25::IFACE_ID, iface_id);
+    }
+
+    #[test]
+    fn iface_bindle() {
+        assert_eq!(format!("{}", Rgb25::iface(Features::all()).to_ascii_armored_string()), RGB25);
+    }
+
+    #[test]
+    fn iface_check() {
+        if let Err(err) = Rgb25::iface(Features::all()).check() {
+            for e in err {
+                eprintln!("- {e}");
+            }
+            panic!("invalid RGB25 interface definition");
+        }
+    }
+}
