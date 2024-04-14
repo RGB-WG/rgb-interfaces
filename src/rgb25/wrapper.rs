@@ -22,11 +22,13 @@
 use rgbstd::interface::{ContractIface, Iface, IfaceId};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::stl::{rgb_contract_stl, AssetTerms, Details, Name};
+use rgbstd::AssetTag;
+use strict_encoding::InvalidRString;
 use strict_types::TypeLib;
 
-use super::Features;
+use super::{Features, Issue};
 use crate::rgb20::iface::*;
-use crate::IfaceWrapper;
+use crate::{IfaceWrapper, IssuerWrapper};
 
 pub const RGB25_BASE_IFACE_ID: IfaceId = IfaceId::from_array([
     0x3b, 0xa6, 0x08, 0xa1, 0xc6, 0x3b, 0xd1, 0xab, 0x9f, 0xf9, 0x42, 0x51, 0x26, 0x8c, 0x6f, 0x88,
@@ -78,6 +80,21 @@ impl IfaceWrapper for Rgb25 {
 }
 
 impl Rgb25 {
+    pub fn testnet<C: IssuerWrapper<IssuingIface = Self>>(
+        name: &str,
+        precision: Precision,
+    ) -> Result<Issue, InvalidRString> {
+        Issue::testnet::<C>(name, precision)
+    }
+
+    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Self>>(
+        name: &str,
+        precision: Precision,
+        asset_tag: AssetTag,
+    ) -> Result<Issue, InvalidRString> {
+        Issue::testnet_det::<C>(name, precision, asset_tag)
+    }
+
     pub fn name(&self) -> Name {
         let strict_val = &self
             .0

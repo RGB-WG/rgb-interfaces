@@ -59,7 +59,7 @@ impl Issue {
             ContractBuilder::with(Rgb25::iface(features), schema, main_iface_impl, types, scripts)
                 .add_global_state("name", Name::try_from(name.to_owned())?)
                 .expect("invalid RGB25 schema (name mismatch)")
-                .add_global_state("name", precision)
+                .add_global_state("precision", precision)
                 .expect("invalid RGB25 schema (precision mismatch)");
 
         Ok(Self {
@@ -203,17 +203,17 @@ impl Issue {
     pub fn issue_contract(self) -> Result<ValidContract, BuilderError> {
         debug_assert!(
             !self.deterministic,
-            "to add asset allocation in deterministic way you must use issue_contract_det method"
+            "to issue contract in deterministic way you must use issue_contract_det method"
         );
-        self.issue_contract_det(Utc::now().timestamp())
+        self.issue_contract_int(Utc::now().timestamp())
     }
 
     #[allow(clippy::result_large_err)]
     pub fn issue_contract_det(self, timestamp: i64) -> Result<ValidContract, BuilderError> {
         debug_assert!(
             self.deterministic,
-            "to add asset allocation in deterministic way the contract builder has to be created \
-             using `*_det` constructor"
+            "to issue contract in deterministic way the contract builder has to be created using \
+             `*_det` constructor"
         );
         self.issue_contract_int(timestamp)
     }

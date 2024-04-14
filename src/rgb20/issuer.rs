@@ -97,6 +97,7 @@ impl PrimaryIssue {
         me.deterministic = true;
         Ok(me)
     }
+
     fn testnet_int(
         issuer: SchemaIssuer<Rgb20>,
         ticker: &str,
@@ -220,7 +221,7 @@ impl PrimaryIssue {
     pub fn issue_contract(self) -> Result<ValidContract, BuilderError> {
         debug_assert!(
             !self.deterministic,
-            "to add asset allocation in deterministic way you must use issue_contract_det method"
+            "to issue contract in deterministic way you must use issue_contract_det method"
         );
         self.issue_contract_int(Utc::now().timestamp())
     }
@@ -229,8 +230,8 @@ impl PrimaryIssue {
     pub fn issue_contract_det(self, timestamp: i64) -> Result<ValidContract, BuilderError> {
         debug_assert!(
             self.deterministic,
-            "to add asset allocation in deterministic way the contract builder has to be created \
-             using `*_det` constructor"
+            "to issue contract in deterministic way the contract builder has to be created using \
+             `*_det` constructor"
         );
         self.issue_contract_int(timestamp)
     }
