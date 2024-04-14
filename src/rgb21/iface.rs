@@ -24,10 +24,10 @@ use rgbstd::interface::{
     VerNo,
 };
 use rgbstd::stl::StandardTypes;
-use rgbstd::Occurrences;
+use rgbstd::{Identity, Occurrences};
 
 use crate::rgb21::wrapper::Rgb21;
-use crate::IfaceWrapper;
+use crate::{IfaceWrapper, LNPBP_IDENTITY};
 
 pub fn nft() -> Iface {
     let types = StandardTypes::with(Rgb21::stl());
@@ -35,7 +35,7 @@ pub fn nft() -> Iface {
         version: VerNo::V1,
         name: tn!("NonFungibleToken"),
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         global_state: tiny_bmap! {
             fname!("tokens") => GlobalIface::none_or_many(types.get("RGB21.TokenData")),
@@ -106,7 +106,7 @@ pub fn unique() -> Iface {
         version: VerNo::V1,
         name: tn!("UniqueNft"),
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         global_state: tiny_bmap! {
             fname!("tokens") => GlobalIface::required(types.get("RGB21.TokenData")),
@@ -142,7 +142,7 @@ pub fn limited() -> Iface {
         version: VerNo::V1,
         name: tn!("LimitedNft"),
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         global_state: tiny_bmap! {
             fname!("tokens") => GlobalIface::one_or_many(types.get("RGB21.TokenData")),
@@ -178,7 +178,7 @@ pub fn engravable() -> Iface {
         version: VerNo::V1,
         name: tn!("EngravableNft"),
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         global_state: tiny_bmap! {
             fname!("engravings") => GlobalIface::none_or_many(types.get("RGB21.EngravingData")),
@@ -232,7 +232,7 @@ pub fn issuable() -> Iface {
         version: VerNo::V1,
         name: tn!("IssuableNft"),
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         global_state: none!(),
         assignments: tiny_bmap! {

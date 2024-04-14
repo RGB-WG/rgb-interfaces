@@ -25,6 +25,9 @@ use rgbstd::interface::{
 };
 use rgbstd::schema::Occurrences;
 use rgbstd::stl::StandardTypes;
+use rgbstd::Identity;
+
+use crate::LNPBP_IDENTITY;
 
 pub fn named_asset() -> Iface {
     let types = StandardTypes::new();
@@ -32,7 +35,7 @@ pub fn named_asset() -> Iface {
         version: VerNo::V1,
         name: tn!("NamedAsset"),
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         global_state: tiny_bmap! {
             fname!("spec") => GlobalIface::required(types.get("RGBContract.AssetSpec")),
@@ -62,7 +65,7 @@ pub fn renameable() -> Iface {
     Iface {
         version: VerNo::V1,
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         name: tn!("RenameableAsset"),
         global_state: none!(),
@@ -111,7 +114,7 @@ pub fn fungible() -> Iface {
         version: VerNo::V1,
         name: tn!("FungibleAsset"),
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         global_state: tiny_bmap! {
             fname!("issuedSupply") => GlobalIface::required(types.get("RGBContract.Amount")),
@@ -173,7 +176,7 @@ pub fn reservable() -> Iface {
         version: VerNo::V1,
         name: tn!("ReservableAsset"),
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         global_state: none!(),
         assignments: none!(),
@@ -222,7 +225,7 @@ pub fn fixed() -> Iface {
         version: VerNo::V1,
         name: tn!("FixedAsset"),
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         global_state: none!(),
         assignments: tiny_bmap! {
@@ -255,7 +258,7 @@ pub fn inflatable() -> Iface {
     Iface {
         version: VerNo::V1,
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         name: tn!("InflatableAsset"),
         global_state: tiny_bmap! {
@@ -312,7 +315,7 @@ pub fn burnable() -> Iface {
     Iface {
         version: VerNo::V1,
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         name: tn!("BurnableAsset"),
         global_state: tiny_bmap! {
@@ -369,7 +372,7 @@ pub fn replaceable() -> Iface {
     Iface {
         version: VerNo::V1,
         inherits: none!(),
-        developer: none!(), // TODO: Add LNP/BP Standards Association
+        developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         name: tn!("ReplaceableAsset"),
         global_state: tiny_bmap! {

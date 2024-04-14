@@ -35,3 +35,5 @@ pub mod rgb25;
 
 pub use rgb20::Rgb20;
 pub use traits::{IfaceWrapper, IssuerWrapper, SchemaIssuer};
+
+pub const LNPBP_IDENTITY: &str = "lnp-bp.org";
