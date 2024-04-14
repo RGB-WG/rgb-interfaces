@@ -2,9 +2,9 @@
 Id: urn:lnp-bp:kit:Bj19kv-fr6a5LJU-Uui41wTL-4BwMWNYy-SikMPakx-BxaKBK#digital-permit-domain
 Version: v2
 Interface: RGB20;
-    id=urn:lnp-bp:if:7xEoW9-7gQjP3ZF-uTqZ8HEU-AgVsKz5U-ia6EP1ov-Rr7gwV#nickel-mentor-monitor
+id=urn:lnp-bp:if:7xEoW9-7gQjP3ZF-uTqZ8HEU-AgVsKz5U-ia6EP1ov-Rr7gwV#nickel-mentor-monitor
 Interface: RGB20Fixed;
-    id=urn:lnp-bp:if:HNZMsT-ApqnCLXZ-XMq3Jo2g-GNf1g8Yx-KdzG4yBC-yahpvn#exotic-mercury-anatomy
+id=urn:lnp-bp:if:HNZMsT-ApqnCLXZ-XMq3Jo2g-GNf1g8Yx-KdzG4yBC-yahpvn#exotic-mercury-anatomy
 Type-System: urn:ubideco:sts:HF6CSpyxTgPYWz4rWWYUY355LbcAtgko4DBtYheaQF2b#trapeze-marvin-labor
 Checksum-SHA256: ccd7f49edf58707d81c66b34e87acfa6e5675b9a05ec42ac95f7acc967e5f50b
 

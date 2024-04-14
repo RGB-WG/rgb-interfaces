@@ -24,7 +24,7 @@ mod wrapper;
 mod issuer;
 
 pub use issuer::{AllocationError, PrimaryIssue};
-pub use wrapper::Rgb20;
+pub use wrapper::{Rgb20, RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID};
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub enum Inflation {
