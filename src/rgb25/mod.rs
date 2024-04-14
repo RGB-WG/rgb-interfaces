@@ -33,20 +33,18 @@ pub struct Features {
 }
 
 impl Features {
-    pub fn none() -> Self {
-        Features {
-            renaming: false,
-            reserves: false,
-            burnable: false,
-        }
-    }
-    pub fn all() -> Self {
-        Features {
-            renaming: true,
-            reserves: true,
-            burnable: true,
-        }
-    }
+    pub const NONE: Self = Features {
+        renaming: false,
+        reserves: false,
+        burnable: false,
+    };
+    pub const ALL: Self = Features {
+        renaming: true,
+        reserves: true,
+        burnable: true,
+    };
+
+    pub const ENUMERATE: &'static [Self] = &[Self::NONE, Self::ALL];
 }
 
 #[cfg(test)]

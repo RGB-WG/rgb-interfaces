@@ -46,13 +46,13 @@ pub struct Features {
 }
 
 impl Features {
-    const NONE: Self = Features {
+    pub const NONE: Self = Features {
         renaming: false,
         reserves: false,
         engraving: false,
         issues: Issues::Unique,
     };
-    const ALL: Self = Features {
+    pub const ALL: Self = Features {
         renaming: true,
         reserves: true,
         engraving: true,
