@@ -70,14 +70,14 @@ fn main() -> io::Result<()> {
 
     let dir = PathBuf::from_str("interfaces").unwrap();
     let stl = Rgb21::stl();
-    stl.serialize(StlFormat::Binary, Some(&dir), "0.1.0", None)
+    stl.serialize(StlFormat::Binary, Some(&dir), "0.11.0", None)
         .expect("unable to write to the file");
-    stl.serialize(StlFormat::Armored, Some(&dir), "0.1.0", None)
+    stl.serialize(StlFormat::Armored, Some(&dir), "0.11.0", None)
         .expect("unable to write to the file");
     stl.serialize(
         StlFormat::Source,
         Some(&dir),
-        "0.1.0",
+        "0.11.0",
         Some(
             "
   Description: Types for RGB21 interfaces

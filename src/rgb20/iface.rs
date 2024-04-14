@@ -37,6 +37,7 @@ pub fn named_asset() -> Iface {
         inherits: none!(),
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
+        metadata: none!(),
         global_state: tiny_bmap! {
             fname!("spec") => GlobalIface::required(types.get("RGBContract.AssetSpec")),
             fname!("terms") => GlobalIface::required(types.get("RGBContract.AssetTerms")),
@@ -45,7 +46,7 @@ pub fn named_asset() -> Iface {
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Abstract,
-            metadata: None,
+            metadata: none!(),
             globals: tiny_bmap! {
                 fname!("spec") => Occurrences::Once,
                 fname!("terms") => Occurrences::Once,
@@ -68,6 +69,7 @@ pub fn renameable() -> Iface {
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         name: tn!("RenameableAsset"),
+        metadata: none!(),
         global_state: none!(),
         assignments: tiny_bmap! {
             fname!("updateRight") => AssignIface::public(OwnedIface::Rights, Req::Required),
@@ -75,7 +77,7 @@ pub fn renameable() -> Iface {
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Override,
-            metadata: None,
+            metadata: none!(),
             globals: none!(),
             assignments: tiny_bmap! {
                 fname!("updateRight") => Occurrences::Once,
@@ -87,7 +89,7 @@ pub fn renameable() -> Iface {
             fname!("rename") => TransitionIface {
                 modifier: Modifier::Final,
                 optional: false,
-                metadata: None,
+                metadata: none!(),
                 globals: tiny_bmap! {
                     fname!("spec") => Occurrences::Once,
                 },
@@ -116,6 +118,7 @@ pub fn fungible() -> Iface {
         inherits: none!(),
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
+        metadata: none!(),
         global_state: tiny_bmap! {
             fname!("issuedSupply") => GlobalIface::required(types.get("RGBContract.Amount")),
         },
@@ -125,7 +128,7 @@ pub fn fungible() -> Iface {
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Override,
-            metadata: None,
+            metadata: none!(),
             globals: tiny_bmap! {
                 fname!("issuedSupply") => Occurrences::Once,
             },
@@ -141,7 +144,7 @@ pub fn fungible() -> Iface {
             fname!("transfer") => TransitionIface {
                 modifier: Modifier::Abstract,
                 optional: false,
-                metadata: None,
+                metadata: none!(),
                 globals: none!(),
                 inputs: tiny_bmap! {
                     fname!("assetOwner") => Occurrences::OnceOrMore,
@@ -176,12 +179,15 @@ pub fn reservable() -> Iface {
         inherits: none!(),
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
+        metadata: tiny_bmap! {
+            fname!("reserveProof") => types.get("RGBContract.IssueMeta"),
+        },
         global_state: none!(),
         assignments: none!(),
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Override,
-            metadata: Some(types.get("RGBContract.IssueMeta")),
+            metadata: tiny_bset![fname!("reserveProof")],
             globals: none!(),
             assignments: none!(),
             valencies: none!(),
@@ -194,7 +200,7 @@ pub fn reservable() -> Iface {
             fname!("issue") => TransitionIface {
                 modifier: Modifier::Override,
                 optional: true,
-                metadata: Some(types.get("RGBContract.IssueMeta")),
+            metadata: tiny_bset![fname!("reserveProof")],
                 globals: none!(),
                 inputs: none!(),
                 assignments: none!(),
@@ -225,6 +231,7 @@ pub fn fixed() -> Iface {
         inherits: none!(),
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
+        metadata: none!(),
         global_state: none!(),
         assignments: tiny_bmap! {
             fname!("assetOwner") => AssignIface::private(OwnedIface::Amount, Req::OneOrMore),
@@ -232,7 +239,7 @@ pub fn fixed() -> Iface {
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Override,
-            metadata: None,
+            metadata: none!(),
             globals: none!(),
             assignments: tiny_bmap! {
                 fname!("assetOwner") => Occurrences::OnceOrMore,
@@ -257,6 +264,7 @@ pub fn inflatable() -> Iface {
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         name: tn!("InflatableAsset"),
+        metadata: none!(),
         global_state: tiny_bmap! {
             fname!("issuedSupply") => GlobalIface::one_or_many(types.get("RGBContract.Amount")),
         },
@@ -266,7 +274,7 @@ pub fn inflatable() -> Iface {
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Override,
-            metadata: None,
+            metadata: none!(),
             globals: none!(),
             assignments: tiny_bmap! {
                 fname!("inflationAllowance") => Occurrences::OnceOrMore,
@@ -278,7 +286,7 @@ pub fn inflatable() -> Iface {
             fname!("issue") => TransitionIface {
                 modifier: Modifier::Abstract,
                 optional: false,
-                metadata: None,
+                metadata: none!(),
                 globals: tiny_bmap! {
                     fname!("issuedSupply") => Occurrences::Once,
                 },
@@ -314,6 +322,9 @@ pub fn burnable() -> Iface {
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         name: tn!("BurnableAsset"),
+        metadata: tiny_bmap! {
+            fname!("burnProof") => types.get("RGBContract.BurnMeta"),
+        },
         global_state: tiny_bmap! {
             fname!("burnedSupply") => GlobalIface::none_or_many(types.get("RGBContract.Amount")),
         },
@@ -323,7 +334,7 @@ pub fn burnable() -> Iface {
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Override,
-            metadata: None,
+            metadata: none!(),
             globals: none!(),
             assignments: tiny_bmap! {
                 fname!("burnRight") => Occurrences::OnceOrMore,
@@ -335,7 +346,7 @@ pub fn burnable() -> Iface {
             fname!("burn") => TransitionIface {
                 modifier: Modifier::Final,
                 optional: false,
-                metadata: Some(types.get("RGBContract.BurnMeta")),
+                metadata: tiny_bset![fname!("burnProof")],
                 globals: tiny_bmap! {
                     fname!("burnedSupply") => Occurrences::Once,
                 },
@@ -371,6 +382,9 @@ pub fn replaceable() -> Iface {
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         name: tn!("ReplaceableAsset"),
+        metadata: tiny_bmap! {
+            fname!("burnProof") => types.get("RGBContract.BurnMeta"),
+        },
         global_state: tiny_bmap! {
             fname!("burnedSupply") => GlobalIface::none_or_many(types.get("RGBContract.Amount")),
             fname!("replacedSupply") => GlobalIface::none_or_many(types.get("RGBContract.Amount")),
@@ -382,7 +396,7 @@ pub fn replaceable() -> Iface {
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Override,
-            metadata: None,
+            metadata: none!(),
             globals: none!(),
             assignments: tiny_bmap! {
                 fname!("burnEpoch") => Occurrences::Once,
@@ -394,7 +408,7 @@ pub fn replaceable() -> Iface {
             fname!("openEpoch") => TransitionIface {
                 modifier: Modifier::Final,
                 optional: false,
-                metadata: None,
+                metadata: none!(),
                 globals: none!(),
                 inputs: tiny_bmap! {
                     fname!("burnEpoch") => Occurrences::Once,
@@ -410,7 +424,7 @@ pub fn replaceable() -> Iface {
             fname!("burn") => TransitionIface {
                 modifier: Modifier::Final,
                 optional: false,
-                metadata: Some(types.get("RGBContract.BurnMeta")),
+                metadata: tiny_bset![fname!("burnProof")],
                 globals: tiny_bmap! {
                     fname!("burnedSupply") => Occurrences::Once,
                 },
@@ -431,7 +445,7 @@ pub fn replaceable() -> Iface {
             fname!("replace") => TransitionIface {
                 modifier: Modifier::Final,
                 optional: false,
-                metadata: Some(types.get("RGBContract.BurnMeta")),
+                metadata: tiny_bset![fname!("burnProof")],
                 globals: tiny_bmap! {
                     fname!("replacedSupply") => Occurrences::Once,
                 },

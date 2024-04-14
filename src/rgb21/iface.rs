@@ -37,6 +37,7 @@ pub fn nft() -> Iface {
         inherits: none!(),
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
+        metadata: none!(),
         global_state: tiny_bmap! {
             fname!("tokens") => GlobalIface::none_or_many(types.get("RGB21.TokenData")),
             fname!("attachmentTypes") => GlobalIface::none_or_many(types.get("RGB21.AttachmentType")),
@@ -47,7 +48,7 @@ pub fn nft() -> Iface {
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Override,
-            metadata: None,
+            metadata: none!(),
             globals: tiny_bmap! {
                 fname!("tokens") => Occurrences::NoneOrMore,
                 fname!("attachmentTypes") => Occurrences::NoneOrMore,
@@ -65,7 +66,7 @@ pub fn nft() -> Iface {
             fname!("transfer") => TransitionIface {
                 modifier: Modifier::Final,
                 optional: false,
-                metadata: None,
+                metadata: none!(),
                 globals: none!(),
                 inputs: tiny_bmap! {
                     fname!("assetOwner") => Occurrences::OnceOrMore,
@@ -108,6 +109,7 @@ pub fn unique() -> Iface {
         inherits: none!(),
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
+        metadata: none!(),
         global_state: tiny_bmap! {
             fname!("tokens") => GlobalIface::required(types.get("RGB21.TokenData")),
             fname!("attachmentTypes") => GlobalIface::required(types.get("RGB21.AttachmentType")),
@@ -118,7 +120,7 @@ pub fn unique() -> Iface {
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Override,
-            metadata: None,
+            metadata: none!(),
             globals: tiny_bmap! {
                 fname!("tokens") => Occurrences::Once,
                 fname!("attachmentTypes") => Occurrences::Once,
@@ -144,6 +146,7 @@ pub fn limited() -> Iface {
         inherits: none!(),
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
+        metadata: none!(),
         global_state: tiny_bmap! {
             fname!("tokens") => GlobalIface::one_or_many(types.get("RGB21.TokenData")),
             fname!("attachmentTypes") => GlobalIface::one_or_many(types.get("RGB21.AttachmentType")),
@@ -154,7 +157,7 @@ pub fn limited() -> Iface {
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Override,
-            metadata: None,
+            metadata: none!(),
             globals: tiny_bmap! {
                 fname!("tokens") => Occurrences::OnceOrMore,
                 fname!("attachmentTypes") => Occurrences::OnceOrMore,
@@ -180,6 +183,7 @@ pub fn engravable() -> Iface {
         inherits: none!(),
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
+        metadata: none!(),
         global_state: tiny_bmap! {
             fname!("engravings") => GlobalIface::none_or_many(types.get("RGB21.EngravingData")),
         },
@@ -187,7 +191,7 @@ pub fn engravable() -> Iface {
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Override,
-            metadata: None,
+            metadata: none!(),
             globals: none!(),
             assignments: none!(),
             valencies: none!(),
@@ -197,7 +201,7 @@ pub fn engravable() -> Iface {
             fname!("engrave") => TransitionIface {
                 modifier: Modifier::Final,
                 optional: false,
-                metadata: None,
+                metadata: none!(),
                 globals: tiny_bmap! {
                     fname!("engravings") => Occurrences::Once,
                 },
@@ -234,6 +238,7 @@ pub fn issuable() -> Iface {
         inherits: none!(),
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
+        metadata: none!(),
         global_state: none!(),
         assignments: tiny_bmap! {
             fname!("inflationAllowance") => AssignIface::public(OwnedIface::Data(types.get("RGB21.ItemsCount")), Req::OneOrMore),
@@ -241,7 +246,7 @@ pub fn issuable() -> Iface {
         valencies: none!(),
         genesis: GenesisIface {
             modifier: Modifier::Override,
-            metadata: None,
+            metadata: none!(),
             globals: none!(),
             assignments: tiny_bmap! {
                 fname!("inflationAllowance") => Occurrences::OnceOrMore,
@@ -253,7 +258,7 @@ pub fn issuable() -> Iface {
             fname!("issue") => TransitionIface {
                 modifier: Modifier::Abstract,
                 optional: false,
-                metadata: None,
+                metadata: none!(),
                 globals: tiny_bmap! {
                     fname!("tokens") => Occurrences::NoneOrMore,
                     fname!("attachmentTypes") => Occurrences::NoneOrMore,
