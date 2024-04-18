@@ -17,8 +17,8 @@ name = "ifaces"
 
 [dependencies]
 amplify = "4.6.0"
-strict_encoding = "2.7.0-beta.1"
-strict_types = "2.7.0-beta.2"
+strict_encoding = "2.7.0-beta.3"
+strict_types = "2.7.0-beta.3"
 aluvm = "0.11.0-beta.5"
 bp-core = "0.11.0-beta.5"
 chrono = "0.4.37"
@@ -33,9 +33,6 @@ all = ["serde"]
 serde = ["serde_crate", "rgb-std/serde"]
 
 [patch.crates-io]
-strict_encoding_derive = { git = "https://github.com/strict-types/strict-encoding", branch = "rstring" }
-strict_encoding = { git = "https://github.com/strict-types/strict-encoding", branch = "rstring" }
-strict_types = { git = "https://github.com/strict-types/strict-types", branch = "develop" }
 commit_verify = { git = "https://github.com/LNP-BP/client_side_validation", branch = "v0.11" }
 single_use_seals = { git = "https://github.com/LNP-BP/client_side_validation", branch = "v0.11" }
 bp-consensus = { git = "https://github.com/BP-WG/bp-core", branch = "v0.11" }
@@ -44,6 +41,6 @@ bp-seals = { git = "https://github.com/BP-WG/bp-core", branch = "v0.11" }
 bp-core = { git = "https://github.com/BP-WG/bp-core", branch = "v0.11" }
 bp-invoice = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
 aluvm = { git = "https://github.com/AluVM/rust-aluvm", branch = "v0.11" }
-rgb-core = { git = "https://github.com/RGB-WG/rgb-core", branch = "script-refactor" }
-rgb-std = { git = "https://github.com/RGB-WG/rgb-std", branch = "script-refactor" }
-rgb-invoice = { git = "https://github.com/RGB-WG/rgb-std", branch = "script-refactor" }
+rgb-core = { git = "https://github.com/RGB-WG/rgb-core", branch = "v0.11" }
+rgb-std = { git = "https://github.com/RGB-WG/rgb-std", branch = "v0.11" }
+rgb-invoice = { git = "https://github.com/RGB-WG/rgb-std", branch = "v0.11" }
