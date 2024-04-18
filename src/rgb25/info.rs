@@ -19,23 +19,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[macro_use]
-extern crate amplify;
-#[macro_use]
-extern crate strict_types;
-#[cfg(feature = "serde")]
-#[macro_use]
-extern crate serde_crate as serde;
+use rgbstd::stl::Attachment;
+use rgbstd::Precision;
 
-mod traits;
+use crate::rgb25::Features;
 
-pub mod rgb20;
-pub mod rgb21;
-pub mod rgb25;
-
-pub use rgb20::Rgb20;
-pub use rgb21::Rgb21;
-pub use rgb25::Rgb25;
-pub use traits::{IssuerWrapper, SchemaIssuer};
-
-pub const LNPBP_IDENTITY: &str = "lnp-bp.org";
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(crate = "serde_crate", rename_all = "camelCase")
+)]
+pub struct Rgb25Info {
+    pub name: String,
+    pub details: String,
+    pub terms: String,
+    pub attach: Option<Attachment>,
+    pub precision: Precision,
+    pub features: Features,
+}

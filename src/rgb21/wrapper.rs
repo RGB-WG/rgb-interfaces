@@ -19,7 +19,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use rgbstd::interface::{ContractIface, DataAllocation, Iface, IfaceId, OutpointFilter};
+use rgbstd::interface::{
+    ContractIface, DataAllocation, Iface, IfaceClass, IfaceId, OutpointFilter,
+};
 use rgbstd::stl::{bp_tx_stl, rgb_contract_stl, AssetSpec, AssetTerms};
 use rgbstd::Allocation;
 use strict_types::stl::std_stl;
@@ -30,7 +32,7 @@ use super::{
     AttachmentType, EngravingData, Features, Issues, ItemsCount, TokenData, LIB_NAME_RGB21,
 };
 use crate::rgb20::iface::{named_asset, renameable, reservable};
-use crate::IfaceWrapper;
+use crate::rgb20::Rgb20Info;
 
 pub const RGB21_UNIQUE_IFACE_ID: IfaceId = IfaceId::from_array([
     0xea, 0x7f, 0x2e, 0xc7, 0x3c, 0x4a, 0x97, 0xd7, 0xf5, 0xae, 0x56, 0xdb, 0xac, 0xef, 0xa0, 0xfb,
@@ -73,11 +75,12 @@ impl From<ContractIface> for Rgb21 {
     }
 }
 
-impl IfaceWrapper for Rgb21 {
+impl IfaceClass for Rgb21 {
     const IFACE_NAME: &'static str = LIB_NAME_RGB21;
     const IFACE_IDS: &'static [IfaceId] = &[RGB21_UNIQUE_IFACE_ID, RGB21_IFACE_ID];
 
     type Features = Features;
+    type Info = Rgb20Info;
 
     fn iface(features: Self::Features) -> Iface {
         let mut iface = named_asset().expect_extended(nft(), "RGB21Base");
@@ -100,7 +103,12 @@ impl IfaceWrapper for Rgb21 {
         }
         iface
     }
+
+    fn iface_id(features: Self::Features) -> IfaceId { todo!() }
+
     fn stl() -> TypeLib { rgb21_stl() }
+
+    fn info(&self) -> Self::Info { todo!() }
 }
 
 impl Rgb21 {

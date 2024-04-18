@@ -23,25 +23,15 @@ use std::marker::PhantomData;
 
 use amplify::confinement::Confined;
 use rgbstd::containers::{ContainerVer, Kit, ValidKit};
-use rgbstd::interface::{ContractIface, Iface, IfaceId, IfaceImpl};
+use rgbstd::interface::{IfaceClass, IfaceImpl};
 use rgbstd::validation::Scripts;
 use rgbstd::Schema;
 use strict_types::typesys::UnknownType;
-use strict_types::{TypeLib, TypeSystem};
-
-pub trait IfaceWrapper: From<ContractIface> {
-    const IFACE_NAME: &'static str;
-    const IFACE_IDS: &'static [IfaceId];
-
-    type Features: Sized + Clone + Default;
-
-    fn iface(features: Self::Features) -> Iface;
-    fn stl() -> TypeLib;
-}
+use strict_types::TypeSystem;
 
 pub trait IssuerWrapper {
-    const FEATURES: <Self::IssuingIface as IfaceWrapper>::Features;
-    type IssuingIface: IfaceWrapper;
+    const FEATURES: <Self::IssuingIface as IfaceClass>::Features;
+    type IssuingIface: IfaceClass;
 
     fn schema() -> Schema;
     fn issue_impl() -> IfaceImpl;
@@ -75,7 +65,7 @@ pub trait IssuerWrapper {
 }
 
 #[derive(Getters, Clone, Eq, PartialEq, Debug)]
-pub struct SchemaIssuer<I: IfaceWrapper> {
+pub struct SchemaIssuer<I: IfaceClass> {
     schema: Schema,
     iimpl: IfaceImpl,
     features: I::Features,
@@ -84,7 +74,7 @@ pub struct SchemaIssuer<I: IfaceWrapper> {
     phantom: PhantomData<I>,
 }
 
-impl<I: IfaceWrapper> SchemaIssuer<I> {
+impl<I: IfaceClass> SchemaIssuer<I> {
     #[allow(clippy::result_large_err)]
     pub fn new(
         schema: Schema,

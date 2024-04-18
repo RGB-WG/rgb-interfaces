@@ -1,10 +1,10 @@
 -----BEGIN RGB KIT-----
-Id: urn:lnp-bp:kit:6wi7S2-AmKqbiFD-4LJgK2NJ-dDpmVL4r-83bm2zry-ymNSTK#cantina-promo-mile
+Id: 6wi7S2-AmKqbiFD-4LJgK2NJ-dDpmVL4r-83bm2zry-ymNSTK#cantina-promo-mile
 Version: v2
 Interface: RGB21;
-id=urn:lnp-bp:if:5X9VWK-esnaF9cZ-CGAX6dHf-aPLneccq-i19Worqb-1625oa#sheriff-presto-chess
+id=5X9VWK-esnaF9cZ-CGAX6dHf-aPLneccq-i19Worqb-1625oa#sheriff-presto-chess
 Interface: RGB21Unique;
-id=urn:lnp-bp:if:GnNtB9-E4VJZ8mj-UQmtezaq-5V7aFqrM-Vc2ikx5k-zqPjxj#compact-regard-rudolf
+id=GnNtB9-E4VJZ8mj-UQmtezaq-5V7aFqrM-Vc2ikx5k-zqPjxj#compact-regard-rudolf
 Type-System: urn:ubideco:sts:5e3VmbX4A135eCdHGAU5c1frc3sD7AdVWP8hHHXSRmS8#mile-plate-value
 Checksum-SHA256: 3484ec680a44bf9e66a64c1b40da153a2af2fe6287ebf48adc4071497f7750be
 

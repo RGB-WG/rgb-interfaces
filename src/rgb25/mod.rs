@@ -21,11 +21,18 @@
 
 mod wrapper;
 mod issuer;
+mod info;
 
+pub use info::Rgb25Info;
 pub use issuer::Issue;
 pub use wrapper::{Rgb25, RGB25_IFACE_ID};
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(crate = "serde_crate", rename_all = "camelCase")
+)]
 pub struct Features {
     pub renaming: bool,
     pub reserves: bool,
@@ -50,9 +57,9 @@ impl Features {
 #[cfg(test)]
 mod test {
     use amplify::ByteArray;
+    use rgbstd::interface::IfaceClass;
 
     use super::*;
-    use crate::IfaceWrapper;
 
     #[test]
     fn iface_id_all() {

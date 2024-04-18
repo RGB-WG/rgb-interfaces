@@ -19,16 +19,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use rgbstd::interface::{ContractIface, Iface, IfaceId};
+use rgbstd::interface::{ContractIface, Iface, IfaceClass, IfaceId};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::stl::{rgb_contract_stl, AssetTerms, Details, Name};
 use rgbstd::AssetTag;
 use strict_encoding::InvalidRString;
 use strict_types::TypeLib;
 
-use super::{Features, Issue};
+use super::{Features, Issue, Rgb25Info};
 use crate::rgb20::iface::*;
-use crate::{IfaceWrapper, IssuerWrapper};
+use crate::IssuerWrapper;
 
 pub const RGB25_BASE_IFACE_ID: IfaceId = IfaceId::from_array([
     0xec, 0x62, 0x9d, 0x0d, 0x0e, 0x21, 0x6c, 0x76, 0x1d, 0x3c, 0x4f, 0x33, 0x86, 0x58, 0x09, 0x8c,
@@ -54,11 +54,12 @@ impl From<ContractIface> for Rgb25 {
     }
 }
 
-impl IfaceWrapper for Rgb25 {
+impl IfaceClass for Rgb25 {
     const IFACE_NAME: &'static str = "RGB25";
     const IFACE_IDS: &'static [IfaceId] = &[RGB25_BASE_IFACE_ID, RGB25_IFACE_ID];
 
     type Features = Features;
+    type Info = Rgb25Info;
 
     fn iface(features: Features) -> Iface {
         let mut iface = named_asset().expect_extended(fungible(), "RGB25Base");
@@ -76,7 +77,12 @@ impl IfaceWrapper for Rgb25 {
         }
         iface
     }
+
+    fn iface_id(features: Self::Features) -> IfaceId { todo!() }
+
     fn stl() -> TypeLib { rgb_contract_stl() }
+
+    fn info(&self) -> Self::Info { todo!() }
 }
 
 impl Rgb25 {

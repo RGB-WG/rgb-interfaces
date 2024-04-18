@@ -30,7 +30,7 @@ sha2 = "0.10.7"
 [features]
 default = []
 all = ["serde"]
-serde = ["serde_crate", "rgb-std/serde"]
+serde = ["serde_crate", "rgb-std/serde", "chrono/serde"]
 
 [patch.crates-io]
 strict_encoding_derive = { git = "https://github.com/strict-types/strict-encoding", branch = "rstring" }
@@ -44,6 +44,6 @@ bp-seals = { git = "https://github.com/BP-WG/bp-core", branch = "v0.11" }
 bp-core = { git = "https://github.com/BP-WG/bp-core", branch = "v0.11" }
 bp-invoice = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
 aluvm = { git = "https://github.com/AluVM/rust-aluvm", branch = "v0.11" }
-rgb-core = { git = "https://github.com/RGB-WG/rgb-core", branch = "script-refactor" }
-rgb-std = { git = "https://github.com/RGB-WG/rgb-std", branch = "script-refactor" }
-rgb-invoice = { git = "https://github.com/RGB-WG/rgb-std", branch = "script-refactor" }
+rgb-core = { git = "https://github.com/RGB-WG/rgb-core", branch = "schema-timestamp" }
+rgb-std = { path = "../rgb-std" }
+rgb-invoice = { path = "../rgb-std/invoice" }

@@ -328,6 +328,7 @@ dependencies = [
  "iana-time-zone",
  "js-sys",
  "num-traits",
+ "serde",
  "wasm-bindgen",
  "windows-targets",
 ]
@@ -634,7 +635,7 @@ dependencies = [
 [[package]]
 name = "rgb-core"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-core?branch=script-refactor#0fbabb559a06e8bb883d1013fa2ff4ddb30c7fcc"
+source = "git+https://github.com/RGB-WG/rgb-core?branch=schema-timestamp#1242c7e8a852f8e0e821f46e5e1e887c56bc8ded"
 dependencies = [
  "aluvm",
  "amplify",
@@ -672,7 +673,6 @@ dependencies = [
 [[package]]
 name = "rgb-invoice"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=script-refactor#272e2ce3ad26c96004dd7f273f15407a66c58d96"
 dependencies = [
  "amplify",
  "baid58",
@@ -690,7 +690,6 @@ dependencies = [
 [[package]]
 name = "rgb-std"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=script-refactor#272e2ce3ad26c96004dd7f273f15407a66c58d96"
 dependencies = [
  "aluvm",
  "amplify",

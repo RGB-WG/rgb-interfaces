@@ -22,8 +22,8 @@
 use std::collections::HashMap;
 
 use rgbstd::interface::{
-    AmountChange, ContractIface, FungibleAllocation, Iface, IfaceId, IfaceOp, OutpointFilter,
-    RightsAllocation, WitnessFilter,
+    AmountChange, ContractIface, FungibleAllocation, Iface, IfaceClass, IfaceId, IfaceOp,
+    OutpointFilter, RightsAllocation, WitnessFilter,
 };
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::stl::{rgb_contract_stl, AssetSpec, AssetTerms};
@@ -33,7 +33,7 @@ use strict_types::TypeLib;
 
 use super::iface::*;
 use super::{Features, PrimaryIssue};
-use crate::{IfaceWrapper, IssuerWrapper};
+use crate::IssuerWrapper;
 
 pub const RGB20_FIXED_IFACE_ID: IfaceId = IfaceId::from_array([
     0x75, 0x16, 0xa9, 0x64, 0xcf, 0x9c, 0x27, 0x42, 0xce, 0x44, 0xfc, 0x99, 0x7a, 0x42, 0xae, 0xbd,
@@ -58,11 +58,13 @@ impl From<ContractIface> for Rgb20 {
     }
 }
 
-impl IfaceWrapper for Rgb20 {
+impl IfaceClass for Rgb20 {
     const IFACE_NAME: &'static str = "RGB20";
     const IFACE_IDS: &'static [IfaceId] = &[RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID];
 
     type Features = Features;
+    type Info = ();
+
     fn iface(features: Features) -> Iface {
         let mut iface = named_asset().expect_extended(fungible(), "RGB20Base");
         if features.renaming {
@@ -87,7 +89,11 @@ impl IfaceWrapper for Rgb20 {
         iface
     }
 
+    fn iface_id(features: Self::Features) -> IfaceId { todo!() }
+
     fn stl() -> TypeLib { rgb_contract_stl() }
+
+    fn info(&self) -> Self::Info { todo!() }
 }
 
 impl Rgb20 {

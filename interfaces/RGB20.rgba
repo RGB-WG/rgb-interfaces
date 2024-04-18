@@ -1,10 +1,10 @@
 -----BEGIN RGB KIT-----
-Id: urn:lnp-bp:kit:B5TmxX-sKRef8Ra-DPxPfnQ3-v8XHq5JY-URjKnSdf-xkzGbz#sting-harmony-shadow
+Id: B5TmxX-sKRef8Ra-DPxPfnQ3-v8XHq5JY-URjKnSdf-xkzGbz#sting-harmony-shadow
 Version: v2
 Interface: RGB20Fixed;
-id=urn:lnp-bp:if:8t4k5d-XPTa4Pmk-nKTsiKXr-s6hiDS1W-SmDQZZLX-Myq7c9#medical-queen-input
+id=8t4k5d-XPTa4Pmk-nKTsiKXr-s6hiDS1W-SmDQZZLX-Myq7c9#medical-queen-input
 Interface: RGB20;
-id=urn:lnp-bp:if:CX1p3g-SNnx6mgs-XEviW3FN-XjktXNB4-sJPaxR4n-Rmwcxb#motif-bottle-algebra
+id=CX1p3g-SNnx6mgs-XEviW3FN-XjktXNB4-sJPaxR4n-Rmwcxb#motif-bottle-algebra
 Type-System: urn:ubideco:sts:2UPw2ADf1HpftMTYk3PmaJawTUjXxcNdWpdVc9aGMkHj#bonjour-robert-change
 Checksum-SHA256: da26d86b85665c52961949417fab5779ea28da81bf0db0d2e25c8b4ee9cad479
 
