@@ -24,7 +24,7 @@ use std::str::FromStr;
 use bp::dbc::Method;
 use chrono::Utc;
 use rgbstd::containers::ValidContract;
-use rgbstd::interface::{BuilderError, ContractBuilder, TxOutpoint};
+use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::PersistedState;
 use rgbstd::stl::{AssetSpec, AssetTerms, Attachment, RicardianContract};
@@ -32,7 +32,7 @@ use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal};
 use strict_encoding::InvalidRString;
 
 use super::Rgb20;
-use crate::{IfaceWrapper, IssuerWrapper, SchemaIssuer};
+use crate::{IssuerWrapper, SchemaIssuer};
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Display, Error)]
 #[display(doc_comments)]

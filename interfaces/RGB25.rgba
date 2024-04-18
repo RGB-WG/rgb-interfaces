@@ -1,10 +1,10 @@
 -----BEGIN RGB KIT-----
-Id: urn:lnp-bp:kit:Gn1DsZ-nQt1XF5k-8o6GZNT9-yn68TwGX-97SU6v3L-71go1H#relax-escape-mambo
+Id: Gn1DsZ-nQt1XF5k-8o6GZNT9-yn68TwGX-97SU6v3L-71go1H#relax-escape-mambo
 Version: v2
 Interface: RGB25;
-id=urn:lnp-bp:if:BCoc7C-rX9DUB3V-E88VVqy9-5MLw4ZRJ-odUP7FDD-g9jpCG#safari-harvard-school
+id=BCoc7C-rX9DUB3V-E88VVqy9-5MLw4ZRJ-odUP7FDD-g9jpCG#safari-harvard-school
 Interface: RGB25Base;
-id=urn:lnp-bp:if:GukRzf-LG76dNfd-jWnesRKX-ShTXgvu3-LBpvRusb-xABWVY#pilgrim-acrobat-boston
+id=GukRzf-LG76dNfd-jWnesRKX-ShTXgvu3-LBpvRusb-xABWVY#pilgrim-acrobat-boston
 Type-System: urn:ubideco:sts:2UPw2ADf1HpftMTYk3PmaJawTUjXxcNdWpdVc9aGMkHj#bonjour-robert-change
 Checksum-SHA256: 38b304bf86298e55b0f4c3b05b8dab5a2d2097053f761560d192a608b02b3b1d
 

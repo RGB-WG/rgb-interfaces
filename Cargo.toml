@@ -30,7 +30,7 @@ sha2 = "0.10.7"
 [features]
 default = []
 all = ["serde"]
-serde = ["serde_crate", "rgb-std/serde"]
+serde = ["serde_crate", "rgb-std/serde", "chrono/serde"]
 
 [patch.crates-io]
 commit_verify = { git = "https://github.com/LNP-BP/client_side_validation", branch = "v0.11" }
@@ -41,6 +41,6 @@ bp-seals = { git = "https://github.com/BP-WG/bp-core", branch = "v0.11" }
 bp-core = { git = "https://github.com/BP-WG/bp-core", branch = "v0.11" }
 bp-invoice = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
 aluvm = { git = "https://github.com/AluVM/rust-aluvm", branch = "v0.11" }
-rgb-core = { git = "https://github.com/RGB-WG/rgb-core", branch = "v0.11" }
-rgb-std = { git = "https://github.com/RGB-WG/rgb-std", branch = "v0.11" }
-rgb-invoice = { git = "https://github.com/RGB-WG/rgb-std", branch = "v0.11" }
+rgb-core = { git = "https://github.com/RGB-WG/rgb-core", branch = "develop" }
+rgb-std = { git = "https://github.com/RGB-WG/rgb-std", branch = "develop" }
+rgb-invoice = { git = "https://github.com/RGB-WG/rgb-std", branch = "develop" }

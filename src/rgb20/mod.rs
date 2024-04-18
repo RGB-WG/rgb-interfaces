@@ -22,11 +22,18 @@
 pub mod iface;
 mod wrapper;
 mod issuer;
+mod info;
 
+pub use info::{Rgb20Info, SupplyEvent, SupplyInfo};
 pub use issuer::{AllocationError, PrimaryIssue};
 pub use wrapper::{Rgb20, RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID};
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(crate = "serde_crate", rename_all = "camelCase")
+)]
 pub enum Inflation {
     #[default]
     Fixed,
@@ -46,6 +53,11 @@ impl Inflation {
 }
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(crate = "serde_crate", rename_all = "camelCase")
+)]
 pub struct Features {
     pub renaming: bool,
     pub reserves: bool,
@@ -69,9 +81,9 @@ impl Features {
 #[cfg(test)]
 mod test {
     use amplify::ByteArray;
+    use rgbstd::interface::IfaceClass;
 
     use super::*;
-    use crate::IfaceWrapper;
 
     #[test]
     fn iface_id_all() {

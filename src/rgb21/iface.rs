@@ -20,14 +20,14 @@
 // limitations under the License.
 
 use rgbstd::interface::{
-    AssignIface, GenesisIface, GlobalIface, Iface, Modifier, OwnedIface, Req, TransitionIface,
-    VerNo,
+    AssignIface, GenesisIface, GlobalIface, Iface, IfaceClass, Modifier, OwnedIface, Req,
+    TransitionIface, VerNo,
 };
 use rgbstd::stl::StandardTypes;
 use rgbstd::{Identity, Occurrences};
 
 use crate::rgb21::wrapper::Rgb21;
-use crate::{IfaceWrapper, LNPBP_IDENTITY};
+use crate::LNPBP_IDENTITY;
 
 pub fn nft() -> Iface {
     let types = StandardTypes::with(Rgb21::stl());

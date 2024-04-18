@@ -24,7 +24,7 @@ use std::str::FromStr;
 use bp::dbc::Method;
 use chrono::Utc;
 use rgbstd::containers::ValidContract;
-use rgbstd::interface::{BuilderError, ContractBuilder, TxOutpoint};
+use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::PersistedState;
 use rgbstd::stl::{AssetTerms, Attachment, Details, Name, RicardianContract};
@@ -33,7 +33,7 @@ use strict_encoding::InvalidRString;
 
 use super::Rgb25;
 use crate::rgb20::AllocationError;
-use crate::{IfaceWrapper, IssuerWrapper, SchemaIssuer};
+use crate::{IssuerWrapper, SchemaIssuer};
 
 #[derive(Clone, Debug)]
 pub struct Issue {

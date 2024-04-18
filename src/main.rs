@@ -23,8 +23,9 @@ use std::io;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-use ifaces::{rgb20, rgb21, rgb25, IfaceWrapper, Rgb20, Rgb21, Rgb25};
+use ifaces::{rgb20, rgb21, rgb25, Rgb20, Rgb21, Rgb25};
 use rgbstd::containers::{FileContent, Kit};
+use rgbstd::interface::IfaceClass;
 use rgbstd::stl::StandardTypes;
 use strict_types::StlFormat;
 

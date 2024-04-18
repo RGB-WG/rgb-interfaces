@@ -65,9 +65,9 @@ impl Features {
 #[cfg(test)]
 mod test {
     use amplify::ByteArray;
+    use rgbstd::interface::IfaceClass;
 
     use super::*;
-    use crate::IfaceWrapper;
 
     #[test]
     fn iface_id() {
