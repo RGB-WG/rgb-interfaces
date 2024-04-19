@@ -22,7 +22,6 @@
 use std::str::FromStr;
 
 use bp::dbc::Method;
-use chrono::Utc;
 use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
@@ -201,31 +200,21 @@ impl Issue {
 
     #[allow(clippy::result_large_err)]
     pub fn issue_contract(self) -> Result<ValidContract, BuilderError> {
-        debug_assert!(
-            !self.deterministic,
-            "to issue contract in deterministic way you must use issue_contract_det method"
-        );
-        self.issue_contract_int(Utc::now().timestamp())
+        self.pre_issue_contract().issue_contract()
     }
 
     #[allow(clippy::result_large_err)]
     pub fn issue_contract_det(self, timestamp: i64) -> Result<ValidContract, BuilderError> {
-        debug_assert!(
-            self.deterministic,
-            "to issue contract in deterministic way the contract builder has to be created using \
-             `*_det` constructor"
-        );
-        self.issue_contract_int(timestamp)
+        self.pre_issue_contract().issue_contract_det(timestamp)
     }
 
     #[allow(clippy::result_large_err)]
-    fn issue_contract_int(self, timestamp: i64) -> Result<ValidContract, BuilderError> {
+    fn pre_issue_contract(self) -> ContractBuilder {
         self.builder
             .add_global_state("issuedSupply", self.issued)
             .expect("invalid RGB25 schema (issued supply mismatch)")
             .add_global_state("terms", self.terms)
             .expect("invalid RGB25 schema (contract terms mismatch)")
-            .issue_contract_det(timestamp)
     }
 
     // TODO: Add secondary issuance and other methods
