@@ -137,7 +137,7 @@ pub fn fungible() -> Iface {
             },
             valencies: none!(),
             errors: tiny_bset! {
-                vname!("supplyMismatch"),
+                vname!("issuedMismatch"),
             },
         },
         transitions: tiny_bmap! {
@@ -161,7 +161,7 @@ pub fn fungible() -> Iface {
         },
         extensions: none!(),
         errors: tiny_bmap! {
-            vname!("supplyMismatch")
+            vname!("issuedMismatch")
                 => tiny_s!("supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"),
 
             vname!("nonEqualAmounts")
@@ -246,7 +246,7 @@ pub fn fixed() -> Iface {
             },
             valencies: none!(),
             errors: tiny_bset! {
-                vname!("supplyMismatch"),
+                vname!("issuedMismatch"),
             },
         },
         transitions: none!(),
@@ -264,9 +264,12 @@ pub fn inflatable() -> Iface {
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         name: tn!("InflatableAsset"),
-        metadata: none!(),
+        metadata: tiny_bmap! {
+            fname!("allowedInflation") => types.get("RGBContract.Amount"),
+        },
         global_state: tiny_bmap! {
             fname!("issuedSupply") => GlobalIface::one_or_many(types.get("RGBContract.Amount")),
+            fname!("maxSupply") => GlobalIface::required(types.get("RGBContract.Amount")),
         },
         assignments: tiny_bmap! {
             fname!("inflationAllowance") => AssignIface::public(OwnedIface::Amount, Req::NoneOrMore),
@@ -275,18 +278,23 @@ pub fn inflatable() -> Iface {
         genesis: GenesisIface {
             modifier: Modifier::Override,
             metadata: none!(),
-            globals: none!(),
+            globals: tiny_bmap! {
+                fname!("maxSupply") => Occurrences::Once,
+            },
             assignments: tiny_bmap! {
                 fname!("inflationAllowance") => Occurrences::OnceOrMore,
             },
             valencies: none!(),
-            errors: none!(),
+            errors: tiny_bset! {
+                vname!("issuedMismatch"),
+                vname!("inflationMismatch"),
+            },
         },
         transitions: tiny_bmap! {
             fname!("issue") => TransitionIface {
                 modifier: Modifier::Abstract,
                 optional: false,
-                metadata: none!(),
+                metadata: tiny_bset![fname!("allowedInflation")],
                 globals: tiny_bmap! {
                     fname!("issuedSupply") => Occurrences::Once,
                 },
@@ -299,8 +307,8 @@ pub fn inflatable() -> Iface {
                 },
                 valencies: none!(),
                 errors: tiny_bset! {
-                    vname!("supplyMismatch"),
-                    vname!("issueExceedsAllowance"),
+                    vname!("issuedMismatch"),
+                    vname!("inflationExceedsAllowance"),
                 },
                 default_assignment: Some(fname!("assetOwner")),
             },
@@ -308,7 +316,9 @@ pub fn inflatable() -> Iface {
         extensions: none!(),
         default_operation: None,
         errors: tiny_bmap! {
-            vname!("issueExceedsAllowance")
+            vname!("inflationMismatch")
+                => tiny_s!("reported sum of issued assets and inflation allowance doesn't match specified maximum supply"),
+            vname!("inflationExceedsAllowance")
                 => tiny_s!("you try to issue more assets than allowed by the contract terms"),
         },
     }
@@ -358,7 +368,7 @@ pub fn burnable() -> Iface {
                 },
                 valencies: none!(),
                 errors: tiny_bset! {
-                    vname!("supplyMismatch"),
+                    vname!("issuedMismatch"),
                     vname!("invalidProof"),
                     vname!("insufficientCoverage")
                 },
@@ -436,7 +446,7 @@ pub fn replaceable() -> Iface {
                 },
                 valencies: none!(),
                 errors: tiny_bset! {
-                    vname!("supplyMismatch"),
+                    vname!("issuedMismatch"),
                     vname!("invalidProof"),
                     vname!("insufficientCoverage")
                 },
@@ -459,7 +469,7 @@ pub fn replaceable() -> Iface {
                 valencies: none!(),
                 errors: tiny_bset! {
                     vname!("nonEqualAmounts"),
-                    vname!("supplyMismatch"),
+                    vname!("issuedMismatch"),
                     vname!("invalidProof"),
                     vname!("insufficientCoverage")
                 },
