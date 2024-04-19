@@ -32,7 +32,7 @@ use strict_encoding::InvalidRString;
 use strict_types::TypeLib;
 
 use super::iface::*;
-use super::{Features, PrimaryIssue};
+use super::{Features, PrimaryIssue, Rgb20Info};
 use crate::IssuerWrapper;
 
 pub const RGB20_FIXED_IFACE_ID: IfaceId = IfaceId::from_array([
@@ -63,7 +63,7 @@ impl IfaceClass for Rgb20 {
     const IFACE_IDS: &'static [IfaceId] = &[RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID];
 
     type Features = Features;
-    type Info = ();
+    type Info = Rgb20Info;
 
     fn iface(features: Features) -> Iface {
         let mut iface = named_asset().expect_extended(fungible(), "RGB20Base");
