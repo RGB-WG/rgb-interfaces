@@ -25,7 +25,7 @@ use bp::dbc::Method;
 use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
-use rgbstd::stl::{AssetSpec, AssetTerms, Attachment, RicardianContract};
+use rgbstd::stl::{AssetSpec, Attachment, ContractTerms, RicardianContract};
 use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal};
 use strict_encoding::InvalidRString;
 
@@ -56,7 +56,7 @@ impl From<BuilderError> for AllocationError {
 pub struct PrimaryIssue {
     builder: ContractBuilder,
     issued: Amount,
-    terms: AssetTerms,
+    terms: ContractTerms,
 }
 
 impl PrimaryIssue {
@@ -103,7 +103,7 @@ impl PrimaryIssue {
         deterministic: bool,
     ) -> Result<Self, InvalidRString> {
         let spec = AssetSpec::with(ticker, name, precision, details)?;
-        let terms = AssetTerms {
+        let terms = ContractTerms {
             text: RicardianContract::default(),
             media: None,
         };
@@ -150,7 +150,7 @@ impl PrimaryIssue {
         media: Option<Attachment>,
     ) -> Result<Self, InvalidRString> {
         let terms = RicardianContract::from_str(contract)?;
-        self.terms = AssetTerms { text: terms, media };
+        self.terms = ContractTerms { text: terms, media };
         Ok(self)
     }
 

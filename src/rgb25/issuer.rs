@@ -26,7 +26,7 @@ use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::PersistedState;
-use rgbstd::stl::{AssetTerms, Attachment, Details, Name, RicardianContract};
+use rgbstd::stl::{Attachment, ContractTerms, Details, Name, RicardianContract};
 use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal};
 use strict_encoding::InvalidRString;
 
@@ -38,7 +38,7 @@ use crate::{IssuerWrapper, SchemaIssuer};
 pub struct Issue {
     builder: ContractBuilder,
     issued: Amount,
-    terms: AssetTerms,
+    terms: ContractTerms,
     deterministic: bool,
 }
 
@@ -48,7 +48,7 @@ impl Issue {
         name: &str,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        let terms = AssetTerms {
+        let terms = ContractTerms {
             text: RicardianContract::default(),
             media: None,
         };
@@ -120,7 +120,7 @@ impl Issue {
         media: Option<Attachment>,
     ) -> Result<Self, InvalidRString> {
         let terms = RicardianContract::from_str(contract)?;
-        self.terms = AssetTerms { text: terms, media };
+        self.terms = ContractTerms { text: terms, media };
         Ok(self)
     }
 

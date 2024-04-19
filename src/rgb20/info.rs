@@ -35,7 +35,7 @@ pub struct Rgb20Info {
     pub contract_id: ContractId,
     pub ticker: String,
     pub name: String,
-    pub details: String,
+    pub details: Option<String>,
     pub terms: String,
     pub attach: Option<Attachment>,
     pub precision: Precision,

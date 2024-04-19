@@ -31,9 +31,10 @@ use crate::rgb25::Features;
     serde(crate = "serde_crate", rename_all = "camelCase")
 )]
 pub struct Rgb25Info {
+    pub article: Option<String>,
     pub contract_id: ContractId,
     pub name: String,
-    pub details: String,
+    pub details: Option<String>,
     pub terms: String,
     pub attach: Option<Attachment>,
     pub precision: Precision,

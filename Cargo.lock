@@ -5,7 +5,7 @@ version = 3
 [[package]]
 name = "aluvm"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/AluVM/rust-aluvm?branch=v0.11#d18ea84836a8a96f3dfe61c99b94f2eab1417819"
+source = "git+https://github.com/AluVM/rust-aluvm?branch=develop#fafec9e124b10d4653cec7ef7804e1a9bda97844"
 dependencies = [
  "amplify",
  "ascii-armor",
@@ -235,7 +235,7 @@ dependencies = [
  "amplify",
  "chrono",
  "commit_verify",
- "secp256k1",
+ "secp256k1 0.29.0",
  "serde",
  "strict_encoding",
  "strict_types",
@@ -268,7 +268,7 @@ dependencies = [
  "base85",
  "bp-consensus",
  "commit_verify",
- "secp256k1",
+ "secp256k1 0.29.0",
  "serde",
  "strict_encoding",
 ]
@@ -276,7 +276,7 @@ dependencies = [
 [[package]]
 name = "bp-invoice"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/BP-WG/bp-std?branch=v0.11#7dd16a84edc8c308856155d990d9df4311c35bfc"
+source = "git+https://github.com/BP-WG/bp-std?branch=v0.11#95ff22306108188729a0646838154efe8b7d715d"
 dependencies = [
  "amplify",
  "bech32",
@@ -336,7 +336,7 @@ dependencies = [
 [[package]]
 name = "commit_encoding_derive"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/LNP-BP/client_side_validation?branch=v0.11#4ca5963fbf6d57138f5b81ebe70aa095a79d0d9d"
+source = "git+https://github.com/LNP-BP/client_side_validation?branch=v0.11#f51e1e0d010b1531acc939d2443af552e8755bb7"
 dependencies = [
  "amplify",
  "amplify_syn",
@@ -348,7 +348,7 @@ dependencies = [
 [[package]]
 name = "commit_verify"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/LNP-BP/client_side_validation?branch=v0.11#4ca5963fbf6d57138f5b81ebe70aa095a79d0d9d"
+source = "git+https://github.com/LNP-BP/client_side_validation?branch=v0.11#f51e1e0d010b1531acc939d2443af552e8755bb7"
 dependencies = [
  "amplify",
  "commit_encoding_derive",
@@ -635,7 +635,7 @@ dependencies = [
 [[package]]
 name = "rgb-core"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-core?branch=develop#177c908bc7b097fd640a7cd30afe0b624bca3580"
+source = "git+https://github.com/RGB-WG/rgb-core?branch=develop#bc8243c61de9eac0f8c1cbf2f92922efb216efc3"
 dependencies = [
  "aluvm",
  "amplify",
@@ -673,7 +673,7 @@ dependencies = [
 [[package]]
 name = "rgb-invoice"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#c980d2c1cdd316587e5a0c45ce0b3eccc6108354"
+source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#25a9713127f8e5b04becd21945fa70f7230f421f"
 dependencies = [
  "amplify",
  "baid58",
@@ -691,7 +691,7 @@ dependencies = [
 [[package]]
 name = "rgb-std"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#c980d2c1cdd316587e5a0c45ce0b3eccc6108354"
+source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#25a9713127f8e5b04becd21945fa70f7230f421f"
 dependencies = [
  "aluvm",
  "amplify",
@@ -734,7 +734,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d24b59d129cdadea20aea4fb2352fa053712e5d713eee47d700cd4b2bc002f10"
 dependencies = [
  "rand",
- "secp256k1-sys",
+ "secp256k1-sys 0.9.2",
+ "serde",
+]
+
+[[package]]
+name = "secp256k1"
+version = "0.29.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e0cc0f1cf93f4969faf3ea1c7d8a9faed25918d96affa959720823dfe86d4f3"
+dependencies = [
+ "rand",
+ "secp256k1-sys 0.10.0",
  "serde",
 ]
 
@@ -748,6 +759,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "secp256k1-sys"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1433bd67156263443f14d603720b082dd3121779323fce20cba2aa07b874bc1b"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "secp256k1-zkp"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -755,7 +775,7 @@ checksum = "c4e48ef9c98bfbcb98bd15693ffa19676cb3e29426b75eda8b73c05cdd7959f8"
 dependencies = [
  "bitcoin-private",
  "rand",
- "secp256k1",
+ "secp256k1 0.28.2",
  "secp256k1-zkp-sys",
  "serde",
 ]
@@ -767,7 +787,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4ead52f43074bae2ddbd1e0e66e6b170135e76117f5ea9916f33d7bd0b36e29"
 dependencies = [
  "cc",
- "secp256k1-sys",
+ "secp256k1-sys 0.9.2",
 ]
 
 [[package]]
@@ -847,7 +867,7 @@ dependencies = [
 [[package]]
 name = "single_use_seals"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/LNP-BP/client_side_validation?branch=v0.11#4ca5963fbf6d57138f5b81ebe70aa095a79d0d9d"
+source = "git+https://github.com/LNP-BP/client_side_validation?branch=v0.11#f51e1e0d010b1531acc939d2443af552e8755bb7"
 dependencies = [
  "amplify_derive",
 ]

@@ -22,7 +22,9 @@
 mod wrapper;
 mod issuer;
 mod info;
+mod iface;
 
+pub use iface::named_contract;
 pub use info::Rgb25Info;
 pub use issuer::Issue;
 pub use wrapper::{Rgb25, RGB25_IFACE_ID};

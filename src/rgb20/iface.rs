@@ -40,7 +40,7 @@ pub fn named_asset() -> Iface {
         metadata: none!(),
         global_state: tiny_bmap! {
             fname!("spec") => GlobalIface::required(types.get("RGBContract.AssetSpec")),
-            fname!("terms") => GlobalIface::required(types.get("RGBContract.AssetTerms")),
+            fname!("terms") => GlobalIface::required(types.get("RGBContract.ContractTerms")),
         },
         assignments: none!(),
         valencies: none!(),
