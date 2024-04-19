@@ -20,7 +20,7 @@
 // limitations under the License.
 
 use rgbstd::stl::Attachment;
-use rgbstd::Precision;
+use rgbstd::{ContractId, Precision};
 
 use crate::rgb25::Features;
 
@@ -31,6 +31,7 @@ use crate::rgb25::Features;
     serde(crate = "serde_crate", rename_all = "camelCase")
 )]
 pub struct Rgb25Info {
+    pub contract_id: ContractId,
     pub name: String,
     pub details: String,
     pub terms: String,

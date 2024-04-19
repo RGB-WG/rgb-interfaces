@@ -21,7 +21,7 @@
 
 use chrono::{DateTime, Utc};
 use rgbstd::stl::Attachment;
-use rgbstd::{Amount, Precision, XOutpoint, XWitnessId};
+use rgbstd::{Amount, ContractId, Precision, XOutpoint, XWitnessId};
 
 use crate::rgb20::Features;
 
@@ -32,6 +32,7 @@ use crate::rgb20::Features;
     serde(crate = "serde_crate", rename_all = "camelCase")
 )]
 pub struct Rgb20Info {
+    pub contract_id: ContractId,
     pub ticker: String,
     pub name: String,
     pub details: String,
