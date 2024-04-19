@@ -384,6 +384,7 @@ pub fn burnable() -> Iface {
     }
 }
 
+/*
 pub fn replaceable() -> Iface {
     let types = StandardTypes::new();
     Iface {
@@ -484,3 +485,4 @@ pub fn replaceable() -> Iface {
         },
     }
 }
+*/

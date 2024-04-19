@@ -73,7 +73,7 @@ impl Features {
     pub const ALL: Self = Features {
         renaming: true,
         reserves: true,
-        inflation: Inflation::Replaceable,
+        inflation: Inflation::InflatibleBurnable,
     };
     pub const ENUMERATE: &'static [Self] = &[Self::NONE, Self::ALL];
 }

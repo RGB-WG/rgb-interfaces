@@ -76,7 +76,8 @@ impl IfaceClass for Rgb20 {
             iface = iface.expect_extended(inflatable(), "RGB20Inflatible");
         }
         if features.inflation.is_replacable() {
-            iface = iface.expect_extended(replaceable(), "RGB20Replacable");
+            todo!("replaceable interface")
+            //iface = iface.expect_extended(replaceable(), "RGB20Replacable");
         } else if features.inflation.is_burnable() {
             iface = iface.expect_extended(burnable(), "RGB20Burnable");
         }
