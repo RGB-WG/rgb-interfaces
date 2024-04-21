@@ -338,6 +338,7 @@ pub fn burnable() -> Iface {
             fname!("burnProof") => types.get("RGBContract.BurnMeta"),
         },
         global_state: tiny_bmap! {
+            fname!("burnConsignmentUrl") => GlobalIface::optional(types.get("RGBContract.Details")),
             fname!("burnedSupply") => GlobalIface::none_or_many(types.get("RGBContract.Amount")),
         },
         assignments: tiny_bmap! {
@@ -360,6 +361,7 @@ pub fn burnable() -> Iface {
                 optional: false,
                 metadata: tiny_bset![fname!("burnProof")],
                 globals: tiny_bmap! {
+                    fname!("burnConsignmentUrl") => Occurrences::NoneOrOnce,
                     fname!("burnedSupply") => Occurrences::Once,
                 },
                 inputs: tiny_bmap! {
@@ -397,7 +399,7 @@ pub fn replaceable() -> Iface {
             fname!("replacedSupply") => GlobalIface::none_or_many(types.get("RGBContract.Amount")),
         },
         assignments: tiny_bmap! {
-            fname!("burnRight") => AssignIface::public(OwnedIface::Rights, Req::OneOrMore),
+            fname!("replaceRight") => AssignIface::public(OwnedIface::Rights, Req::OneOrMore),
         },
         valencies: none!(),
         genesis: GenesisIface {
@@ -414,14 +416,15 @@ pub fn replaceable() -> Iface {
                 optional: false,
                 metadata: tiny_bset![fname!("burnProof")],
                 globals: tiny_bmap! {
+                    fname!("burnConsignmentUrl") => Occurrences::NoneOrOnce,
                     fname!("replacedSupply") => Occurrences::Once,
                 },
                 inputs: tiny_bmap! {
-                    fname!("burnRight") => Occurrences::OnceOrMore,
+                    fname!("replaceRight") => Occurrences::OnceOrMore,
                 },
                 assignments: tiny_bmap! {
                     fname!("assetOwner") => Occurrences::NoneOrMore,
-                    fname!("burnRight") => Occurrences::NoneOrOnce,
+                    fname!("replaceRight") => Occurrences::NoneOrOnce,
                 },
                 valencies: none!(),
                 errors: tiny_bset! {
