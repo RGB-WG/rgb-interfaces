@@ -63,15 +63,16 @@ impl IfaceClass for Rgb20 {
         }
         if features.inflation.is_fixed() {
             iface = iface.expect_extended(fixed(), "RGB20Fixed");
-        } else if features.inflation.is_inflatible() {
+        } else if features.inflation.is_inflatable() {
             iface = iface.expect_extended(inflatable(), "RGB20Inflatable");
         }
-        if features.inflation.is_replacable() {
-            todo!("replaceable interface")
-            //iface = iface.expect_extended(replaceable(), "RGB20Replacable");
-        } else if features.inflation.is_burnable() {
+        if features.inflation.is_burnable() {
             iface = iface.expect_extended(burnable(), "RGB20Burnable");
         }
+        if features.inflation.is_replaceable() {
+            iface = iface.expect_extended(replaceable(), "RGB20Replaceable");
+        }
+        // TODO: Disable reservable for now
         if features.reserves {
             iface = iface.expect_extended(reservable(), "RGB20Reservable");
         }

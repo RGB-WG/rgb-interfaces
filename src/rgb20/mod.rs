@@ -38,17 +38,17 @@ pub enum Inflation {
     #[default]
     Fixed,
     Burnable,
-    Inflatible,
-    InflatibleBurnable,
+    Inflatable,
+    InflatableBurnable,
     Replaceable,
 }
 
 impl Inflation {
     pub fn is_fixed(self) -> bool { self == Self::Fixed }
-    pub fn is_inflatible(self) -> bool {
-        self == Self::Inflatible || self == Self::InflatibleBurnable || self == Self::Replaceable
+    pub fn is_inflatable(self) -> bool {
+        self == Self::Inflatable || self == Self::InflatableBurnable || self == Self::Replaceable
     }
-    pub fn is_replacable(self) -> bool { self == Self::Replaceable }
+    pub fn is_replaceable(self) -> bool { self == Self::Replaceable }
     pub fn is_burnable(self) -> bool { self == Self::Burnable || self == Self::Replaceable }
 }
 
@@ -73,7 +73,7 @@ impl Features {
     pub const ALL: Self = Features {
         renaming: true,
         reserves: true,
-        inflation: Inflation::InflatibleBurnable,
+        inflation: Inflation::Replaceable,
     };
     pub const ENUMERATE: &'static [Self] = &[Self::NONE, Self::ALL];
 }

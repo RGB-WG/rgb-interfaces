@@ -200,13 +200,13 @@ pub fn reservable() -> Iface {
             fname!("issue") => TransitionIface {
                 modifier: Modifier::Override,
                 optional: true,
-            metadata: tiny_bset![fname!("reserveProof")],
+                metadata: tiny_bset![fname!("reserveProof")],
                 globals: none!(),
                 inputs: none!(),
                 assignments: none!(),
                 valencies: none!(),
                 errors: tiny_bset! {
-                    vname!("invalidProof"),
+                    vname!("invalidReservesProof"),
                     vname!("insufficientReserves")
                 },
                 default_assignment: Some(fname!("assetOwner")),
@@ -214,8 +214,8 @@ pub fn reservable() -> Iface {
         },
         extensions: none!(),
         errors: tiny_bmap! {
-            vname!("invalidProof")
-                => tiny_s!("the provided proof is invalid"),
+            vname!("invalidReservesProof")
+                => tiny_s!("the provided proof of reserves is invalid"),
 
             vname!("insufficientReserves")
                 => tiny_s!("reserve is insufficient to cover the issued assets"),
@@ -361,16 +361,14 @@ pub fn burnable() -> Iface {
                     fname!("burnedSupply") => Occurrences::Once,
                 },
                 inputs: tiny_bmap! {
-                    fname!("burnRight") => Occurrences::Once,
+                    fname!("burnRight") => Occurrences::OnceOrMore,
                 },
                 assignments: tiny_bmap! {
                     fname!("burnRight") => Occurrences::NoneOrMore,
                 },
                 valencies: none!(),
                 errors: tiny_bset! {
-                    vname!("issuedMismatch"),
-                    vname!("invalidProof"),
-                    vname!("insufficientCoverage")
+                    vname!("invalidBurnProof")
                 },
                 default_assignment: None,
             },
@@ -378,14 +376,67 @@ pub fn burnable() -> Iface {
         extensions: none!(),
         default_operation: None,
         errors: tiny_bmap! {
-            vname!("insufficientCoverage")
-                => tiny_s!("the claimed amount of burned assets is not covered by the assets in the operation inputs"),
+            vname!("invalidBurnProof")
+                => tiny_s!("the provided proof of reserves is invalid")
         },
     }
 }
 
-/*
 pub fn replaceable() -> Iface {
+    let types = StandardTypes::new();
+    Iface {
+        version: VerNo::V1,
+        inherits: none!(),
+        developer: Identity::from(LNPBP_IDENTITY),
+        timestamp: 1711405444,
+        name: tn!("ReplaceableAsset"),
+        metadata: none!(),
+        global_state: tiny_bmap! {
+            fname!("replacedSupply") => GlobalIface::none_or_many(types.get("RGBContract.Amount")),
+        },
+        assignments: tiny_bmap! {
+            fname!("burnRight") => AssignIface::public(OwnedIface::Rights, Req::OneOrMore),
+        },
+        valencies: none!(),
+        genesis: GenesisIface {
+            modifier: Modifier::Override,
+            metadata: none!(),
+            globals: none!(),
+            assignments: none!(),
+            valencies: none!(),
+            errors: none!(),
+        },
+        transitions: tiny_bmap! {
+            fname!("replace") => TransitionIface {
+                modifier: Modifier::Final,
+                optional: false,
+                metadata: tiny_bset![fname!("burnProof")],
+                globals: tiny_bmap! {
+                    fname!("replacedSupply") => Occurrences::Once,
+                },
+                inputs: tiny_bmap! {
+                    fname!("burnRight") => Occurrences::OnceOrMore,
+                },
+                assignments: tiny_bmap! {
+                    fname!("assetOwner") => Occurrences::NoneOrMore,
+                    fname!("burnRight") => Occurrences::NoneOrOnce,
+                },
+                valencies: none!(),
+                errors: tiny_bset! {
+                    vname!("issuedMismatch"),
+                    vname!("invalidBurnProof"),
+                },
+                default_assignment: Some(fname!("assetOwner")),
+            },
+        },
+        extensions: none!(),
+        default_operation: None,
+        errors: none!(),
+    }
+}
+
+/*
+pub fn replaceable_epochs() -> Iface {
     let types = StandardTypes::new();
     Iface {
         version: VerNo::V1,
