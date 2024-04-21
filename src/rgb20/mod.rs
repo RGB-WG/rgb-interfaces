@@ -60,19 +60,19 @@ impl Inflation {
 )]
 pub struct Features {
     pub renaming: bool,
-    pub reserves: bool,
+    // pub reserves: bool,
     pub inflation: Inflation,
 }
 
 impl Features {
     pub const NONE: Self = Features {
         renaming: false,
-        reserves: false,
+        // reserves: false,
         inflation: Inflation::Fixed,
     };
     pub const ALL: Self = Features {
         renaming: true,
-        reserves: true,
+        // reserves: true,
         inflation: Inflation::Replaceable,
     };
     pub const ENUMERATE: &'static [Self] = &[Self::NONE, Self::ALL];

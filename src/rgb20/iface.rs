@@ -171,6 +171,7 @@ pub fn fungible() -> Iface {
     }
 }
 
+/*
 pub fn reservable() -> Iface {
     let types = StandardTypes::new();
     Iface {
@@ -223,6 +224,7 @@ pub fn reservable() -> Iface {
         default_operation: None,
     }
 }
+ */
 
 pub fn fixed() -> Iface {
     Iface {

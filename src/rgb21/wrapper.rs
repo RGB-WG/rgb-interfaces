@@ -31,7 +31,7 @@ use super::iface::*;
 use super::{
     AttachmentType, EngravingData, Features, Issues, ItemsCount, TokenData, LIB_NAME_RGB21,
 };
-use crate::rgb20::iface::{named_asset, renameable, reservable};
+use crate::rgb20::iface::{named_asset, renameable};
 use crate::rgb20::Rgb20Info;
 
 pub const RGB21_UNIQUE_IFACE_ID: IfaceId = IfaceId::from_array([
@@ -95,9 +95,11 @@ impl IfaceClass for Rgb21 {
             Issues::Limited => iface.expect_extended(limited(), "RGB21Limited"),
             Issues::MultiIssue => iface.expect_extended(issuable(), "RGB21Issuable"),
         };
+        /*
         if features.reserves {
             iface = iface.expect_extended(reservable(), "RGB21Reservable");
         }
+         */
         iface
     }
 

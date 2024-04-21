@@ -66,9 +66,11 @@ impl IfaceClass for Rgb25 {
         if features.renaming {
             iface = iface.expect_extended(renameable(), "RGB25Renameable");
         }
+        /*
         if features.reserves {
             iface = iface.expect_extended(reservable(), "RGB25Reservable");
         }
+         */
         if features.burnable {
             iface = iface.expect_extended(burnable(), "RGB25Burnable");
         }

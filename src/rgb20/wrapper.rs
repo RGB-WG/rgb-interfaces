@@ -72,10 +72,11 @@ impl IfaceClass for Rgb20 {
         if features.inflation.is_replaceable() {
             iface = iface.expect_extended(replaceable(), "RGB20Replaceable");
         }
-        // TODO: Disable reservable for now
+        /* TODO: Complete reservable interface
         if features.reserves {
             iface = iface.expect_extended(reservable(), "RGB20Reservable");
         }
+         */
         iface
     }
 

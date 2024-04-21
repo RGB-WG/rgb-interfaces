@@ -40,7 +40,7 @@ pub enum Issues {
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub struct Features {
     pub renaming: bool,
-    pub reserves: bool,
+    // pub reserves: bool,
     pub engraving: bool,
     pub issues: Issues,
 }
@@ -48,13 +48,13 @@ pub struct Features {
 impl Features {
     pub const NONE: Self = Features {
         renaming: false,
-        reserves: false,
+        // reserves: false,
         engraving: false,
         issues: Issues::Unique,
     };
     pub const ALL: Self = Features {
         renaming: true,
-        reserves: true,
+        // reserves: true,
         engraving: true,
         issues: Issues::MultiIssue,
     };

@@ -37,19 +37,19 @@ pub use wrapper::{Rgb25, RGB25_IFACE_ID};
 )]
 pub struct Features {
     pub renaming: bool,
-    pub reserves: bool,
+    // pub reserves: bool,
     pub burnable: bool,
 }
 
 impl Features {
     pub const NONE: Self = Features {
         renaming: false,
-        reserves: false,
+        // reserves: false,
         burnable: false,
     };
     pub const ALL: Self = Features {
         renaming: true,
-        reserves: true,
+        // reserves: true,
         burnable: true,
     };
 
