@@ -406,7 +406,9 @@ pub fn replaceable() -> Iface {
             modifier: Modifier::Override,
             metadata: none!(),
             globals: none!(),
-            assignments: none!(),
+            assignments: tiny_bmap! {
+                fname!("replaceRight") => Occurrences::OnceOrMore,
+            },
             valencies: none!(),
             errors: none!(),
         },
