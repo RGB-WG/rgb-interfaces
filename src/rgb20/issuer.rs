@@ -47,7 +47,7 @@ impl From<BuilderError> for AllocationError {
     fn from(err: BuilderError) -> Self {
         match err {
             BuilderError::InvalidLayer1(_) => AllocationError::NoLiquidSupport,
-            _ => panic!("invalid RGB20 schema (assetOwner mismatch)"),
+            err => panic!("invalid RGB20 schema. Details: {err}"),
         }
     }
 }
