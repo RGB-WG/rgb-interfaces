@@ -32,9 +32,9 @@ use strict_encoding::InvalidRString;
 use super::Rgb20;
 use crate::{IssuerWrapper, SchemaIssuer};
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Display, Error)]
+#[derive(Clone, Eq, PartialEq, Hash, Debug, Display, Error)]
 #[display(doc_comments)]
-pub enum AllocationError {
+pub enum IssuerError {
     /// contract genesis doesn't support allocating to liquid seals; request
     /// liquid support first.
     NoLiquidSupport,
@@ -43,10 +43,10 @@ pub enum AllocationError {
     AmountOverflow,
 }
 
-impl From<BuilderError> for AllocationError {
+impl From<BuilderError> for IssuerError {
     fn from(err: BuilderError) -> Self {
         match err {
-            BuilderError::InvalidLayer1(_) => AllocationError::NoLiquidSupport,
+            BuilderError::InvalidLayer1(_) => IssuerError::NoLiquidSupport,
             err => panic!("invalid RGB20 schema. Details: {err}"),
         }
     }
@@ -161,14 +161,14 @@ impl PrimaryIssue {
         method: Method,
         beneficiary: O,
         amount: impl Into<Amount>,
-    ) -> Result<Self, AllocationError> {
+    ) -> Result<Self, IssuerError> {
         let amount = amount.into();
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
             GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
         });
         self.issued
             .checked_add_assign(amount)
-            .ok_or(AllocationError::AmountOverflow)?;
+            .ok_or(IssuerError::AmountOverflow)?;
         self.builder =
             self.builder
                 .add_fungible_state("assetOwner", beneficiary, amount.value())?;
@@ -179,7 +179,7 @@ impl PrimaryIssue {
         mut self,
         method: Method,
         allocations: impl IntoIterator<Item = (O, impl Into<Amount>)>,
-    ) -> Result<Self, AllocationError> {
+    ) -> Result<Self, IssuerError> {
         for (beneficiary, amount) in allocations {
             self = self.allocate(method, beneficiary, amount)?;
         }
@@ -194,14 +194,14 @@ impl PrimaryIssue {
         seal_blinding: u64,
         amount: impl Into<Amount>,
         amount_blinding: BlindingFactor,
-    ) -> Result<Self, AllocationError> {
+    ) -> Result<Self, IssuerError> {
         let amount = amount.into();
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
             GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
         });
         self.issued
             .checked_add_assign(amount)
-            .ok_or(AllocationError::AmountOverflow)?;
+            .ok_or(IssuerError::AmountOverflow)?;
         self.builder = self.builder.add_fungible_state_det(
             "assetOwner",
             beneficiary,
@@ -216,7 +216,7 @@ impl PrimaryIssue {
         method: Method,
         controller: O,
         supply: impl Into<Amount>,
-    ) -> Result<Self, AllocationError> {
+    ) -> Result<Self, IssuerError> {
         let supply = supply.into();
         let controller = controller.map_to_xchain(|outpoint| {
             GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
@@ -236,7 +236,7 @@ impl PrimaryIssue {
         seal_blinding: u64,
         supply: impl Into<Amount>,
         supply_blinding: BlindingFactor,
-    ) -> Result<Self, AllocationError> {
+    ) -> Result<Self, IssuerError> {
         let supply = supply.into();
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
             GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
@@ -251,11 +251,11 @@ impl PrimaryIssue {
         Ok(self)
     }
 
-    fn update_max_supply(mut self, supply: Amount) -> Result<Self, AllocationError> {
+    fn update_max_supply(mut self, supply: Amount) -> Result<Self, IssuerError> {
         match &mut self.inflation {
             Some(max) => max
                 .checked_add_assign(supply)
-                .ok_or(AllocationError::AmountOverflow)?,
+                .ok_or(IssuerError::AmountOverflow)?,
             None => {
                 let tag = self
                     .builder
@@ -275,7 +275,7 @@ impl PrimaryIssue {
         mut self,
         method: Method,
         controller: O,
-    ) -> Result<Self, AllocationError> {
+    ) -> Result<Self, IssuerError> {
         let controller = controller.map_to_xchain(|outpoint| {
             GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
         });
@@ -288,7 +288,7 @@ impl PrimaryIssue {
         method: Method,
         controller: O,
         seal_blinding: u64,
-    ) -> Result<Self, AllocationError> {
+    ) -> Result<Self, IssuerError> {
         let controller = controller.map_to_xchain(|outpoint| {
             GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
         });
@@ -300,7 +300,7 @@ impl PrimaryIssue {
         mut self,
         method: Method,
         controller: O,
-    ) -> Result<Self, AllocationError> {
+    ) -> Result<Self, IssuerError> {
         let controller = controller.map_to_xchain(|outpoint| {
             GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
         });
@@ -313,7 +313,7 @@ impl PrimaryIssue {
         method: Method,
         controller: O,
         seal_blinding: u64,
-    ) -> Result<Self, AllocationError> {
+    ) -> Result<Self, IssuerError> {
         let controller = controller.map_to_xchain(|outpoint| {
             GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
         });
@@ -329,22 +329,22 @@ impl PrimaryIssue {
      */
 
     #[allow(clippy::result_large_err)]
-    pub fn issue_contract(self) -> Result<ValidContract, AllocationError> {
+    pub fn issue_contract(self) -> Result<ValidContract, IssuerError> {
         Ok(self.pre_issue_contract()?.issue_contract()?)
     }
 
     #[allow(clippy::result_large_err)]
-    pub fn issue_contract_det(self, timestamp: i64) -> Result<ValidContract, AllocationError> {
+    pub fn issue_contract_det(self, timestamp: i64) -> Result<ValidContract, IssuerError> {
         Ok(self.pre_issue_contract()?.issue_contract_det(timestamp)?)
     }
 
     #[allow(clippy::result_large_err)]
-    fn pre_issue_contract(mut self) -> Result<ContractBuilder, AllocationError> {
+    fn pre_issue_contract(mut self) -> Result<ContractBuilder, IssuerError> {
         if let Some(inflation) = self.inflation {
             let max = self
                 .issued
                 .checked_add(inflation)
-                .ok_or(AllocationError::AmountOverflow)?;
+                .ok_or(IssuerError::AmountOverflow)?;
             self.builder = self.builder.add_global_state("maxSupply", max)?;
         }
         Ok(self

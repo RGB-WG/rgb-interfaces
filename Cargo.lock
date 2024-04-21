@@ -5,10 +5,10 @@ version = 3
 [[package]]
 name = "aluvm"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/AluVM/rust-aluvm?branch=develop#1f0d2491a0a72aa1488826be65a799033caf51c6"
+source = "git+https://github.com/AluVM/rust-aluvm?branch=develop#7ecf240c94679df44476ed783b0e17d79b1244bb"
 dependencies = [
  "amplify",
- "ascii-armor 0.2.0",
+ "ascii-armor 0.3.0",
  "baid58",
  "blake3",
  "getrandom",
@@ -686,7 +686,7 @@ dependencies = [
 [[package]]
 name = "rgb-invoice"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#351cfe70795fdc7ef0a0eaeec692cd598347e8e7"
+source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#1e120fc875100a1175e1e318225333064a857721"
 dependencies = [
  "amplify",
  "baid58",
@@ -704,7 +704,7 @@ dependencies = [
 [[package]]
 name = "rgb-std"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#351cfe70795fdc7ef0a0eaeec692cd598347e8e7"
+source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#1e120fc875100a1175e1e318225333064a857721"
 dependencies = [
  "aluvm",
  "amplify",
@@ -964,18 +964,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.58"
+version = "1.0.59"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03468839009160513471e86a034bb2c5c0e4baae3b43f79ffc55c4a5427b3297"
+checksum = "f0126ad08bff79f29fc3ae6a55cc72352056dfff61e3ff8bb7129476d44b23aa"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.58"
+version = "1.0.59"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c61f3ba182994efc43764a46c018c347bc492c79f024e705f46567b418f6d4f7"
+checksum = "d1cd413b5d558b4c5bf3680e324a6fa5014e7b7c067a51e69dbdf47eb7148b66"
 dependencies = [
  "proc-macro2",
  "quote",

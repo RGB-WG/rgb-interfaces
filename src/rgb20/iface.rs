@@ -425,7 +425,7 @@ pub fn replaceable() -> Iface {
                     fname!("replaceRight") => Occurrences::OnceOrMore,
                 },
                 assignments: tiny_bmap! {
-                    fname!("assetOwner") => Occurrences::NoneOrMore,
+                    fname!("assetOwner") => Occurrences::OnceOrMore,
                     fname!("replaceRight") => Occurrences::NoneOrOnce,
                 },
                 valencies: none!(),

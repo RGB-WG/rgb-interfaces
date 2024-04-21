@@ -1,6 +1,6 @@
 -----BEGIN RGB KIT-----
 Id: DK74j9-sANvsvyz-Q1ybrxBa-SDRKxNU6-nuchKWYC-Bx3NeQ#texas-promise-manila
-Version: v2
+Version: 2
 Interface: RGB25Burnable;
 	id=8dDSNM-Th4qZzpj-V9iUA6W2-qrPdZ417-joSpTYar-2RgGvH#cosmos-equator-milk
 Interface: RGB25Base;

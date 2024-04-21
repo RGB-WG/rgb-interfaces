@@ -31,7 +31,7 @@ use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal};
 use strict_encoding::InvalidRString;
 
 use super::Rgb25;
-use crate::rgb20::AllocationError;
+use crate::rgb20::IssuerError;
 use crate::{IssuerWrapper, SchemaIssuer};
 
 #[derive(Clone, Debug)]
@@ -129,7 +129,7 @@ impl Issue {
         method: Method,
         beneficiary: O,
         amount: Amount,
-    ) -> Result<Self, AllocationError> {
+    ) -> Result<Self, IssuerError> {
         debug_assert!(
             !self.deterministic,
             "for creating deterministic contracts please use allocate_det method"
@@ -140,7 +140,7 @@ impl Issue {
         });
         self.issued
             .checked_add_assign(amount)
-            .ok_or(AllocationError::AmountOverflow)?;
+            .ok_or(IssuerError::AmountOverflow)?;
         self.builder =
             self.builder
                 .add_fungible_state("assetOwner", beneficiary, amount.value())?;
@@ -151,7 +151,7 @@ impl Issue {
         mut self,
         method: Method,
         allocations: impl IntoIterator<Item = (O, Amount)>,
-    ) -> Result<Self, AllocationError> {
+    ) -> Result<Self, IssuerError> {
         for (beneficiary, amount) in allocations {
             self = self.allocate(method, beneficiary, amount)?;
         }
@@ -166,7 +166,7 @@ impl Issue {
         seal_blinding: u64,
         amount: Amount,
         amount_blinding: BlindingFactor,
-    ) -> Result<Self, AllocationError> {
+    ) -> Result<Self, IssuerError> {
         debug_assert!(
             self.deterministic,
             "to add asset allocation in deterministic way the contract builder has to be created \
@@ -182,7 +182,7 @@ impl Issue {
         });
         self.issued
             .checked_add_assign(amount)
-            .ok_or(AllocationError::AmountOverflow)?;
+            .ok_or(IssuerError::AmountOverflow)?;
         self.builder = self.builder.add_owned_state_det(
             "assetOwner",
             beneficiary,

@@ -25,7 +25,7 @@ mod issuer;
 mod info;
 
 pub use info::{Rgb20Info, SupplyEvent, SupplyInfo};
-pub use issuer::{AllocationError, PrimaryIssue};
+pub use issuer::{IssuerError, PrimaryIssue};
 pub use wrapper::{Rgb20, RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID};
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
