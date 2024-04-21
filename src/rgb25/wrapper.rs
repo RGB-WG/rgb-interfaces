@@ -77,7 +77,10 @@ impl IfaceClass for Rgb25 {
         iface
     }
 
-    fn iface_id(features: Self::Features) -> IfaceId { todo!() }
+    fn iface_id(features: Self::Features) -> IfaceId {
+        // TODO: Optimize with constants
+        Rgb25::iface(features).iface_id()
+    }
 
     fn stl() -> TypeLib { rgb_contract_stl() }
 

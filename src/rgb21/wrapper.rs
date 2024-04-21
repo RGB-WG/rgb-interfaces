@@ -103,7 +103,10 @@ impl IfaceClass for Rgb21 {
         iface
     }
 
-    fn iface_id(features: Self::Features) -> IfaceId { todo!() }
+    fn iface_id(features: Self::Features) -> IfaceId {
+        // TODO: Optimize with constants
+        Rgb21::iface(features).iface_id()
+    }
 
     fn stl() -> TypeLib { rgb21_stl() }
 
