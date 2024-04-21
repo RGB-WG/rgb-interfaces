@@ -56,6 +56,7 @@ impl From<BuilderError> for AllocationError {
 pub struct PrimaryIssue {
     builder: ContractBuilder,
     issued: Amount,
+    inflation: Option<Amount>,
     terms: ContractTerms,
 }
 
@@ -133,6 +134,7 @@ impl PrimaryIssue {
             builder,
             terms,
             issued: Amount::ZERO,
+            inflation: None,
         })
     }
 
@@ -209,6 +211,66 @@ impl PrimaryIssue {
         Ok(self)
     }
 
+    pub fn allow_inflation<O: TxOutpoint>(
+        mut self,
+        method: Method,
+        controller: O,
+        supply: impl Into<Amount>,
+    ) -> Result<Self, AllocationError> {
+        let supply = supply.into();
+        let controller = controller.map_to_xchain(|outpoint| {
+            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
+        });
+        self = self.update_max_supply(supply)?;
+        self.builder =
+            self.builder
+                .add_fungible_state("inflationAllowance", controller, supply.value())?;
+        Ok(self)
+    }
+
+    /// Add asset allocation in a deterministic way.
+    pub fn allow_inflation_det<O: TxOutpoint>(
+        mut self,
+        method: Method,
+        beneficiary: O,
+        seal_blinding: u64,
+        supply: impl Into<Amount>,
+        supply_blinding: BlindingFactor,
+    ) -> Result<Self, AllocationError> {
+        let supply = supply.into();
+        let beneficiary = beneficiary.map_to_xchain(|outpoint| {
+            GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
+        });
+        self = self.update_max_supply(supply)?;
+        self.builder = self.builder.add_fungible_state_det(
+            "inflationAllowance",
+            beneficiary,
+            supply,
+            supply_blinding,
+        )?;
+        Ok(self)
+    }
+
+    fn update_max_supply(mut self, supply: Amount) -> Result<Self, AllocationError> {
+        match &mut self.inflation {
+            Some(max) => max
+                .checked_add_assign(supply)
+                .ok_or(AllocationError::AmountOverflow)?,
+            None => {
+                let tag = self
+                    .builder
+                    .asset_tag("assetOwner")
+                    .expect("asset tag must be already set");
+                self.builder = self
+                    .builder
+                    .add_asset_tag("inflationAllowance", tag)
+                    .expect("invalid RGB20 schema (max supply mismatch)");
+                self.inflation = Some(supply)
+            }
+        }
+        Ok(self)
+    }
+
     // TODO: implement when bulletproofs are supported
     /*
     pub fn conceal_allocations(mut self) -> Self {
@@ -217,22 +279,28 @@ impl PrimaryIssue {
      */
 
     #[allow(clippy::result_large_err)]
-    pub fn issue_contract(self) -> Result<ValidContract, BuilderError> {
-        self.pre_issue_contract().issue_contract()
+    pub fn issue_contract(self) -> Result<ValidContract, AllocationError> {
+        Ok(self.pre_issue_contract()?.issue_contract()?)
     }
 
     #[allow(clippy::result_large_err)]
-    pub fn issue_contract_det(self, timestamp: i64) -> Result<ValidContract, BuilderError> {
-        self.pre_issue_contract().issue_contract_det(timestamp)
+    pub fn issue_contract_det(self, timestamp: i64) -> Result<ValidContract, AllocationError> {
+        Ok(self.pre_issue_contract()?.issue_contract_det(timestamp)?)
     }
 
     #[allow(clippy::result_large_err)]
-    fn pre_issue_contract(self) -> ContractBuilder {
-        self.builder
-            .add_global_state("issuedSupply", self.issued)
-            .expect("invalid RGB20 schema (issued supply mismatch)")
-            .add_global_state("terms", self.terms)
-            .expect("invalid RGB20 schema (contract terms mismatch)")
+    fn pre_issue_contract(mut self) -> Result<ContractBuilder, AllocationError> {
+        if let Some(inflation) = self.inflation {
+            let max = self
+                .issued
+                .checked_add(inflation)
+                .ok_or(AllocationError::AmountOverflow)?;
+            self.builder = self.builder.add_global_state("maxSupply", max)?;
+        }
+        Ok(self
+            .builder
+            .add_global_state("issuedSupply", self.issued)?
+            .add_global_state("terms", self.terms)?)
     }
 
     // TODO: Add secondary issuance and other methods
