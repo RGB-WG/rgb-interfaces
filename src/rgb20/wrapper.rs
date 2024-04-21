@@ -44,19 +44,10 @@ pub const RGB20_IFACE_ID: IfaceId = IfaceId::from_array([
     0x31, 0x99, 0x05, 0xbd, 0xc9, 0x9d, 0x9d, 0x33, 0x87, 0xbe, 0xa7, 0x30, 0x21, 0x9d, 0x5d, 0x03,
 ]);
 
-#[derive(Wrapper, WrapperMut, Clone, Eq, PartialEq, Debug)]
+#[derive(Wrapper, WrapperMut, Clone, Eq, PartialEq, Debug, From)]
 #[wrapper(Deref)]
 #[wrapper_mut(DerefMut)]
 pub struct Rgb20(ContractIface);
-
-impl From<ContractIface> for Rgb20 {
-    fn from(iface: ContractIface) -> Self {
-        if !Rgb20::IFACE_IDS.contains(&iface.iface.iface_id) {
-            panic!("the provided interface is not RGB20 interface");
-        }
-        Self(iface)
-    }
-}
 
 impl IfaceClass for Rgb20 {
     const IFACE_NAME: &'static str = "RGB20";
@@ -73,7 +64,7 @@ impl IfaceClass for Rgb20 {
         if features.inflation.is_fixed() {
             iface = iface.expect_extended(fixed(), "RGB20Fixed");
         } else if features.inflation.is_inflatible() {
-            iface = iface.expect_extended(inflatable(), "RGB20Inflatible");
+            iface = iface.expect_extended(inflatable(), "RGB20Inflatable");
         }
         if features.inflation.is_replacable() {
             todo!("replaceable interface")
