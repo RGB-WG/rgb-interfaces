@@ -158,8 +158,9 @@ impl PrimaryIssue {
         mut self,
         method: Method,
         beneficiary: O,
-        amount: Amount,
+        amount: impl Into<Amount>,
     ) -> Result<Self, AllocationError> {
+        let amount = amount.into();
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
             GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
         });
@@ -175,7 +176,7 @@ impl PrimaryIssue {
     pub fn allocate_all<O: TxOutpoint>(
         mut self,
         method: Method,
-        allocations: impl IntoIterator<Item = (O, Amount)>,
+        allocations: impl IntoIterator<Item = (O, impl Into<Amount>)>,
     ) -> Result<Self, AllocationError> {
         for (beneficiary, amount) in allocations {
             self = self.allocate(method, beneficiary, amount)?;
@@ -189,9 +190,10 @@ impl PrimaryIssue {
         method: Method,
         beneficiary: O,
         seal_blinding: u64,
-        amount: Amount,
+        amount: impl Into<Amount>,
         amount_blinding: BlindingFactor,
     ) -> Result<Self, AllocationError> {
+        let amount = amount.into();
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
             GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
         });
