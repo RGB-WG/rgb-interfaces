@@ -271,6 +271,56 @@ impl PrimaryIssue {
         Ok(self)
     }
 
+    pub fn allow_burn<O: TxOutpoint>(
+        mut self,
+        method: Method,
+        controller: O,
+    ) -> Result<Self, AllocationError> {
+        let controller = controller.map_to_xchain(|outpoint| {
+            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
+        });
+        self.builder = self.builder.add_rights("burnRight", controller)?;
+        Ok(self)
+    }
+
+    pub fn allow_burn_det<O: TxOutpoint>(
+        mut self,
+        method: Method,
+        controller: O,
+        seal_blinding: u64,
+    ) -> Result<Self, AllocationError> {
+        let controller = controller.map_to_xchain(|outpoint| {
+            GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
+        });
+        self.builder = self.builder.add_rights("burnRight", controller)?;
+        Ok(self)
+    }
+
+    pub fn allow_replace<O: TxOutpoint>(
+        mut self,
+        method: Method,
+        controller: O,
+    ) -> Result<Self, AllocationError> {
+        let controller = controller.map_to_xchain(|outpoint| {
+            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
+        });
+        self.builder = self.builder.add_rights("replaceRight", controller)?;
+        Ok(self)
+    }
+
+    pub fn allow_replace_det<O: TxOutpoint>(
+        mut self,
+        method: Method,
+        controller: O,
+        seal_blinding: u64,
+    ) -> Result<Self, AllocationError> {
+        let controller = controller.map_to_xchain(|outpoint| {
+            GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
+        });
+        self.builder = self.builder.add_rights("replaceRight", controller)?;
+        Ok(self)
+    }
+
     // TODO: implement when bulletproofs are supported
     /*
     pub fn conceal_allocations(mut self) -> Self {
