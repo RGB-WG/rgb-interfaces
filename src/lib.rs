@@ -39,3 +39,34 @@ pub use rgb25::Rgb25;
 pub use traits::{IssuerWrapper, SchemaIssuer};
 
 pub const LNPBP_IDENTITY: &str = "lnp-bp.org";
+
+#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Display)]
+#[display(uppercase)]
+pub enum IfaceStandard {
+    Rgb20,
+    Rgb21,
+    Rgb25,
+}
+
+#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Display, Error)]
+#[display("unknown RGB interface standard name")]
+pub struct UnknownStandard;
+
+mod _from_str {
+    use std::str::FromStr;
+
+    use super::*;
+
+    impl FromStr for IfaceStandard {
+        type Err = UnknownStandard;
+
+        fn from_str(s: &str) -> Result<Self, Self::Err> {
+            match s.to_uppercase().as_str() {
+                "RGB20" => Ok(Self::Rgb20),
+                "RGB21" => Ok(Self::Rgb21),
+                "RGB25" => Ok(Self::Rgb25),
+                _ => Err(UnknownStandard),
+            }
+        }
+    }
+}
