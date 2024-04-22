@@ -89,18 +89,20 @@ impl IfaceClass for Rgb25 {
 
 impl Rgb25 {
     pub fn testnet<C: IssuerWrapper<IssuingIface = Self>>(
+        issuer: &str,
         name: &str,
         precision: Precision,
     ) -> Result<Issue, InvalidRString> {
-        Issue::testnet::<C>(name, precision)
+        Issue::testnet::<C>(issuer, name, precision)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Self>>(
+        issuer: &str,
         name: &str,
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<Issue, InvalidRString> {
-        Issue::testnet_det::<C>(name, precision, asset_tag)
+        Issue::testnet_det::<C>(issuer, name, precision, asset_tag)
     }
 
     pub fn name(&self) -> Name {

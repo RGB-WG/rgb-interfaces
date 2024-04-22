@@ -108,22 +108,24 @@ impl IfaceClass for Rgb20 {
 
 impl Rgb20 {
     pub fn testnet<C: IssuerWrapper<IssuingIface = Self>>(
+        issuer: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet::<C>(ticker, name, details, precision)
+        PrimaryIssue::testnet::<C>(issuer, ticker, name, details, precision)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Self>>(
+        issuer: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet_det::<C>(ticker, name, details, precision, asset_tag)
+        PrimaryIssue::testnet_det::<C>(issuer, ticker, name, details, precision, asset_tag)
     }
 
     pub fn features(&self) -> Features {

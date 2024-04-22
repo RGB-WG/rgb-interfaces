@@ -27,7 +27,7 @@ use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::PersistedState;
 use rgbstd::stl::{Attachment, ContractTerms, Details, Name, RicardianContract};
-use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal};
+use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal, Identity};
 use strict_encoding::InvalidRString;
 
 use super::Rgb25;
@@ -45,6 +45,7 @@ pub struct Issue {
 impl Issue {
     fn testnet_int(
         issuer: SchemaIssuer<Rgb25>,
+        by: &str,
         name: &str,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
@@ -54,12 +55,18 @@ impl Issue {
         };
 
         let (schema, main_iface_impl, types, scripts, features) = issuer.into_split();
-        let builder =
-            ContractBuilder::with(Rgb25::iface(features), schema, main_iface_impl, types, scripts)
-                .add_global_state("name", Name::try_from(name.to_owned())?)
-                .expect("invalid RGB25 schema (name mismatch)")
-                .add_global_state("precision", precision)
-                .expect("invalid RGB25 schema (precision mismatch)");
+        let builder = ContractBuilder::with(
+            Identity::from_str(by).expect("invalid issuer identity string"),
+            Rgb25::iface(features),
+            schema,
+            main_iface_impl,
+            types,
+            scripts,
+        )
+        .add_global_state("name", Name::try_from(name.to_owned())?)
+        .expect("invalid RGB25 schema (name mismatch)")
+        .add_global_state("precision", precision)
+        .expect("invalid RGB25 schema (precision mismatch)");
 
         Ok(Self {
             builder,
@@ -70,26 +77,29 @@ impl Issue {
     }
 
     pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb25>>(
+        by: &str,
         name: &str,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(C::issuer(), name, precision)
+        Self::testnet_int(C::issuer(), by, name, precision)
     }
 
     pub fn testnet_with(
         issuer: SchemaIssuer<Rgb25>,
+        by: &str,
         name: &str,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(issuer, name, precision)
+        Self::testnet_int(issuer, by, name, precision)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb25>>(
+        by: &str,
         name: &str,
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<Self, InvalidRString> {
-        let mut me = Self::testnet_int(C::issuer(), name, precision)?;
+        let mut me = Self::testnet_int(C::issuer(), by, name, precision)?;
         me.builder = me
             .builder
             .add_asset_tag("assetOwner", asset_tag)

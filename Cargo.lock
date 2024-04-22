@@ -5,10 +5,10 @@ version = 3
 [[package]]
 name = "aluvm"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/AluVM/rust-aluvm?branch=develop#7ecf240c94679df44476ed783b0e17d79b1244bb"
+source = "git+https://github.com/AluVM/rust-aluvm?branch=develop#3fc2434ee9af51e935b44e5ea682fef933019bda"
 dependencies = [
  "amplify",
- "ascii-armor 0.3.0",
+ "ascii-armor 0.2.0",
  "baid58",
  "blake3",
  "getrandom",
@@ -243,7 +243,7 @@ dependencies = [
 [[package]]
 name = "bp-consensus"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/BP-WG/bp-core?branch=develop#fb281e3b2d81a9aee7d393b6c574a3a4f62ad132"
+source = "git+https://github.com/BP-WG/bp-core?branch=develop#91e195d45a24c3e5623f0cbe0738ea2fca315bae"
 dependencies = [
  "amplify",
  "chrono",
@@ -257,7 +257,7 @@ dependencies = [
 [[package]]
 name = "bp-core"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/BP-WG/bp-core?branch=develop#fb281e3b2d81a9aee7d393b6c574a3a4f62ad132"
+source = "git+https://github.com/BP-WG/bp-core?branch=develop#91e195d45a24c3e5623f0cbe0738ea2fca315bae"
 dependencies = [
  "amplify",
  "bp-consensus",
@@ -275,7 +275,7 @@ dependencies = [
 [[package]]
 name = "bp-dbc"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/BP-WG/bp-core?branch=develop#fb281e3b2d81a9aee7d393b6c574a3a4f62ad132"
+source = "git+https://github.com/BP-WG/bp-core?branch=develop#91e195d45a24c3e5623f0cbe0738ea2fca315bae"
 dependencies = [
  "amplify",
  "base85",
@@ -289,7 +289,7 @@ dependencies = [
 [[package]]
 name = "bp-invoice"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/BP-WG/bp-std?branch=v0.11#95ff22306108188729a0646838154efe8b7d715d"
+source = "git+https://github.com/BP-WG/bp-std?branch=v0.11#6741b11d42e92557ae884b7d5208013f0314807f"
 dependencies = [
  "amplify",
  "bech32",
@@ -300,7 +300,7 @@ dependencies = [
 [[package]]
 name = "bp-seals"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/BP-WG/bp-core?branch=develop#fb281e3b2d81a9aee7d393b6c574a3a4f62ad132"
+source = "git+https://github.com/BP-WG/bp-core?branch=develop#91e195d45a24c3e5623f0cbe0738ea2fca315bae"
 dependencies = [
  "amplify",
  "baid58",
@@ -686,7 +686,7 @@ dependencies = [
 [[package]]
 name = "rgb-invoice"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#1e120fc875100a1175e1e318225333064a857721"
+source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#569f33e170c25bf81465529acf181b1a6f9c401c"
 dependencies = [
  "amplify",
  "baid58",
@@ -704,7 +704,7 @@ dependencies = [
 [[package]]
 name = "rgb-std"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#1e120fc875100a1175e1e318225333064a857721"
+source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#569f33e170c25bf81465529acf181b1a6f9c401c"
 dependencies = [
  "aluvm",
  "amplify",

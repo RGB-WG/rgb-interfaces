@@ -26,7 +26,7 @@ use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::stl::{AssetSpec, Attachment, ContractTerms, RicardianContract};
-use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal};
+use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal, Identity};
 use strict_encoding::InvalidRString;
 
 use super::Rgb20;
@@ -63,31 +63,34 @@ pub struct PrimaryIssue {
 impl PrimaryIssue {
     pub fn testnet_with(
         issuer: SchemaIssuer<Rgb20>,
+        by: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(issuer, ticker, name, details, precision, false)
+        Self::testnet_int(issuer, by, ticker, name, details, precision, false)
     }
 
     pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb20>>(
+        by: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(C::issuer(), ticker, name, details, precision, false)
+        Self::testnet_int(C::issuer(), by, ticker, name, details, precision, false)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb20>>(
+        by: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<Self, InvalidRString> {
-        let mut me = Self::testnet_int(C::issuer(), ticker, name, details, precision, true)?;
+        let mut me = Self::testnet_int(C::issuer(), by, ticker, name, details, precision, true)?;
         me.builder = me
             .builder
             .add_asset_tag("assetOwner", asset_tag)
@@ -97,6 +100,7 @@ impl PrimaryIssue {
 
     fn testnet_int(
         issuer: SchemaIssuer<Rgb20>,
+        by: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
@@ -112,6 +116,7 @@ impl PrimaryIssue {
         let (schema, main_iface_impl, types, scripts, features) = issuer.into_split();
         let mut builder = match deterministic {
             false => ContractBuilder::with(
+                Identity::from_str(by).expect("invalid issuer identity string"),
                 Rgb20::iface(features),
                 schema,
                 main_iface_impl,
@@ -119,6 +124,7 @@ impl PrimaryIssue {
                 scripts,
             ),
             true => ContractBuilder::deterministic(
+                Identity::from_str(by).expect("invalid issuer identity string"),
                 Rgb20::iface(features),
                 schema,
                 main_iface_impl,
