@@ -28,17 +28,19 @@ pub use info::{Rgb20Info, SupplyEvent, SupplyInfo};
 pub use issuer::{IssuerError, PrimaryIssue};
 pub use wrapper::{Rgb20, RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID};
 
-#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
+#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default, Display)]
 #[cfg_attr(
     feature = "serde",
     derive(Serialize, Deserialize),
     serde(crate = "serde_crate", rename_all = "camelCase")
 )]
+#[display(lowercase)]
 pub enum Inflation {
     #[default]
     Fixed,
     Burnable,
     Inflatable,
+    #[display("inflatable, burnable")]
     InflatableBurnable,
     Replaceable,
 }
@@ -76,6 +78,21 @@ impl Features {
         inflation: Inflation::Replaceable,
     };
     pub const ENUMERATE: &'static [Self] = &[Self::NONE, Self::ALL];
+}
+
+mod _display {
+    use std::fmt::{self, Display, Formatter};
+
+    use super::*;
+
+    impl Display for Features {
+        fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+            if self.renaming {
+                f.write_str("renamable, ")?;
+            }
+            Display::fmt(&self.inflation, f)
+        }
+    }
 }
 
 #[cfg(test)]

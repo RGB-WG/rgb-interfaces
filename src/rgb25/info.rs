@@ -19,6 +19,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::fmt::{self, Display, Formatter};
+
 use rgbstd::stl::Attachment;
 use rgbstd::{ContractId, Precision};
 
@@ -39,4 +41,8 @@ pub struct Rgb25Info {
     pub attach: Option<Attachment>,
     pub precision: Precision,
     pub features: Features,
+}
+
+impl Display for Rgb25Info {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result { todo!() }
 }

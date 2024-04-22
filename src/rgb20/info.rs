@@ -19,9 +19,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::fmt::{self, Display, Formatter, Write};
+
 use chrono::{DateTime, Utc};
 use rgbstd::stl::Attachment;
-use rgbstd::{Amount, ContractId, Precision, XOutpoint, XWitnessId};
+use rgbstd::{Amount, CoinAmount, ContractId, Precision, XOutpoint, XWitnessId};
 
 use crate::rgb20::Features;
 
@@ -44,6 +46,24 @@ pub struct Rgb20Info {
     pub issued: Amount,   // TODO: Replace with SupplyInfo
     pub burned: Amount,   // TODO: Replace with SupplyInfo
     pub replaced: Amount, // TODO: Replace with SupplyInfo
+}
+
+impl Display for Rgb20Info {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{: >8}", self.ticker)?;
+        f.write_char(f.fill())?;
+        write!(f, "{: <40}", self.name)?;
+        f.write_char(f.fill())?;
+        write!(f, "{: >2}", self.precision as u8)?;
+        f.write_char(f.fill())?;
+        write!(f, "{}", CoinAmount::with(self.issued, self.precision))?;
+        f.write_char(f.fill())?;
+        writeln!(f, "{}", self.features)?;
+        if let Some(details) = &self.details {
+            writeln!(f, "\t{details}")?;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
