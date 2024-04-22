@@ -41,9 +41,9 @@ pub struct Rgb20Info {
     pub precision: Precision,
     pub features: Features,
 
-    pub issued: SupplyInfo,
-    pub burned: SupplyInfo,
-    pub replaced: SupplyInfo,
+    pub issued: Amount,   // TODO: Replace with SupplyInfo
+    pub burned: Amount,   // TODO: Replace with SupplyInfo
+    pub replaced: Amount, // TODO: Replace with SupplyInfo
 }
 
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]

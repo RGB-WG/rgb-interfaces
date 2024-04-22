@@ -26,13 +26,13 @@ use rgbstd::interface::{
     OutpointFilter, RightsAllocation, WitnessFilter,
 };
 use rgbstd::invoice::{Amount, Precision};
-use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms};
+use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms, Details};
 use rgbstd::{AssetTag, XWitnessId};
 use strict_encoding::InvalidRString;
 use strict_types::TypeLib;
 
 use super::iface::*;
-use super::{Features, PrimaryIssue, Rgb20Info};
+use super::{Features, Inflation, PrimaryIssue, Rgb20Info};
 use crate::IssuerWrapper;
 
 pub const RGB20_FIXED_IFACE_ID: IfaceId = IfaceId::from_array([
@@ -87,7 +87,23 @@ impl IfaceClass for Rgb20 {
 
     fn stl() -> TypeLib { rgb_contract_stl() }
 
-    fn info(&self) -> Self::Info { todo!() }
+    fn info(&self) -> Self::Info {
+        let spec = self.spec();
+        let terms = self.contract_terms();
+        Rgb20Info {
+            contract_id: self.contract_id(),
+            ticker: spec.ticker.to_string(),
+            name: spec.name.to_string(),
+            details: spec.details.as_ref().map(Details::to_string),
+            terms: terms.text.to_string(),
+            attach: terms.media,
+            precision: spec.precision,
+            features: self.features(),
+            issued: self.total_issued_supply(),
+            burned: self.total_burned_supply(),
+            replaced: self.total_replaced_supply(),
+        }
+    }
 }
 
 impl Rgb20 {
@@ -108,6 +124,50 @@ impl Rgb20 {
         asset_tag: AssetTag,
     ) -> Result<PrimaryIssue, InvalidRString> {
         PrimaryIssue::testnet_det::<C>(ticker, name, details, precision, asset_tag)
+    }
+
+    pub fn features(&self) -> Features {
+        let renaming = self
+            .0
+            .iface
+            .transitions
+            .iter()
+            .any(|field| field.name.as_str() == "rename");
+        let inflatable = self
+            .0
+            .iface
+            .transitions
+            .iter()
+            .any(|field| field.name.as_str() == "issue");
+        let burnable = self
+            .0
+            .iface
+            .transitions
+            .iter()
+            .any(|field| field.name.as_str() == "burn");
+        let replaceable = self
+            .0
+            .iface
+            .transitions
+            .iter()
+            .any(|field| field.name.as_str() == "replace");
+
+        let inflation = match (inflatable, burnable, replaceable) {
+            (true, true, true) => Inflation::Replaceable,
+            (true, true, false) => Inflation::InflatableBurnable,
+            (false, true, false) => Inflation::Burnable,
+            (true, false, false) => Inflation::Inflatable,
+            (false, false, false) => Inflation::Fixed,
+            (true, false, true) | (false, false, true) => {
+                panic!("replaceable asset with no burn enabled")
+            }
+            (false, true, true) => panic!("replaceable but non-inflatible asset"),
+        };
+
+        Features {
+            renaming,
+            inflation,
+        }
     }
 
     pub fn spec(&self) -> AssetSpec {
