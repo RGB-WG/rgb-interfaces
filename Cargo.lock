@@ -5,7 +5,7 @@ version = 3
 [[package]]
 name = "aluvm"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/AluVM/rust-aluvm?branch=develop#3fc2434ee9af51e935b44e5ea682fef933019bda"
+source = "git+https://github.com/AluVM/rust-aluvm?branch=develop#75782d845e29ba9afcb9dab967513932f73ccf49"
 dependencies = [
  "amplify",
  "ascii-armor 0.2.0",
@@ -686,7 +686,7 @@ dependencies = [
 [[package]]
 name = "rgb-invoice"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#569f33e170c25bf81465529acf181b1a6f9c401c"
+source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#aa314fde5d5663090be3d1ddd9d8cf3c93a0472b"
 dependencies = [
  "amplify",
  "baid58",
@@ -704,7 +704,7 @@ dependencies = [
 [[package]]
 name = "rgb-std"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#569f33e170c25bf81465529acf181b1a6f9c401c"
+source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#aa314fde5d5663090be3d1ddd9d8cf3c93a0472b"
 dependencies = [
  "aluvm",
  "amplify",

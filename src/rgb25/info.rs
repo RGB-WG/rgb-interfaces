@@ -21,20 +21,23 @@
 
 use std::fmt::{self, Display, Formatter};
 
+use rgbstd::info::ContractInfo;
 use rgbstd::stl::Attachment;
-use rgbstd::{ContractId, Precision};
+use rgbstd::Precision;
 
 use crate::rgb25::Features;
 
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
 #[cfg_attr(
     feature = "serde",
     derive(Serialize, Deserialize),
     serde(crate = "serde_crate", rename_all = "camelCase")
 )]
 pub struct Rgb25Info {
+    #[cfg_attr(feature = "serde", serde(flatten))]
+    pub contract: ContractInfo,
+
     pub article: Option<String>,
-    pub contract_id: ContractId,
     pub name: String,
     pub details: Option<String>,
     pub terms: String,
@@ -44,5 +47,5 @@ pub struct Rgb25Info {
 }
 
 impl Display for Rgb25Info {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result { todo!() }
+    fn fmt(&self, _f: &mut Formatter<'_>) -> fmt::Result { todo!() }
 }

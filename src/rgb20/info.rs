@@ -22,19 +22,22 @@
 use std::fmt::{self, Display, Formatter, Write};
 
 use chrono::{DateTime, Utc};
+use rgbstd::info::ContractInfo;
 use rgbstd::stl::Attachment;
-use rgbstd::{Amount, CoinAmount, ContractId, Precision, XOutpoint, XWitnessId};
+use rgbstd::{Amount, CoinAmount, Precision, XOutpoint, XWitnessId};
 
 use crate::rgb20::Features;
 
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
 #[cfg_attr(
     feature = "serde",
     derive(Serialize, Deserialize),
     serde(crate = "serde_crate", rename_all = "camelCase")
 )]
 pub struct Rgb20Info {
-    pub contract_id: ContractId,
+    #[cfg_attr(feature = "serde", serde(flatten))]
+    pub contract: ContractInfo,
+
     pub ticker: String,
     pub name: String,
     pub details: Option<String>,

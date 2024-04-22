@@ -91,7 +91,7 @@ impl IfaceClass for Rgb20 {
         let spec = self.spec();
         let terms = self.contract_terms();
         Rgb20Info {
-            contract_id: self.contract_id(),
+            contract: self.0.info.clone(),
             ticker: spec.ticker.to_string(),
             name: spec.name.to_string(),
             details: spec.details.as_ref().map(Details::to_string),
