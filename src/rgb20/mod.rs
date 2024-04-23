@@ -51,7 +51,9 @@ impl Inflation {
         self == Self::Inflatable || self == Self::InflatableBurnable || self == Self::Replaceable
     }
     pub fn is_replaceable(self) -> bool { self == Self::Replaceable }
-    pub fn is_burnable(self) -> bool { self == Self::Burnable || self == Self::Replaceable }
+    pub fn is_burnable(self) -> bool {
+        self == Self::Burnable || self == Self::Replaceable || self == Self::InflatableBurnable
+    }
 }
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
@@ -67,17 +69,68 @@ pub struct Features {
 }
 
 impl Features {
-    pub const NONE: Self = Features {
+    pub const FIXED: Self = Features {
         renaming: false,
         // reserves: false,
         inflation: Inflation::Fixed,
+    };
+    pub const RENAMABLE: Self = Features {
+        renaming: true,
+        // reserves: false,
+        inflation: Inflation::Fixed,
+    };
+    pub const INFLATABLE: Self = Features {
+        renaming: false,
+        // reserves: false,
+        inflation: Inflation::Inflatable,
+    };
+    pub const BURNABLE: Self = Features {
+        renaming: false,
+        // reserves: false,
+        inflation: Inflation::Burnable,
+    };
+    pub const REPLACEABLE: Self = Features {
+        renaming: false,
+        // reserves: false,
+        inflation: Inflation::Replaceable,
+    };
+    pub const INFLATABLE_BURNABLE: Self = Features {
+        renaming: false,
+        // reserves: false,
+        inflation: Inflation::InflatableBurnable,
+    };
+    pub const INFLATABLE_RENAMABLE: Self = Features {
+        renaming: true,
+        // reserves: false,
+        inflation: Inflation::Inflatable,
+    };
+    pub const BURNABLE_RENAMABLE: Self = Features {
+        renaming: true,
+        // reserves: false,
+        inflation: Inflation::Burnable,
+    };
+    pub const INFLATABLE_BURNABLE_RENAMABLE: Self = Features {
+        renaming: true,
+        // reserves: false,
+        inflation: Inflation::InflatableBurnable,
     };
     pub const ALL: Self = Features {
         renaming: true,
         // reserves: true,
         inflation: Inflation::Replaceable,
     };
-    pub const ENUMERATE: &'static [Self] = &[Self::NONE, Self::ALL];
+    pub const ENUMERATE: &'static [Self] = &[
+        Self::FIXED,
+        Self::RENAMABLE,
+        Self::INFLATABLE,
+        Self::BURNABLE,
+        Self::REPLACEABLE,
+        Self::INFLATABLE_BURNABLE,
+        Self::INFLATABLE_RENAMABLE,
+        Self::BURNABLE_RENAMABLE,
+        Self::INFLATABLE_BURNABLE_RENAMABLE,
+        Self::ALL,
+    ];
 }
 
 mod _display {
@@ -104,7 +157,7 @@ mod test {
 
     #[test]
     fn iface_id_all() {
-        let iface_id = Rgb20::iface(Features::NONE).iface_id();
+        let iface_id = Rgb20::iface(Features::FIXED).iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
         assert_eq!(Rgb20::IFACE_IDS[0], iface_id);
         let iface_id = Rgb20::iface(Features::ALL).iface_id();
@@ -114,7 +167,7 @@ mod test {
 
     #[test]
     fn iface_check() {
-        if let Err(err) = Rgb20::iface(Features::NONE).check() {
+        if let Err(err) = Rgb20::iface(Features::FIXED).check() {
             for e in err {
                 eprintln!("{e}");
             }

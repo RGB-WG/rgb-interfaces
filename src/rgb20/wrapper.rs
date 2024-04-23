@@ -57,20 +57,32 @@ impl IfaceClass for Rgb20 {
     type Info = Rgb20Info;
 
     fn iface(features: Features) -> Iface {
-        let mut iface = named_asset().expect_extended(fungible(), "RGB20Base");
+        let mut name = s!("RGB20");
+        let mut iface = named_asset().expect_extended(fungible(), tn!(format!("{name}Base")));
         if features.renaming {
-            iface = iface.expect_extended(renameable(), "RGB20Renamable");
+            name = format!("{name}Renamable");
+            iface = iface.expect_extended(renameable(), tn!(name.clone()));
         }
         if features.inflation.is_fixed() {
-            iface = iface.expect_extended(fixed(), "RGB20Fixed");
+            iface = iface.expect_extended(
+                fixed(),
+                tn!(if features.renaming {
+                    name.clone()
+                } else {
+                    format!("{name}Fixed")
+                }),
+            );
         } else if features.inflation.is_inflatable() {
-            iface = iface.expect_extended(inflatable(), "RGB20Inflatable");
+            iface = iface.expect_extended(inflatable(), tn!(format!("{name}Inflatable")));
+            if !features.inflation.is_replaceable() {
+                name = format!("{name}Inflatable");
+            }
         }
         if features.inflation.is_burnable() {
-            iface = iface.expect_extended(burnable(), "RGB20Burnable");
+            iface = iface.expect_extended(burnable(), tn!(format!("{name}Burnable")));
         }
         if features.inflation.is_replaceable() {
-            iface = iface.expect_extended(replaceable(), "RGB20Replaceable");
+            iface = iface.expect_extended(replaceable(), tn!(format!("{name}Replaceable")));
         }
         /* TODO: Complete reservable interface
         if features.reserves {
