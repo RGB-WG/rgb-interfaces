@@ -38,7 +38,7 @@ pub use rgb21::Rgb21;
 pub use rgb25::Rgb25;
 pub use traits::{IssuerWrapper, SchemaIssuer};
 
-pub const LNPBP_IDENTITY: &str = "lnp-bp.org";
+pub const LNPBP_IDENTITY: &str = "did:dns:lnp-bp.org";
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Display)]
 #[display(uppercase)]
