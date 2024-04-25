@@ -2,9 +2,11 @@
 Id: rgb:kit:hGAbDq53-B3fZaYb-0wenoU1-MGdyXXm-LF2RHWd-iCNP4EM
 Version: 2
 Interface: RGB25Burnable;
-	id=rgb:ifc:A9gfZH5e-LL0lu79-hDfK572-ZX3MLta-l$BHC9O-1L410vY#natural-samuel-present
+	id=A9gfZH5e-LL0lu79-hDfK572-ZX3MLta-l$BHC9O-1L410vY#natural-samuel-present;
+	dev=ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w
 Interface: RGB25Base;
-	id=rgb:ifc:Xwaeqhvo-BFatSYY-nA3kr3Q-wW3fGxN-vn5H8QZ-$Nky6C0#fiction-robot-parker
+	id=Xwaeqhvo-BFatSYY-nA3kr3Q-wW3fGxN-vn5H8QZ-$Nky6C0#fiction-robot-parker;
+	dev=ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w
 Type-System: sts:uupt94S0-Jqxrlcn-$9XVAdb-aqXj$ia-AaoAPSp-GCthCus#example-baker-rival
 Checksum-SHA256: eab1e5c545f858295b046ed3d61c966f918e735061fd773e8ade569db25d6975
 

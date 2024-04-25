@@ -24,9 +24,13 @@ mod wrapper;
 mod issuer;
 mod info;
 
+use amplify::confinement::Confined;
 pub use info::{Rgb20Info, SupplyEvent, SupplyInfo};
 pub use issuer::{IssuerError, PrimaryIssue};
+use rgbstd::info::FeatureList;
 pub use wrapper::{Rgb20, RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID};
+
+pub const LIB_NAME_RGB20: &str = "RGB20";
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default, Display)]
 #[cfg_attr(
@@ -131,6 +135,23 @@ impl Features {
         Self::INFLATABLE_BURNABLE_RENAMABLE,
         Self::ALL,
     ];
+
+    pub fn to_list(&self) -> FeatureList {
+        let mut list = bset![];
+        if self.renaming {
+            list.insert(fname!("renamable"));
+        }
+        if self.inflation.is_burnable() {
+            list.insert(fname!("burnable"));
+        }
+        if self.inflation.is_inflatable() {
+            list.insert(fname!("inflatable"));
+        }
+        if self.inflation.is_replaceable() {
+            list.insert(fname!("replaceable"));
+        }
+        Confined::from_collection_unsafe(list).into()
+    }
 }
 
 mod _display {

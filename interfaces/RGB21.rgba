@@ -2,9 +2,11 @@
 Id: rgb:kit:s8HBT$rN-i4aFeh9-4wZ5M2c-QZwA8LF-rRkgreF-yLfPMFs
 Version: 2
 Interface: RGB21Unique;
-	id=rgb:ifc:S$k8eEy1-tVL3GYW-eejng@7-uWcN1KL-bbNmp9w-rq9wrNw#green-edward-natural
+	id=S$k8eEy1-tVL3GYW-eejng@7-uWcN1KL-bbNmp9w-rq9wrNw#green-edward-natural;
+	dev=ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w
 Interface: RGB21Issuable;
-	id=rgb:ifc:aB1YixIq-cWXGSbI-Dh1K9q9-3Y0FgaS-OZ3HKMT-s@@IbcU#demo-memphis-road
+	id=aB1YixIq-cWXGSbI-Dh1K9q9-3Y0FgaS-OZ3HKMT-s@@IbcU#demo-memphis-road;
+	dev=ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w
 Type-System: sts:khmpaMuX-TkN$aWG-9khkPeS-s7byD4Q-VtuwEzF-2bqkUZc#alien-phone-bagel
 Checksum-SHA256: 9210ef2ac9e2c8df0df41fd5f4b8ed8fb0626b2f202ba8c4ccba1616f41b9cd8
 
