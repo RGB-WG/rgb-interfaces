@@ -29,6 +29,11 @@ use rgbstd::Identity;
 
 use crate::LNPBP_IDENTITY;
 
+pub fn rgb20_base() -> Iface { named_asset().expect_extended(fungible(), tn!("RGB20Base")) }
+pub fn rgb20_renamable() -> Iface {
+    rgb20_base().expect_extended(renameable(), tn!("RGB20Renamable"))
+}
+
 pub fn named_asset() -> Iface {
     let types = StandardTypes::new();
     Iface {

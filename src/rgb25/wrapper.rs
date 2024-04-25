@@ -26,8 +26,9 @@ use rgbstd::AssetTag;
 use strict_encoding::InvalidRString;
 use strict_types::TypeLib;
 
-use super::{named_contract, Features, Issue, Rgb25Info};
+use super::{Features, Issue, Rgb25Info};
 use crate::rgb20::iface::*;
+use crate::rgb25::iface::named_contract;
 use crate::IssuerWrapper;
 
 pub const RGB25_BASE_IFACE_ID: IfaceId = IfaceId::from_array([

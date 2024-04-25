@@ -19,15 +19,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::io;
+use std::collections::HashMap;
+use std::io::Write;
 use std::path::PathBuf;
 use std::str::FromStr;
+use std::{fs, io};
 
 use ifaces::{rgb20, rgb21, rgb25, Rgb20, Rgb21, Rgb25};
 use rgbstd::containers::{FileContent, Kit};
 use rgbstd::interface::IfaceClass;
-use rgbstd::stl::StandardTypes;
-use strict_types::StlFormat;
+use rgbstd::stl::{bp_tx_stl, rgb_contract_stl, StandardTypes};
+use strict_types::stl::std_stl;
+use strict_types::{StlFormat, SystemBuilder};
 
 fn main() -> io::Result<()> {
     let mut kit = Kit::default();
@@ -88,6 +91,65 @@ fn main() -> io::Result<()> {
         ),
     )
     .expect("unable to write to the file");
+
+    let mut filename = dir.clone();
+
+    let ifsys = SystemBuilder::new()
+        .import(Rgb21::stl())
+        .unwrap()
+        .import(rgb_contract_stl())
+        .unwrap()
+        .import(bp_tx_stl())
+        .unwrap()
+        .import(std_stl())
+        .unwrap()
+        .finalize()
+        .expect("not all libraries present");
+
+    let mut map = HashMap::new();
+    let ifaces = [
+        rgb20::iface::named_asset(),
+        rgb20::iface::renameable(),
+        rgb20::iface::fungible(),
+        rgb20::iface::fixed(),
+        rgb20::iface::burnable(),
+        rgb20::iface::inflatable(),
+        rgb20::iface::replaceable(),
+        rgb21::iface::nft(),
+        rgb21::iface::engravable(),
+        rgb21::iface::unique(),
+        rgb21::iface::limited(),
+        rgb21::iface::issuable(),
+        rgb25::iface::named_contract(),
+    ];
+
+    map.extend(
+        ifaces
+            .iter()
+            .map(|iface| (iface.iface_id(), iface.name.clone())),
+    );
+
+    filename.push("RGBStd.con");
+    let mut file = fs::File::create(&filename).unwrap();
+    for iface in ifaces {
+        writeln!(file, "{}", iface.display(&map, &ifsys)).unwrap();
+    }
+
+    let mut ifaces = vec![rgb20::iface::rgb20_base(), rgb20::iface::rgb20_renamable()];
+    ifaces.extend(rgb20::Features::ENUMERATE.iter().copied().map(Rgb20::iface));
+
+    map.extend(
+        ifaces
+            .iter()
+            .map(|iface| (iface.iface_id(), iface.name.clone())),
+    );
+
+    filename.pop();
+    filename.push("RGB20.con");
+    let mut file = fs::File::create(&filename).unwrap();
+    for iface in ifaces {
+        writeln!(file, "{}", iface.display(&map, &ifsys)).unwrap();
+    }
 
     Ok(())
 }

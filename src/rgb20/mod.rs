@@ -89,15 +89,15 @@ impl Features {
         // reserves: false,
         inflation: Inflation::Burnable,
     };
-    pub const REPLACEABLE: Self = Features {
-        renaming: false,
-        // reserves: false,
-        inflation: Inflation::Replaceable,
-    };
     pub const INFLATABLE_BURNABLE: Self = Features {
         renaming: false,
         // reserves: false,
         inflation: Inflation::InflatableBurnable,
+    };
+    pub const REPLACEABLE: Self = Features {
+        renaming: false,
+        // reserves: false,
+        inflation: Inflation::Replaceable,
     };
     pub const INFLATABLE_RENAMABLE: Self = Features {
         renaming: true,
@@ -124,8 +124,8 @@ impl Features {
         Self::RENAMABLE,
         Self::INFLATABLE,
         Self::BURNABLE,
-        Self::REPLACEABLE,
         Self::INFLATABLE_BURNABLE,
+        Self::REPLACEABLE,
         Self::INFLATABLE_RENAMABLE,
         Self::BURNABLE_RENAMABLE,
         Self::INFLATABLE_BURNABLE_RENAMABLE,
