@@ -673,7 +673,7 @@ dependencies = [
 [[package]]
 name = "rgb-invoice"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#824a90ef5b897533563bc119d14796ab2bacd5e1"
+source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#482ae9a7adbf4a2d945289ed598a8e8a3d77067f"
 dependencies = [
  "amplify",
  "baid64",
@@ -692,7 +692,7 @@ dependencies = [
 [[package]]
 name = "rgb-std"
 version = "0.11.0-beta.5"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#824a90ef5b897533563bc119d14796ab2bacd5e1"
+source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#482ae9a7adbf4a2d945289ed598a8e8a3d77067f"
 dependencies = [
  "aluvm",
  "amplify",
@@ -876,7 +876,7 @@ dependencies = [
 [[package]]
 name = "strict_encoding"
 version = "2.7.0-beta.3"
-source = "git+https://github.com/strict-types/strict-encoding?branch=develop#7fbf31b2bc0f117cba5ae676e46e4ef3656616f5"
+source = "git+https://github.com/strict-types/strict-encoding?branch=develop#901e26ee8b01b3bcff4d7ac76acff2fcc633634b"
 dependencies = [
  "amplify",
  "half",
@@ -887,7 +887,7 @@ dependencies = [
 [[package]]
 name = "strict_encoding_derive"
 version = "2.7.0-beta.3"
-source = "git+https://github.com/strict-types/strict-encoding?branch=develop#7fbf31b2bc0f117cba5ae676e46e4ef3656616f5"
+source = "git+https://github.com/strict-types/strict-encoding?branch=develop#901e26ee8b01b3bcff4d7ac76acff2fcc633634b"
 dependencies = [
  "amplify_syn",
  "heck",
@@ -1170,9 +1170,9 @@ checksum = "bec47e5bfd1bff0eeaf6d8b485cc1074891a197ab4225d504cb7a1ab88b02bf0"
 
 [[package]]
 name = "winnow"
-version = "0.6.6"
+version = "0.6.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0c976aaaa0e1f90dbb21e9587cdaf1d9679a1cde8875c0d6bd83ab96a208352"
+checksum = "14b9415ee827af173ebb3f15f9083df5a122eb93572ec28741fb153356ea2578"
 dependencies = [
  "memchr",
 ]
