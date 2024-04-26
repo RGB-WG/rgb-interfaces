@@ -96,6 +96,14 @@ fn main() -> io::Result<()> {
     for features in rgb21::Features::ENUMERATE {
         let iface = Rgb21::iface(*features);
         let types = typesys.extract(iface.types()).unwrap();
+        let mut suppl = Supplement::new(iface.iface_id(), LNPBP_IDENTITY);
+        suppl
+            .annotate_itself(SUPPL_ANNOT_IFACE_CLASS, &IfaceClassName::from("RGB21"))
+            .unwrap();
+        suppl
+            .annotate_itself(SUPPL_ANNOT_IFACE_FEATURES, &features.to_list())
+            .unwrap();
+        kit.supplements.push(suppl).unwrap();
         kit.ifaces.push(iface).unwrap();
         kit.types.extend(types).unwrap();
     }
@@ -106,6 +114,14 @@ fn main() -> io::Result<()> {
     for features in rgb25::Features::ENUMERATE {
         let iface = Rgb25::iface(*features);
         let types = typesys.extract(iface.types()).unwrap();
+        let mut suppl = Supplement::new(iface.iface_id(), LNPBP_IDENTITY);
+        suppl
+            .annotate_itself(SUPPL_ANNOT_IFACE_CLASS, &IfaceClassName::from("RGB25"))
+            .unwrap();
+        suppl
+            .annotate_itself(SUPPL_ANNOT_IFACE_FEATURES, &features.to_list())
+            .unwrap();
+        kit.supplements.push(suppl).unwrap();
         kit.ifaces.push(iface).unwrap();
         kit.types.extend(types).unwrap();
     }

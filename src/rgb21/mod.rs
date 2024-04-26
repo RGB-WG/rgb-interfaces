@@ -23,6 +23,8 @@ pub mod iface;
 mod types;
 mod wrapper;
 
+use amplify::confinement::Confined;
+use rgbstd::info::FeatureList;
 pub use types::{
     AttachmentName, AttachmentType, EmbeddedMedia, EngravingData, ItemsCount, TokenData,
     LIB_ID_RGB21, LIB_NAME_RGB21,
@@ -60,6 +62,22 @@ impl Features {
     };
 
     pub const ENUMERATE: &'static [Self] = &[Self::NONE, Self::ALL];
+
+    pub fn to_list(&self) -> FeatureList {
+        let mut list = bset![fname!("fractional")];
+        if self.renaming {
+            list.insert(fname!("renamable"));
+        }
+        if self.engraving {
+            list.insert(fname!("engravable"));
+        }
+        match self.issues {
+            Issues::Unique => list.insert(fname!("unique")),
+            Issues::Limited => list.insert(fname!("limited")),
+            Issues::MultiIssue => list.insert(fname!("collection")),
+        };
+        Confined::from_collection_unsafe(list).into()
+    }
 }
 
 #[cfg(test)]

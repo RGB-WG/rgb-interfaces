@@ -24,8 +24,10 @@ mod wrapper;
 mod issuer;
 mod info;
 
+use amplify::confinement::Confined;
 pub use info::Rgb25Info;
 pub use issuer::Issue;
+use rgbstd::info::FeatureList;
 pub use wrapper::{Rgb25, RGB25_IFACE_ID};
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
@@ -53,6 +55,17 @@ impl Features {
     };
 
     pub const ENUMERATE: &'static [Self] = &[Self::NONE, Self::ALL];
+
+    pub fn to_list(&self) -> FeatureList {
+        let mut list = bset![fname!("fractional")];
+        if self.renaming {
+            list.insert(fname!("renamable"));
+        }
+        if self.burnable {
+            list.insert(fname!("burnable"));
+        }
+        Confined::from_collection_unsafe(list).into()
+    }
 }
 
 #[cfg(test)]
