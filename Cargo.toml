@@ -33,7 +33,6 @@ all = ["serde"]
 serde = ["serde_crate", "rgb-std/serde", "chrono/serde"]
 
 [patch.crates-io]
-ascii-armor = { git = "https://github.com/UBIDECO/ascii-armor" }
 strict_encoding = { git = "https://github.com/strict-types/strict-encoding", branch = "develop" }
 strict_types = { git = "https://github.com/strict-types/strict-types", branch = "develop" }
 commit_verify = { git = "https://github.com/LNP-BP/client_side_validation", branch = "develop" }
