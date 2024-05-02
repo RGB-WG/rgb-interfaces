@@ -1,16 +1,16 @@
 -----BEGIN RGB KIT-----
-Id: rgb:kit:3s16z6Vn-$PNs841-Tk8k7o5-oyzo0kv-7EOKdLj-bsQ1vvg
+Id: rgb:kit:3S9OY@d@-DrO4EdP-ANVa3WP-G3aZsRA-IkeP$tA-la91QPQ
 Version: 2
 Interface: RGB25Burnable;
 	id=A9gfZH5e-LL0lu79-hDfK572-ZX3MLta-l$BHC9O-1L410vY#natural-samuel-present;
 	dev=ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w;
-	suppl=wxqRAosxj5O3cOWbredp9mJaCL9@$YOVvubSm3ZEzGI
+	suppl=j1gk8faS9qtmCi4UYKcGzQh2qX0@68fHTT3iuWAt8uE
 Interface: RGB25Base;
 	id=Xwaeqhvo-BFatSYY-nA3kr3Q-wW3fGxN-vn5H8QZ-$Nky6C0#fiction-robot-parker;
 	dev=ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w;
-	suppl=n421oagPZPDvIqey$Ju8SeCYEP4WAiq$Fp7JdkYkzcY
+	suppl=TF7knP1sY@EhMCGvLvYNlD4N$1tRN7gLjTy4RUOoQ4U
 Type-System: sts:uupt94S0-Jqxrlcn-$9XVAdb-aqXj$ia-AaoAPSp-GCthCus#example-baker-rival
-Check-SHA256: e39f005291cdde27eadd6a4a995a2a84737930e191ba163dbfa6d7ed6c496ebf
+Check-SHA256: 4f9569ce06646437a1411f48955741999094c085b1c69afd70fd82d052746218
 
 0s;XIQb$5EH9~cAZee0<Wd><=*!*t2<!yh2|4Ti-_$^#sI)8Dp0$j&qCeM~;3sBc{dOaKyPp>`{W+ev&
 _Ht^TvI2G1Jtsm#HCZ5u7Cv7Fo~j$@1Xis{h9?7gE8Pqh-SM$D`S~Bj8T{EY=q*(F#NPRGODlp?H>{w_
@@ -41,10 +41,10 @@ Ze?-+0SI(*VQzC~WpV-zX>)URWn@ihb8TUCV`yY^b#QQOc_4FeWn*b(X=P*}VRIm1AZKiEVqt6`aA9&`
 ZDn+2av)@HWpi#PbRcbEbYo~BbZBKDX>)URWn>_8b#QQOc_3kIY;R*>bY)~9bZ;PZXk{Q_b8}^MAa8eW
 WpZ;5Zf|ZyadlyAL2Yk!Zgg`+bZBKDb9HSXZ)PBKaAj_EAYpTJWpr~OWN&42ZYOjgWpQ<3Y#?-RAarPD
 AaiwXAa7<MVRLh3baNnSZXj=UbZ~Wab2I>Rb7?wET2nD~cr9mYL^*C)P)03JV`X$zRclu*HgYp{Q$tfW
-En!h;b2(QvW-T~MMK^Z<00II7*dJtmUM#&OyT4%#^11J3SKPwwYG1(|FHY3HHPZI2rY>dx0000q0CRI`
+En!h;b2(QvW-T~MMK^Z<00II7*dJtmUM#&OyT4%#^11J3SKPwwYG1(|FHY3HHPZHzl{01l0000q0CRI`
 I!szqF?Dz?XKF+_Zdg!8El*=*bX8SrS1mSjGj&r#Q#LJOQD}2HS2boWI7&q~cL4wa00Ia`Wnpx6a%FQL
 00RhOb#iWDVr*p!W^!R;bZKvHVQdL<Wo}_@VPb4$2vc-nZe(F{WCj2QQb$5EH3DA-o~j$@1Xis{h9?7g
-E8Pqh-SM$D`S~Bj8T{EY=q;_LE@l7#001-qb8~4rOj=Vhb$BgjYD771SWreSPh(|tRaI+OEjDs9byGuA
+E8Pqh-SM$D`S~Bj8T{EY=q;0#GiCq)001-qb8~4rOj=Vhb$BgjYD771SWreSPh(|tRaI+OEjDs9byGuA
 HZ5UMXmdGNHD)b1N<}w!0RRC20tiNBVRUtJWpfMw0SabvVPkY@Z*F012vc-nZe(F{WCj2QQb$5EH7x)D
 4$>Ms8HM=uUmE|%CLL8DYpYB02F=7s{mYlP#7GIv1_A_iba-#*YCz3gCHcMLg#T%!5i+MiD<M_A4ptJu
 zvG0JV8sRnaB^>NX7aiufEJ#8I!OHhFfAY7fVtxlj{%}vrgbfS&w=j<I1`4ThN&e7_DZhZ(?s#4rR#ml

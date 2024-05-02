@@ -146,7 +146,7 @@ interface ReplaceableAsset
 
 
 @version(1)
-@id(rgb:ifc:7Da2Vdrz-imv$K08-ZSaIG5Z-WODAIO7-VOSeBz2-Hx4h8jw#fuel-genetic-hamlet)
+@id(rgb:ifc:cqaDYTzY-SR6opg8-yAwXW23-QH5ge@v-KJK8kzy-xqGZ4gI#cake-museum-karl)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface NonFungibleToken
@@ -156,28 +156,30 @@ interface NonFungibleToken
 	owned assetOwner(*): RGBContract.Allocation
 
 	error fractionOverflow
-		"the amount of fractional token in outputs exceeds 1"
+		"the amount of token fractions in outputs exceeds 1"
 	error invalidAttachmentType
 		"attachment has a type which is not allowed for the token"
 	error nonEqualValues
 		"the sum of spent token fractions doesn't equal to the sum of token fractions in outputs"
 	error nonFractionalToken
 		"attempt to transfer a fraction of non-fractionable token"
+	error unknownToken
+		"allocation of unknown token ID"
 
 	genesis: override
-		errors: fractionOverflow, invalidAttachmentType
+		errors: fractionOverflow, invalidAttachmentType, unknownToken
 		globals: attachmentTypes(*), tokens(*)
 		assigns: assetOwner(*)
 
 	transition transfer: required, default, final
-		errors: fractionOverflow, nonEqualValues, nonFractionalToken
+		errors: fractionOverflow, nonEqualValues, nonFractionalToken, unknownToken
 		assigns: assetOwner(+)
 		default: assetOwner
 		inputs: assetOwner(+)
 
 
 @version(1)
-@id(rgb:ifc:@smyOWZ7-qYgtPd5-AP5N31b-JUA16JA-22YS$ve-X80smUA#shake-marble-tonight)
+@id(rgb:ifc:EiusZVYz-zpXSkSo-3c0Tqoc-t@N4Jnr-6$TxTgX-Ur1CFWM#tropic-joel-data)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface EngravableNft
@@ -189,7 +191,7 @@ interface EngravableNft
 	genesis: override
 
 	transition engrave: required, final
-		errors: fractionOverflow, nonEngravableToken, nonEqualValues, nonFractionalToken
+		errors: fractionOverflow, nonEngravableToken, nonEqualValues, nonFractionalToken, unknownToken
 		globals: engravings
 		assigns: assetOwner(+)
 		default: assetOwner
@@ -227,7 +229,7 @@ interface LimitedNft
 
 
 @version(1)
-@id(rgb:ifc:7l7stAAE-0lfP7qv-jy$MIMX-a@biUUb-QKLndgc-aM6nydY#tactic-earth-wave)
+@id(rgb:ifc:aXanqSSq-fn3fX@7-fPNkIir-jzgZDkR-Qf2cZ08-C0P2xc0#baron-front-report)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface IssuableNft
@@ -241,7 +243,7 @@ interface IssuableNft
 		assigns: inflationAllowance(+)
 
 	transition issue: required, abstract
-		errors: fractionOverflow, insufficientReserves, invalidAttachmentType, invalidProof, issueExceedsAllowance
+		errors: fractionOverflow, insufficientReserves, invalidAttachmentType, invalidProof, issueExceedsAllowance, unknownToken
 		globals: attachmentTypes(*), tokens(*)
 		assigns: assetOwner(*), inflationAllowance(*)
 		default: assetOwner

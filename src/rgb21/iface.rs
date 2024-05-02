@@ -58,6 +58,7 @@ pub fn nft() -> Iface {
             },
             valencies: none!(),
             errors: tiny_bset! {
+                vname!("unknownToken"),
                 vname!("fractionOverflow"),
                 vname!("invalidAttachmentType")
             },
@@ -76,6 +77,7 @@ pub fn nft() -> Iface {
                 },
                 valencies: none!(),
                 errors: tiny_bset! {
+                vname!("unknownToken"),
                     vname!("nonEqualValues"),
                     vname!("fractionOverflow"),
                     vname!("nonFractionalToken")
@@ -86,7 +88,10 @@ pub fn nft() -> Iface {
         extensions: none!(),
         errors: tiny_bmap! {
             vname!("fractionOverflow")
-                => tiny_s!("the amount of fractional token in outputs exceeds 1"),
+                => tiny_s!("the amount of token fractions in outputs exceeds 1"),
+
+            vname!("unknownToken")
+                => tiny_s!("allocation of unknown token ID"),
 
             vname!("nonEqualValues")
                 => tiny_s!("the sum of spent token fractions doesn't equal to the sum of token fractions in outputs"),
@@ -213,6 +218,7 @@ pub fn engravable() -> Iface {
                 },
                 valencies: none!(),
                 errors: tiny_bset! {
+                    vname!("unknownToken"),
                     vname!("nonEqualValues"),
                     vname!("fractionOverflow"),
                     vname!("nonFractionalToken"),
@@ -272,9 +278,8 @@ pub fn issuable() -> Iface {
                 },
                 valencies: none!(),
                 errors: tiny_bset! {
+                    vname!("unknownToken"),
                     vname!("fractionOverflow"),
-                    vname!("invalidProof"),
-                    vname!("insufficientReserves"),
                     vname!("invalidAttachmentType"),
                     vname!("issueExceedsAllowance"),
                 },
