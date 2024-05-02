@@ -37,30 +37,17 @@ pub use wrapper::{Rgb25, RGB25_IFACE_ID};
     serde(crate = "serde_crate", rename_all = "camelCase")
 )]
 pub struct Features {
-    pub renaming: bool,
-    // pub reserves: bool,
     pub burnable: bool,
 }
 
 impl Features {
-    pub const NONE: Self = Features {
-        renaming: false,
-        // reserves: false,
-        burnable: false,
-    };
-    pub const ALL: Self = Features {
-        renaming: true,
-        // reserves: true,
-        burnable: true,
-    };
+    pub const NONE: Self = Features { burnable: false };
+    pub const ALL: Self = Features { burnable: true };
 
     pub const ENUMERATE: &'static [Self] = &[Self::NONE, Self::ALL];
 
     pub fn to_list(&self) -> FeatureList {
         let mut list = bset![fname!("fractional")];
-        if self.renaming {
-            list.insert(fname!("renamable"));
-        }
         if self.burnable {
             list.insert(fname!("burnable"));
         }

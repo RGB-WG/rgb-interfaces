@@ -251,11 +251,14 @@ interface IssuableNft
 
 
 @version(1)
-@id(rgb:ifc:aXXY$G69-5W1$hP9-LPb74LV-xeOn9xs-gJcx2Mm-z5ZmC1A#coconut-michael-rapid)
+@id(rgb:ifc:KRRDrxL0-3yhKX13-O9CSpIF-y9a1y5f-jbAak89-fH4Qnfc#left-oxygen-goblin)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface NamedContract
-	global spec: RGBContract.ContractSpec
+	global art(?): RGBContract.Article
+	global details(?): RGBContract.Details
+	global name: RGBContract.Name
+	global precision: RGBContract.Precision
 	global terms: RGBContract.ContractTerms
 
 	genesis: abstract

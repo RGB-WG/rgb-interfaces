@@ -35,7 +35,10 @@ pub fn named_contract() -> Iface {
         timestamp: 1711405444,
         metadata: none!(),
         global_state: tiny_bmap! {
-            fname!("spec") => GlobalIface::required(types.get("RGBContract.ContractSpec")),
+            fname!("art") => GlobalIface::optional(types.get("RGBContract.Article")),
+            fname!("name") => GlobalIface::required(types.get("RGBContract.Name")),
+            fname!("details") => GlobalIface::optional(types.get("RGBContract.Details")),
+            fname!("precision") => GlobalIface::required(types.get("RGBContract.Precision")),
             fname!("terms") => GlobalIface::required(types.get("RGBContract.ContractTerms")),
         },
         assignments: none!(),
@@ -44,7 +47,10 @@ pub fn named_contract() -> Iface {
             modifier: Modifier::Abstract,
             metadata: none!(),
             globals: tiny_bmap! {
-                fname!("spec") => Occurrences::Once,
+                fname!("art") => Occurrences::NoneOrOnce,
+                fname!("name") => Occurrences::Once,
+                fname!("details") => Occurrences::NoneOrOnce,
+                fname!("precision") => Occurrences::Once,
                 fname!("terms") => Occurrences::Once,
             },
             assignments: none!(),
