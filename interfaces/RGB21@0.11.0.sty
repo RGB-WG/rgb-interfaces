@@ -1,5 +1,5 @@
 {-
-  Id: urn:ubideco:stl:21bXsRAYrobA45mJpFu1T2ZNkoDXCk9gZk8TBwy3FsgA#jungle-swing-bruno
+  Id: stl:URVJ768i-moZ15p1-NpCOpOv-E$nZffn-Wq2vgZh-MgmPyPM#omega-cactus-hazard
   Name: RGB21
   Version: 0.11.0
   Description: Types for RGB21 interfaces
@@ -11,52 +11,54 @@
 @context
 typelib RGB21
 
-import RGBContract#7isbv9C7vzzuNUvpPPbxnLFj7V6XZHP8kWPAZezjvaqx#barbara-limit-cricket
-  use ProofOfReserves#liquid-owner-london
-  use Allocation#igor-baboon-leonid
-  use OwnedFraction#vital-edgar-quota
-  use Attachment#barcode-newton-fashion
-  use Name#ruby-tennis-lotus
-  use MediaRegName#telecom-pixel-initial
-  use Details#network-kayak-adam
-  use TokenIndex#connect-farmer-havana
-  use MediaType#gossip-beach-manila
-  use Ticker#proton-logic-weekend
+import Std#ralph-blue-lucky
+  use AsciiPrintable#ultra-sunset-format
+  use AlphaNum#window-tractor-alamo
+  use Alpha#citizen-bicycle-stretch
+  use AlphaSmall#magnum-martin-soviet
 
-import Std#EcCNgrgLaygt3tCZNu2ZVEzMzSAZYEUeTNAVi5E81YWi#aspirin-mango-average
-  use AsciiPrintable#prize-solar-driver
-  use Alpha#october-urgent-tunnel
-  use AlphaSmall#song-accent-mammal
+import Bitcoin#signal-color-cipher
+  use Vout#brush-gloria-heroic
+  use Txid#shallow-light-reverse
+  use Outpoint#logo-alamo-madam
 
-import Bitcoin#HX2UBak8vPsTokug1DGMDvTpzns3xUdwZ7QJdyt4qBA9#speed-atlanta-trilogy
-  use Vout#chrome-robin-gallop
-  use Txid#cowboy-diego-betty
-  use Outpoint#dinner-yoga-danube
+import RGBContract#rover-annual-disney
+  use ProofOfReserves#harmony-dolby-golf
+  use Allocation#amadeus-ohio-trust
+  use OwnedFraction#mission-person-armor
+  use MediaRegName#total-monkey-rondo
+  use MimeChar#amber-alarm-satire
+  use Details#trivial-halt-nobody
+  use Attachment#swim-cantina-july
+  use Ticker#newton-corona-aloha
+  use TokenIndex#giraffe-correct-modest
+  use Name#lexicon-monitor-madonna
+  use MediaType#mimic-turtle-monday
 
 
-@mnemonic(banjo-arizona-camel)
-data AttachmentName    : [Std.AsciiPrintable#prize-solar-driver ^ 1..0x14]
+@mnemonic(resume-telex-tower)
+data AttachmentName    : [Std.AsciiPrintable ^ 1..0x14]
 
-@mnemonic(boston-cake-susan)
+@mnemonic(brave-costume-percent)
 data AttachmentType    : id U8, name AttachmentName
 
-@mnemonic(montana-yoyo-llama)
-data EmbeddedMedia     : type RGBContract.MediaType#gossip-beach-manila, data [Byte]
+@mnemonic(agent-arcade-morris)
+data EmbeddedMedia     : type RGBContract.MediaType, data [Byte]
 
-@mnemonic(trumpet-crown-waiter)
-data EngravingData     : appliedTo RGBContract.TokenIndex#connect-farmer-havana, content EmbeddedMedia
+@mnemonic(future-lesson-quiet)
+data EngravingData     : appliedTo RGBContract.TokenIndex, content EmbeddedMedia
 
-@mnemonic(capital-conduct-aspect)
+@mnemonic(tokyo-rose-ford)
 data ItemsCount        : U32
 
-@mnemonic(lima-philips-fortune)
-data TokenData         : index RGBContract.TokenIndex#connect-farmer-havana
-                       , ticker RGBContract.Ticker#proton-logic-weekend?
-                       , name RGBContract.Name#ruby-tennis-lotus?
-                       , details RGBContract.Details#network-kayak-adam?
+@mnemonic(jimmy-jacket-violet)
+data TokenData         : index RGBContract.TokenIndex
+                       , ticker RGBContract.Ticker?
+                       , name RGBContract.Name?
+                       , details RGBContract.Details?
                        , preview EmbeddedMedia?
-                       , media RGBContract.Attachment#barcode-newton-fashion?
-                       , attachments {U8 -> ^ ..0x14 RGBContract.Attachment#barcode-newton-fashion}
-                       , reserves RGBContract.ProofOfReserves#liquid-owner-london?
+                       , media RGBContract.Attachment?
+                       , attachments {U8 -> ^ ..0x14 RGBContract.Attachment}
+                       , reserves RGBContract.ProofOfReserves?
 
 

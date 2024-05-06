@@ -19,40 +19,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+pub mod iface;
 mod wrapper;
 mod issuer;
+mod info;
 
+use amplify::confinement::Confined;
+pub use info::Rgb25Info;
 pub use issuer::Issue;
+use rgbstd::info::FeatureList;
 pub use wrapper::{Rgb25, RGB25_IFACE_ID};
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(crate = "serde_crate", rename_all = "camelCase")
+)]
 pub struct Features {
-    pub renaming: bool,
-    pub reserves: bool,
     pub burnable: bool,
 }
 
 impl Features {
-    pub const NONE: Self = Features {
-        renaming: false,
-        reserves: false,
-        burnable: false,
-    };
-    pub const ALL: Self = Features {
-        renaming: true,
-        reserves: true,
-        burnable: true,
-    };
+    pub const NONE: Self = Features { burnable: false };
+    pub const ALL: Self = Features { burnable: true };
 
     pub const ENUMERATE: &'static [Self] = &[Self::NONE, Self::ALL];
+
+    pub fn to_list(&self) -> FeatureList {
+        let mut list = bset![fname!("fractional")];
+        if self.burnable {
+            list.insert(fname!("burnable"));
+        }
+        Confined::from_collection_unsafe(list).into()
+    }
 }
 
 #[cfg(test)]
 mod test {
     use amplify::ByteArray;
+    use rgbstd::interface::IfaceClass;
 
     use super::*;
-    use crate::IfaceWrapper;
 
     #[test]
     fn iface_id_all() {

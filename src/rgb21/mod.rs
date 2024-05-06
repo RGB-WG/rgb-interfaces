@@ -23,6 +23,8 @@ pub mod iface;
 mod types;
 mod wrapper;
 
+use amplify::confinement::Confined;
+use rgbstd::info::FeatureList;
 pub use types::{
     AttachmentName, AttachmentType, EmbeddedMedia, EngravingData, ItemsCount, TokenData,
     LIB_ID_RGB21, LIB_NAME_RGB21,
@@ -40,7 +42,7 @@ pub enum Issues {
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub struct Features {
     pub renaming: bool,
-    pub reserves: bool,
+    // pub reserves: bool,
     pub engraving: bool,
     pub issues: Issues,
 }
@@ -48,26 +50,42 @@ pub struct Features {
 impl Features {
     pub const NONE: Self = Features {
         renaming: false,
-        reserves: false,
+        // reserves: false,
         engraving: false,
         issues: Issues::Unique,
     };
     pub const ALL: Self = Features {
         renaming: true,
-        reserves: true,
+        // reserves: true,
         engraving: true,
         issues: Issues::MultiIssue,
     };
 
     pub const ENUMERATE: &'static [Self] = &[Self::NONE, Self::ALL];
+
+    pub fn to_list(&self) -> FeatureList {
+        let mut list = bset![fname!("fractional")];
+        if self.renaming {
+            list.insert(fname!("renamable"));
+        }
+        if self.engraving {
+            list.insert(fname!("engravable"));
+        }
+        match self.issues {
+            Issues::Unique => list.insert(fname!("unique")),
+            Issues::Limited => list.insert(fname!("limited")),
+            Issues::MultiIssue => list.insert(fname!("collection")),
+        };
+        Confined::from_collection_unsafe(list).into()
+    }
 }
 
 #[cfg(test)]
 mod test {
     use amplify::ByteArray;
+    use rgbstd::interface::IfaceClass;
 
     use super::*;
-    use crate::IfaceWrapper;
 
     #[test]
     fn iface_id() {
