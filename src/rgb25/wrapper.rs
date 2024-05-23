@@ -19,25 +19,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use rgbstd::interface::{ContractIface, Iface, IfaceId};
+use rgbstd::interface::{ContractIface, Iface, IfaceClass, IfaceId};
 use rgbstd::invoice::{Amount, Precision};
-use rgbstd::stl::{rgb_contract_stl, AssetTerms, Details, Name};
+use rgbstd::stl::{rgb_contract_stl, ContractTerms, Details, Name};
 use rgbstd::AssetTag;
 use strict_encoding::InvalidRString;
 use strict_types::TypeLib;
 
-use super::{Features, Issue};
+use super::{Features, Issue, Rgb25Info};
 use crate::rgb20::iface::*;
-use crate::{IfaceWrapper, IssuerWrapper};
+use crate::rgb25::iface::named_contract;
+use crate::IssuerWrapper;
 
 pub const RGB25_BASE_IFACE_ID: IfaceId = IfaceId::from_array([
-    0xec, 0x62, 0x9d, 0x0d, 0x0e, 0x21, 0x6c, 0x76, 0x1d, 0x3c, 0x4f, 0x33, 0x86, 0x58, 0x09, 0x8c,
-    0xdd, 0x6f, 0x8f, 0x58, 0x2d, 0x79, 0x11, 0x24, 0x59, 0x71, 0x2c, 0x48, 0xb3, 0xb8, 0xb5, 0x8b,
+    0x05, 0xd2, 0xa2, 0x30, 0x7b, 0x9b, 0x45, 0x94, 0xd8, 0xad, 0xb4, 0xb5, 0xdc, 0x6d, 0xf0, 0xb7,
+    0xae, 0x2e, 0x21, 0xc8, 0x72, 0x3c, 0xc4, 0x05, 0xd0, 0xa9, 0xa6, 0xb1, 0x88, 0x1e, 0x32, 0x46,
 ]);
 
 pub const RGB25_IFACE_ID: IfaceId = IfaceId::from_array([
-    0x97, 0x9a, 0xf4, 0x76, 0xaa, 0xc3, 0x46, 0xfc, 0xd7, 0x10, 0xc6, 0x04, 0x95, 0x35, 0x2b, 0x29,
-    0x87, 0x37, 0xbb, 0x61, 0x4d, 0x31, 0xb4, 0x9f, 0xfd, 0x8f, 0xf6, 0xac, 0x9e, 0x02, 0x0d, 0x99,
+    0x09, 0x02, 0xdc, 0xc8, 0x58, 0x1c, 0x4c, 0xc0, 0xa1, 0xc5, 0x94, 0x3a, 0xff, 0xc3, 0xb0, 0x77,
+    0x31, 0xce, 0xca, 0xda, 0xe6, 0x85, 0x3f, 0x50, 0x0f, 0xcb, 0x4b, 0x78, 0x7c, 0xbc, 0x65, 0x41,
 ]);
 
 #[derive(Wrapper, WrapperMut, Clone, Eq, PartialEq, Debug)]
@@ -54,45 +55,52 @@ impl From<ContractIface> for Rgb25 {
     }
 }
 
-impl IfaceWrapper for Rgb25 {
+impl IfaceClass for Rgb25 {
     const IFACE_NAME: &'static str = "RGB25";
     const IFACE_IDS: &'static [IfaceId] = &[RGB25_BASE_IFACE_ID, RGB25_IFACE_ID];
 
     type Features = Features;
+    type Info = Rgb25Info;
 
     fn iface(features: Features) -> Iface {
-        let mut iface = named_asset().expect_extended(fungible(), "RGB25Base");
-        if features.renaming {
-            iface = iface.expect_extended(renameable(), "RGB25Renameable");
-        }
+        let mut iface = named_contract().expect_extended(fungible(), "RGB25Base");
+        /*
         if features.reserves {
             iface = iface.expect_extended(reservable(), "RGB25Reservable");
         }
+         */
         if features.burnable {
             iface = iface.expect_extended(burnable(), "RGB25Burnable");
         }
-        if features == Features::ALL {
-            iface.name = Self::IFACE_NAME.into();
-        }
         iface
     }
+
+    fn iface_id(features: Self::Features) -> IfaceId {
+        // TODO: Optimize with constants
+        Rgb25::iface(features).iface_id()
+    }
+
     fn stl() -> TypeLib { rgb_contract_stl() }
+
+    fn info(&self) -> Self::Info { todo!() }
 }
 
 impl Rgb25 {
     pub fn testnet<C: IssuerWrapper<IssuingIface = Self>>(
+        issuer: &str,
         name: &str,
         precision: Precision,
     ) -> Result<Issue, InvalidRString> {
-        Issue::testnet::<C>(name, precision)
+        Issue::testnet::<C>(issuer, name, precision)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Self>>(
+        issuer: &str,
         name: &str,
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<Issue, InvalidRString> {
-        Issue::testnet_det::<C>(name, precision, asset_tag)
+        Issue::testnet_det::<C>(issuer, name, precision, asset_tag)
     }
 
     pub fn name(&self) -> Name {
@@ -141,11 +149,11 @@ impl Rgb25 {
             .sum()
     }
 
-    pub fn contract_terms(&self) -> AssetTerms {
+    pub fn contract_terms(&self) -> ContractTerms {
         let strict_val = &self
             .0
             .global("terms")
             .expect("RGB25 interface requires global `terms`")[0];
-        AssetTerms::from_strict_val_unchecked(strict_val)
+        ContractTerms::from_strict_val_unchecked(strict_val)
     }
 }

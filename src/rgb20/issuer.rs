@@ -22,21 +22,19 @@
 use std::str::FromStr;
 
 use bp::dbc::Method;
-use chrono::Utc;
 use rgbstd::containers::ValidContract;
-use rgbstd::interface::{BuilderError, ContractBuilder, TxOutpoint};
+use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
-use rgbstd::persistence::PersistedState;
-use rgbstd::stl::{AssetSpec, AssetTerms, Attachment, RicardianContract};
-use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal};
+use rgbstd::stl::{AssetSpec, Attachment, ContractTerms, RicardianContract};
+use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal, Identity};
 use strict_encoding::InvalidRString;
 
 use super::Rgb20;
-use crate::{IfaceWrapper, IssuerWrapper, SchemaIssuer};
+use crate::{IssuerWrapper, SchemaIssuer};
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Display, Error)]
+#[derive(Clone, Eq, PartialEq, Hash, Debug, Display, Error)]
 #[display(doc_comments)]
-pub enum AllocationError {
+pub enum IssuerError {
     /// contract genesis doesn't support allocating to liquid seals; request
     /// liquid support first.
     NoLiquidSupport,
@@ -45,11 +43,11 @@ pub enum AllocationError {
     AmountOverflow,
 }
 
-impl From<BuilderError> for AllocationError {
+impl From<BuilderError> for IssuerError {
     fn from(err: BuilderError) -> Self {
         match err {
-            BuilderError::InvalidLayer1(_) => AllocationError::NoLiquidSupport,
-            _ => panic!("invalid RGB20 schema (assetOwner mismatch)"),
+            BuilderError::InvalidLayer1(_) => IssuerError::NoLiquidSupport,
+            err => panic!("invalid RGB20 schema. Details: {err}"),
         }
     }
 }
@@ -58,70 +56,91 @@ impl From<BuilderError> for AllocationError {
 pub struct PrimaryIssue {
     builder: ContractBuilder,
     issued: Amount,
-    terms: AssetTerms,
-    deterministic: bool,
+    inflation: Option<Amount>,
+    terms: ContractTerms,
 }
 
 impl PrimaryIssue {
-    pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb20>>(
-        ticker: &str,
-        name: &str,
-        details: Option<&str>,
-        precision: Precision,
-    ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(C::issuer(), ticker, name, details, precision)
-    }
-
     pub fn testnet_with(
         issuer: SchemaIssuer<Rgb20>,
+        by: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(issuer, ticker, name, details, precision)
+        Self::testnet_int(issuer, by, ticker, name, details, precision, false)
+    }
+
+    pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb20>>(
+        by: &str,
+        ticker: &str,
+        name: &str,
+        details: Option<&str>,
+        precision: Precision,
+    ) -> Result<Self, InvalidRString> {
+        Self::testnet_int(C::issuer(), by, ticker, name, details, precision, false)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb20>>(
+        by: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<Self, InvalidRString> {
-        let mut me = Self::testnet_int(C::issuer(), ticker, name, details, precision)?;
+        let mut me = Self::testnet_int(C::issuer(), by, ticker, name, details, precision, true)?;
         me.builder = me
             .builder
             .add_asset_tag("assetOwner", asset_tag)
             .expect("invalid RGB20 schema (assetOwner mismatch)");
-        me.deterministic = true;
         Ok(me)
     }
 
     fn testnet_int(
         issuer: SchemaIssuer<Rgb20>,
+        by: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
+        deterministic: bool,
     ) -> Result<Self, InvalidRString> {
         let spec = AssetSpec::with(ticker, name, precision, details)?;
-        let terms = AssetTerms {
+        let terms = ContractTerms {
             text: RicardianContract::default(),
             media: None,
         };
 
         let (schema, main_iface_impl, types, scripts, features) = issuer.into_split();
-        let builder =
-            ContractBuilder::with(Rgb20::iface(features), schema, main_iface_impl, types, scripts)
-                .add_global_state("spec", spec)
-                .expect("invalid RGB20 schema (token specification mismatch)");
+        let mut builder = match deterministic {
+            false => ContractBuilder::with(
+                Identity::from_str(by).expect("invalid issuer identity string"),
+                Rgb20::iface(features),
+                schema,
+                main_iface_impl,
+                types,
+                scripts,
+            ),
+            true => ContractBuilder::deterministic(
+                Identity::from_str(by).expect("invalid issuer identity string"),
+                Rgb20::iface(features),
+                schema,
+                main_iface_impl,
+                types,
+                scripts,
+            ),
+        };
+        builder = builder
+            .add_global_state("spec", spec)
+            .expect("invalid RGB20 schema (token specification mismatch)");
 
         Ok(Self {
             builder,
             terms,
             issued: Amount::ZERO,
-            deterministic: false,
+            inflation: None,
         })
     }
 
@@ -139,7 +158,7 @@ impl PrimaryIssue {
         media: Option<Attachment>,
     ) -> Result<Self, InvalidRString> {
         let terms = RicardianContract::from_str(contract)?;
-        self.terms = AssetTerms { text: terms, media };
+        self.terms = ContractTerms { text: terms, media };
         Ok(self)
     }
 
@@ -147,19 +166,15 @@ impl PrimaryIssue {
         mut self,
         method: Method,
         beneficiary: O,
-        amount: Amount,
-    ) -> Result<Self, AllocationError> {
-        debug_assert!(
-            !self.deterministic,
-            "for creating deterministic contracts please use allocate_det method"
-        );
-
+        amount: impl Into<Amount>,
+    ) -> Result<Self, IssuerError> {
+        let amount = amount.into();
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
             GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
         });
         self.issued
             .checked_add_assign(amount)
-            .ok_or(AllocationError::AmountOverflow)?;
+            .ok_or(IssuerError::AmountOverflow)?;
         self.builder =
             self.builder
                 .add_fungible_state("assetOwner", beneficiary, amount.value())?;
@@ -169,8 +184,8 @@ impl PrimaryIssue {
     pub fn allocate_all<O: TxOutpoint>(
         mut self,
         method: Method,
-        allocations: impl IntoIterator<Item = (O, Amount)>,
-    ) -> Result<Self, AllocationError> {
+        allocations: impl IntoIterator<Item = (O, impl Into<Amount>)>,
+    ) -> Result<Self, IssuerError> {
         for (beneficiary, amount) in allocations {
             self = self.allocate(method, beneficiary, amount)?;
         }
@@ -183,30 +198,132 @@ impl PrimaryIssue {
         method: Method,
         beneficiary: O,
         seal_blinding: u64,
-        amount: Amount,
+        amount: impl Into<Amount>,
         amount_blinding: BlindingFactor,
-    ) -> Result<Self, AllocationError> {
-        debug_assert!(
-            self.deterministic,
-            "to add asset allocation in deterministic way the contract builder has to be created \
-             using `*_det` constructor"
-        );
-
-        let tag = self
-            .builder
-            .asset_tag("assetOwner")
-            .expect("internal library error: asset tag is unassigned");
+    ) -> Result<Self, IssuerError> {
+        let amount = amount.into();
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
             GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
         });
         self.issued
             .checked_add_assign(amount)
-            .ok_or(AllocationError::AmountOverflow)?;
-        self.builder = self.builder.add_owned_state_det(
+            .ok_or(IssuerError::AmountOverflow)?;
+        self.builder = self.builder.add_fungible_state_det(
             "assetOwner",
             beneficiary,
-            PersistedState::Amount(amount, amount_blinding, tag),
+            amount,
+            amount_blinding,
         )?;
+        Ok(self)
+    }
+
+    pub fn allow_inflation<O: TxOutpoint>(
+        mut self,
+        method: Method,
+        controller: O,
+        supply: impl Into<Amount>,
+    ) -> Result<Self, IssuerError> {
+        let supply = supply.into();
+        let controller = controller.map_to_xchain(|outpoint| {
+            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
+        });
+        self = self.update_max_supply(supply)?;
+        self.builder =
+            self.builder
+                .add_fungible_state("inflationAllowance", controller, supply.value())?;
+        Ok(self)
+    }
+
+    /// Add asset allocation in a deterministic way.
+    pub fn allow_inflation_det<O: TxOutpoint>(
+        mut self,
+        method: Method,
+        beneficiary: O,
+        seal_blinding: u64,
+        supply: impl Into<Amount>,
+        supply_blinding: BlindingFactor,
+    ) -> Result<Self, IssuerError> {
+        let supply = supply.into();
+        let beneficiary = beneficiary.map_to_xchain(|outpoint| {
+            GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
+        });
+        self = self.update_max_supply(supply)?;
+        self.builder = self.builder.add_fungible_state_det(
+            "inflationAllowance",
+            beneficiary,
+            supply,
+            supply_blinding,
+        )?;
+        Ok(self)
+    }
+
+    fn update_max_supply(mut self, supply: Amount) -> Result<Self, IssuerError> {
+        match &mut self.inflation {
+            Some(max) => max
+                .checked_add_assign(supply)
+                .ok_or(IssuerError::AmountOverflow)?,
+            None => {
+                let tag = self
+                    .builder
+                    .asset_tag("assetOwner")
+                    .expect("asset tag must be already set");
+                self.builder = self
+                    .builder
+                    .add_asset_tag("inflationAllowance", tag)
+                    .expect("invalid RGB20 schema (max supply mismatch)");
+                self.inflation = Some(supply)
+            }
+        }
+        Ok(self)
+    }
+
+    pub fn allow_burn<O: TxOutpoint>(
+        mut self,
+        method: Method,
+        controller: O,
+    ) -> Result<Self, IssuerError> {
+        let controller = controller.map_to_xchain(|outpoint| {
+            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
+        });
+        self.builder = self.builder.add_rights("burnRight", controller)?;
+        Ok(self)
+    }
+
+    pub fn allow_burn_det<O: TxOutpoint>(
+        mut self,
+        method: Method,
+        controller: O,
+        seal_blinding: u64,
+    ) -> Result<Self, IssuerError> {
+        let controller = controller.map_to_xchain(|outpoint| {
+            GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
+        });
+        self.builder = self.builder.add_rights("burnRight", controller)?;
+        Ok(self)
+    }
+
+    pub fn allow_replace<O: TxOutpoint>(
+        mut self,
+        method: Method,
+        controller: O,
+    ) -> Result<Self, IssuerError> {
+        let controller = controller.map_to_xchain(|outpoint| {
+            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
+        });
+        self.builder = self.builder.add_rights("replaceRight", controller)?;
+        Ok(self)
+    }
+
+    pub fn allow_replace_det<O: TxOutpoint>(
+        mut self,
+        method: Method,
+        controller: O,
+        seal_blinding: u64,
+    ) -> Result<Self, IssuerError> {
+        let controller = controller.map_to_xchain(|outpoint| {
+            GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
+        });
+        self.builder = self.builder.add_rights("replaceRight", controller)?;
         Ok(self)
     }
 
@@ -218,32 +335,28 @@ impl PrimaryIssue {
      */
 
     #[allow(clippy::result_large_err)]
-    pub fn issue_contract(self) -> Result<ValidContract, BuilderError> {
-        debug_assert!(
-            !self.deterministic,
-            "to issue contract in deterministic way you must use issue_contract_det method"
-        );
-        self.issue_contract_int(Utc::now().timestamp())
+    pub fn issue_contract(self) -> Result<ValidContract, IssuerError> {
+        Ok(self.pre_issue_contract()?.issue_contract()?)
     }
 
     #[allow(clippy::result_large_err)]
-    pub fn issue_contract_det(self, timestamp: i64) -> Result<ValidContract, BuilderError> {
-        debug_assert!(
-            self.deterministic,
-            "to issue contract in deterministic way the contract builder has to be created using \
-             `*_det` constructor"
-        );
-        self.issue_contract_int(timestamp)
+    pub fn issue_contract_det(self, timestamp: i64) -> Result<ValidContract, IssuerError> {
+        Ok(self.pre_issue_contract()?.issue_contract_det(timestamp)?)
     }
 
     #[allow(clippy::result_large_err)]
-    fn issue_contract_int(self, timestamp: i64) -> Result<ValidContract, BuilderError> {
-        self.builder
-            .add_global_state("issuedSupply", self.issued)
-            .expect("invalid RGB20 schema (issued supply mismatch)")
-            .add_global_state("terms", self.terms)
-            .expect("invalid RGB20 schema (contract terms mismatch)")
-            .issue_contract_det(timestamp)
+    fn pre_issue_contract(mut self) -> Result<ContractBuilder, IssuerError> {
+        if let Some(inflation) = self.inflation {
+            let max = self
+                .issued
+                .checked_add(inflation)
+                .ok_or(IssuerError::AmountOverflow)?;
+            self.builder = self.builder.add_global_state("maxSupply", max)?;
+        }
+        Ok(self
+            .builder
+            .add_global_state("issuedSupply", self.issued)?
+            .add_global_state("terms", self.terms)?)
     }
 
     // TODO: Add secondary issuance and other methods

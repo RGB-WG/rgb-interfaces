@@ -22,92 +22,157 @@
 use std::collections::HashMap;
 
 use rgbstd::interface::{
-    AmountChange, ContractIface, FungibleAllocation, Iface, IfaceId, IfaceOp, OutpointFilter,
-    RightsAllocation, WitnessFilter,
+    AmountChange, ContractIface, FungibleAllocation, Iface, IfaceClass, IfaceId, IfaceOp,
+    OutpointFilter, RightsAllocation, WitnessFilter,
 };
 use rgbstd::invoice::{Amount, Precision};
-use rgbstd::stl::{rgb_contract_stl, AssetSpec, AssetTerms};
+use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms, Details};
 use rgbstd::{AssetTag, XWitnessId};
 use strict_encoding::InvalidRString;
 use strict_types::TypeLib;
 
 use super::iface::*;
-use super::{Features, PrimaryIssue};
-use crate::{IfaceWrapper, IssuerWrapper};
+use super::{Features, Inflation, PrimaryIssue, Rgb20Info};
+use crate::IssuerWrapper;
 
 pub const RGB20_FIXED_IFACE_ID: IfaceId = IfaceId::from_array([
-    0x75, 0x16, 0xa9, 0x64, 0xcf, 0x9c, 0x27, 0x42, 0xce, 0x44, 0xfc, 0x99, 0x7a, 0x42, 0xae, 0xbd,
-    0x26, 0xa4, 0x7e, 0x62, 0x6a, 0x28, 0xf7, 0xaa, 0x75, 0x58, 0xe1, 0x4b, 0xfa, 0x05, 0x09, 0x4e,
+    0xfe, 0x25, 0x27, 0x3b, 0xd6, 0x8e, 0xd7, 0x18, 0x6a, 0x51, 0xde, 0xb5, 0x26, 0x6e, 0x52, 0xe7,
+    0xec, 0x0c, 0xde, 0x78, 0x1b, 0xcb, 0x91, 0x95, 0x13, 0x29, 0x50, 0x65, 0x30, 0x0c, 0x60, 0x39,
 ]);
 pub const RGB20_IFACE_ID: IfaceId = IfaceId::from_array([
-    0xab, 0x20, 0xe5, 0xca, 0x9a, 0x68, 0xef, 0xb2, 0xc5, 0xf0, 0x81, 0xe4, 0xd2, 0x24, 0xaa, 0x58,
-    0xe3, 0xb3, 0x70, 0xd3, 0x88, 0xdc, 0xac, 0x84, 0x24, 0xa3, 0xe2, 0x22, 0x79, 0xc5, 0x0d, 0x74,
+    0xaf, 0xaf, 0xdd, 0x2d, 0xe5, 0x72, 0x1f, 0x41, 0xd0, 0xa5, 0x4c, 0x85, 0xd9, 0x76, 0xd7, 0xd8,
+    0x43, 0xf6, 0x26, 0xa6, 0xc7, 0xa7, 0x0b, 0x08, 0x48, 0x3e, 0x1f, 0xc5, 0x41, 0x1a, 0x38, 0xa4,
 ]);
 
-#[derive(Wrapper, WrapperMut, Clone, Eq, PartialEq, Debug)]
+#[derive(Wrapper, WrapperMut, Clone, Eq, PartialEq, Debug, From)]
 #[wrapper(Deref)]
 #[wrapper_mut(DerefMut)]
 pub struct Rgb20(ContractIface);
 
-impl From<ContractIface> for Rgb20 {
-    fn from(iface: ContractIface) -> Self {
-        if !Rgb20::IFACE_IDS.contains(&iface.iface.iface_id) {
-            panic!("the provided interface is not RGB20 interface");
-        }
-        Self(iface)
-    }
-}
-
-impl IfaceWrapper for Rgb20 {
+impl IfaceClass for Rgb20 {
     const IFACE_NAME: &'static str = "RGB20";
     const IFACE_IDS: &'static [IfaceId] = &[RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID];
 
     type Features = Features;
+    type Info = Rgb20Info;
+
     fn iface(features: Features) -> Iface {
-        let mut iface = named_asset().expect_extended(fungible(), "RGB20Base");
-        if features.renaming {
-            iface = iface.expect_extended(renameable(), "RGB20Renamable");
-        }
+        let (mut name, mut iface) = if features.renaming {
+            (tn!("RGB20Renamable"), rgb20_renamable())
+        } else {
+            (tn!("RGB20"), rgb20_base())
+        };
         if features.inflation.is_fixed() {
-            iface = iface.expect_extended(fixed(), "RGB20Fixed");
-        } else if features.inflation.is_inflatible() {
-            iface = iface.expect_extended(inflatable(), "RGB20Inflatible");
+            iface = iface.expect_extended(fixed(), tn!(format!("{name}Fixed")));
+        } else if features.inflation.is_inflatable() {
+            iface = iface.expect_extended(inflatable(), tn!(format!("{name}Inflatable")));
+            name = tn!(format!("{name}Inflatable"));
         }
-        if features.inflation.is_replacable() {
-            iface = iface.expect_extended(replaceable(), "RGB20Replacable");
-        } else if features.inflation.is_burnable() {
-            iface = iface.expect_extended(burnable(), "RGB20Burnable");
+        if features.inflation.is_burnable() {
+            iface = iface.expect_extended(burnable(), tn!(format!("{name}Burnable")));
+            if features.inflation.is_replaceable() {
+                name = tn!(format!("{}Replaceable", name.to_string().replace("Inflatable", "")));
+                iface = iface.expect_extended(replaceable(), name);
+            }
         }
+        /* TODO: Complete reservable interface
         if features.reserves {
             iface = iface.expect_extended(reservable(), "RGB20Reservable");
         }
-        if features == Features::ALL {
-            iface.name = Self::IFACE_NAME.into();
-        }
+         */
         iface
     }
 
+    fn iface_id(features: Self::Features) -> IfaceId {
+        // TODO: Optimize with constants
+        Rgb20::iface(features).iface_id()
+    }
+
     fn stl() -> TypeLib { rgb_contract_stl() }
+
+    fn info(&self) -> Self::Info {
+        let spec = self.spec();
+        let terms = self.contract_terms();
+        Rgb20Info {
+            contract: self.0.info.clone(),
+            ticker: spec.ticker.to_string(),
+            name: spec.name.to_string(),
+            details: spec.details.as_ref().map(Details::to_string),
+            terms: terms.text.to_string(),
+            attach: terms.media,
+            precision: spec.precision,
+            features: self.features(),
+            issued: self.total_issued_supply(),
+            burned: self.total_burned_supply(),
+            replaced: self.total_replaced_supply(),
+        }
+    }
 }
 
 impl Rgb20 {
     pub fn testnet<C: IssuerWrapper<IssuingIface = Self>>(
+        issuer: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet::<C>(ticker, name, details, precision)
+        PrimaryIssue::testnet::<C>(issuer, ticker, name, details, precision)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Self>>(
+        issuer: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet_det::<C>(ticker, name, details, precision, asset_tag)
+        PrimaryIssue::testnet_det::<C>(issuer, ticker, name, details, precision, asset_tag)
+    }
+
+    pub fn features(&self) -> Features {
+        let renaming = self
+            .0
+            .iface
+            .transitions
+            .iter()
+            .any(|field| field.name.as_str() == "rename");
+        let inflatable = self
+            .0
+            .iface
+            .transitions
+            .iter()
+            .any(|field| field.name.as_str() == "issue");
+        let burnable = self
+            .0
+            .iface
+            .transitions
+            .iter()
+            .any(|field| field.name.as_str() == "burn");
+        let replaceable = self
+            .0
+            .iface
+            .transitions
+            .iter()
+            .any(|field| field.name.as_str() == "replace");
+
+        let inflation = match (inflatable, burnable, replaceable) {
+            (true, true, true) => Inflation::Replaceable,
+            (true, true, false) => Inflation::InflatableBurnable,
+            (false, true, false) => Inflation::Burnable,
+            (true, false, false) => Inflation::Inflatable,
+            (false, false, false) => Inflation::Fixed,
+            (true, false, true) | (false, false, true) => {
+                panic!("replaceable asset with no burn enabled")
+            }
+            (false, true, true) => panic!("replaceable but non-inflatible asset"),
+        };
+
+        Features {
+            renaming,
+            inflation,
+        }
     }
 
     pub fn spec(&self) -> AssetSpec {
@@ -169,12 +234,12 @@ impl Rgb20 {
             .expect("RGB20 interface requires `updateRight` state")
     }
 
-    pub fn contract_terms(&self) -> AssetTerms {
+    pub fn contract_terms(&self) -> ContractTerms {
         let strict_val = &self
             .0
             .global("terms")
             .expect("RGB20 interface requires global `terms`")[0];
-        AssetTerms::from_strict_val_unchecked(strict_val)
+        ContractTerms::from_strict_val_unchecked(strict_val)
     }
 
     pub fn total_issued_supply(&self) -> Amount {

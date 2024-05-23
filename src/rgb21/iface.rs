@@ -20,14 +20,14 @@
 // limitations under the License.
 
 use rgbstd::interface::{
-    AssignIface, GenesisIface, GlobalIface, Iface, Modifier, OwnedIface, Req, TransitionIface,
-    VerNo,
+    AssignIface, GenesisIface, GlobalIface, Iface, IfaceClass, Modifier, OwnedIface, Req,
+    TransitionIface, VerNo,
 };
 use rgbstd::stl::StandardTypes;
 use rgbstd::{Identity, Occurrences};
 
 use crate::rgb21::wrapper::Rgb21;
-use crate::{IfaceWrapper, LNPBP_IDENTITY};
+use crate::LNPBP_IDENTITY;
 
 pub fn nft() -> Iface {
     let types = StandardTypes::with(Rgb21::stl());
@@ -58,6 +58,7 @@ pub fn nft() -> Iface {
             },
             valencies: none!(),
             errors: tiny_bset! {
+                vname!("unknownToken"),
                 vname!("fractionOverflow"),
                 vname!("invalidAttachmentType")
             },
@@ -76,6 +77,7 @@ pub fn nft() -> Iface {
                 },
                 valencies: none!(),
                 errors: tiny_bset! {
+                vname!("unknownToken"),
                     vname!("nonEqualValues"),
                     vname!("fractionOverflow"),
                     vname!("nonFractionalToken")
@@ -86,7 +88,10 @@ pub fn nft() -> Iface {
         extensions: none!(),
         errors: tiny_bmap! {
             vname!("fractionOverflow")
-                => tiny_s!("the amount of fractional token in outputs exceeds 1"),
+                => tiny_s!("the amount of token fractions in outputs exceeds 1"),
+
+            vname!("unknownToken")
+                => tiny_s!("allocation of unknown token ID"),
 
             vname!("nonEqualValues")
                 => tiny_s!("the sum of spent token fractions doesn't equal to the sum of token fractions in outputs"),
@@ -213,6 +218,7 @@ pub fn engravable() -> Iface {
                 },
                 valencies: none!(),
                 errors: tiny_bset! {
+                    vname!("unknownToken"),
                     vname!("nonEqualValues"),
                     vname!("fractionOverflow"),
                     vname!("nonFractionalToken"),
@@ -272,9 +278,8 @@ pub fn issuable() -> Iface {
                 },
                 valencies: none!(),
                 errors: tiny_bset! {
+                    vname!("unknownToken"),
                     vname!("fractionOverflow"),
-                    vname!("invalidProof"),
-                    vname!("insufficientReserves"),
                     vname!("invalidAttachmentType"),
                     vname!("issueExceedsAllowance"),
                 },

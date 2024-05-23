@@ -1,0 +1,267 @@
+@version(1)
+@id(rgb:ifc:Vk9c4$Ny-Fv0J6tg-pDF05CE-312oCWh-fENNuia-GYbEu18#adios-alert-never)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface NamedAsset
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	genesis: abstract
+		globals: spec, terms
+
+
+@version(1)
+@id(rgb:ifc:VPnE3vly-SyuCUze-soMpdCb-jvSuziU-M@dOCU@-QBt6KVA#pierre-night-plate)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RenameableAsset
+
+	public updateRight: Rights
+
+	genesis: override
+		assigns: updateRight
+
+	transition rename: required, final
+		globals: spec
+		assigns: updateRight(?)
+		default: updateRight
+		inputs: updateRight
+
+
+@version(1)
+@id(rgb:ifc:13N6PRwT-T68@FGY-lBwX2cm-qesgJ11-j0nQkM1-WSCJFj4#ariel-gizmo-evita)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface FungibleAsset
+	global issuedSupply: RGBContract.Amount
+
+	owned assetOwner(*): Zk64
+
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: override
+		errors: issuedMismatch
+		globals: issuedSupply
+		assigns: assetOwner(*)
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:w3Lk9Mt3-gKt$n5y-TYpVGg0-IDpK0p9-sHQ@hb6-m2Qr3a0#unicorn-reward-ladder)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface FixedAsset
+
+	owned assetOwner(+): Zk64
+
+	genesis: override
+		errors: issuedMismatch
+		assigns: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:vOVfWwQ7-2TDwbAN-36Yrvum-8nAF$lT-vNzw@Zt-7ZmBGR0#ammonia-antonio-norway)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface BurnableAsset
+	meta burnProof: RGBContract.BurnMeta
+
+	global burnConsignmentUrl(?): RGBContract.Details
+	global burnedSupply(*): RGBContract.Amount
+
+	public burnRight(+): Rights
+
+	error invalidBurnProof
+		"the provided proof of reserves is invalid"
+
+	genesis: override
+		assigns: burnRight(+)
+
+	transition burn: required, final
+		errors: invalidBurnProof
+		meta: burnProof
+		globals: burnConsignmentUrl(?), burnedSupply
+		assigns: burnRight(*)
+		inputs: burnRight(+)
+
+
+@version(1)
+@id(rgb:ifc:0RhF@uRt-geU8$Hc-hvvG6j4-e1wxCwQ-CWBtpfB-gZIIY6s#brazil-olympic-marvin)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface InflatableAsset
+	meta allowedInflation: RGBContract.Amount
+
+	global issuedSupply(+): RGBContract.Amount
+	global maxSupply: RGBContract.Amount
+
+	public inflationAllowance(*): Zk64
+
+	error inflationExceedsAllowance
+		"you try to issue more assets than allowed by the contract terms"
+	error inflationMismatch
+		"reported sum of issued assets and inflation allowance doesn't match specified maximum supply"
+
+	genesis: override
+		errors: inflationMismatch, issuedMismatch
+		globals: maxSupply
+		assigns: inflationAllowance(+)
+
+	transition issue: required, abstract
+		errors: inflationExceedsAllowance, issuedMismatch
+		meta: allowedInflation
+		globals: issuedSupply
+		assigns: assetOwner(*), inflationAllowance(*)
+		default: assetOwner
+		inputs: inflationAllowance(+)
+
+
+@version(1)
+@id(rgb:ifc:azoYYtyN-hzAFPrJ-8zqI$HJ-14PRdSK-YrUQL2v-ccJC6Bk#tractor-scorpio-mineral)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface ReplaceableAsset
+	global replacedSupply(*): RGBContract.Amount
+
+	public replaceRight(+): Rights
+
+	genesis: override
+		assigns: replaceRight(+)
+
+	transition replace: required, final
+		errors: invalidBurnProof, issuedMismatch
+		meta: burnProof
+		globals: burnConsignmentUrl(?), replacedSupply
+		assigns: assetOwner(+), replaceRight(?)
+		default: assetOwner
+		inputs: replaceRight(+)
+
+
+@version(1)
+@id(rgb:ifc:cqaDYTzY-SR6opg8-yAwXW23-QH5ge@v-KJK8kzy-xqGZ4gI#cake-museum-karl)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface NonFungibleToken
+	global attachmentTypes(*): RGB21.AttachmentType
+	global tokens(*): RGB21.TokenData
+
+	owned assetOwner(*): RGBContract.Allocation
+
+	error fractionOverflow
+		"the amount of token fractions in outputs exceeds 1"
+	error invalidAttachmentType
+		"attachment has a type which is not allowed for the token"
+	error nonEqualValues
+		"the sum of spent token fractions doesn't equal to the sum of token fractions in outputs"
+	error nonFractionalToken
+		"attempt to transfer a fraction of non-fractionable token"
+	error unknownToken
+		"allocation of unknown token ID"
+
+	genesis: override
+		errors: fractionOverflow, invalidAttachmentType, unknownToken
+		globals: attachmentTypes(*), tokens(*)
+		assigns: assetOwner(*)
+
+	transition transfer: required, default, final
+		errors: fractionOverflow, nonEqualValues, nonFractionalToken, unknownToken
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:EiusZVYz-zpXSkSo-3c0Tqoc-t@N4Jnr-6$TxTgX-Ur1CFWM#tropic-joel-data)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface EngravableNft
+	global engravings(*): RGB21.EngravingData
+
+	error nonEngravableToken
+		"attempt to engrave on a token which prohibit engraving"
+
+	genesis: override
+
+	transition engrave: required, final
+		errors: fractionOverflow, nonEngravableToken, nonEqualValues, nonFractionalToken, unknownToken
+		globals: engravings
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:gpfNDb9S-qdSEAmR-MH2bn@3-ZQtY$Az-GxASNVG-dVIhFzM#bernard-nikita-detail)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface UniqueNft
+	global attachmentTypes: RGB21.AttachmentType
+	global tokens: RGB21.TokenData
+
+	owned assetOwner(+): RGBContract.Allocation
+
+	genesis: override
+		globals: attachmentTypes, tokens
+		assigns: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:L8SvJhId-0E78cOR-LOTR$VO-KhEnHfL-7afNS2K-WCHl4gI#suzuki-solid-dragon)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface LimitedNft
+	global attachmentTypes(+): RGB21.AttachmentType
+	global tokens(+): RGB21.TokenData
+
+	owned assetOwner(+): RGBContract.Allocation
+
+	genesis: override
+		globals: attachmentTypes(+), tokens(+)
+		assigns: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:aXanqSSq-fn3fX@7-fPNkIir-jzgZDkR-Qf2cZ08-C0P2xc0#baron-front-report)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface IssuableNft
+
+	public inflationAllowance(+): RGB21.ItemsCount
+
+	error issueExceedsAllowance
+		"you try to issue more assets than allowed by the contract terms"
+
+	genesis: override
+		assigns: inflationAllowance(+)
+
+	transition issue: required, abstract
+		errors: fractionOverflow, insufficientReserves, invalidAttachmentType, invalidProof, issueExceedsAllowance, unknownToken
+		globals: attachmentTypes(*), tokens(*)
+		assigns: assetOwner(*), inflationAllowance(*)
+		default: assetOwner
+		inputs: inflationAllowance(+)
+
+
+@version(1)
+@id(rgb:ifc:KRRDrxL0-3yhKX13-O9CSpIF-y9a1y5f-jbAak89-fH4Qnfc#left-oxygen-goblin)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface NamedContract
+	global art(?): RGBContract.Article
+	global details(?): RGBContract.Details
+	global name: RGBContract.Name
+	global precision: RGBContract.Precision
+	global terms: RGBContract.ContractTerms
+
+	genesis: abstract
+		globals: spec, terms
+
+

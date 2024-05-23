@@ -1,0 +1,574 @@
+@version(1)
+@id(rgb:ifc:naFrAfgG-Kfu$A@c-3L@bC$4-s1LWJQV-4Iv@62u-4B3ab8Y#mailbox-dialog-iron)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB20Base: NamedAsset, FungibleAsset
+	global issuedSupply: RGBContract.Amount
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	owned assetOwner(*): Zk64
+
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: abstract
+		errors: issuedMismatch
+		globals: issuedSupply, spec, terms
+		assigns: assetOwner(*)
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:1$D4u$R8-gvvRAMs-SAZpZiR-IPGrUMf-6xizoHW-8UtBnJU#arena-ladder-left)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB20Renamable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset
+	global issuedSupply: RGBContract.Amount
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	owned assetOwner(*): Zk64
+	public updateRight: Rights
+
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: abstract
+		errors: issuedMismatch
+		globals: issuedSupply, spec, terms
+		assigns: assetOwner(*), updateRight
+
+	transition rename: required, final
+		globals: spec
+		assigns: updateRight(?)
+		default: updateRight
+		inputs: updateRight
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:$iUnO9aO-1xhqUd6-1Jm5S5@-wM3ngby-5GVEylQ-ZTAMYDk#tornado-pioneer-bucket)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB20Fixed: NamedAsset, FungibleAsset, RGB20Base, FixedAsset
+	global issuedSupply: RGBContract.Amount
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	owned assetOwner(+): Zk64
+
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: abstract
+		errors: issuedMismatch
+		globals: issuedSupply, spec, terms
+		assigns: assetOwner(+)
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:meHrtVTZ-6xAdd0w-rjDttLh-cs2n7zn-sZBzfwz-FcU@i24#jungle-wizard-dollar)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB20RenamableFixed: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset, RGB20Renamable, FixedAsset
+	global issuedSupply: RGBContract.Amount
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	owned assetOwner(+): Zk64
+	public updateRight: Rights
+
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: abstract
+		errors: issuedMismatch
+		globals: issuedSupply, spec, terms
+		assigns: assetOwner(+), updateRight
+
+	transition rename: required, final
+		globals: spec
+		assigns: updateRight(?)
+		default: updateRight
+		inputs: updateRight
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:YLpmbnY2-yZn$JdG-ghjwoCP-zj215y0-$XuwA90-o$CP$pg#camel-slogan-comrade)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB20Inflatable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsset
+	meta allowedInflation: RGBContract.Amount
+
+	global issuedSupply(+): RGBContract.Amount
+	global maxSupply: RGBContract.Amount
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	owned assetOwner(*): Zk64
+	public inflationAllowance(*): Zk64
+
+	error inflationExceedsAllowance
+		"you try to issue more assets than allowed by the contract terms"
+	error inflationMismatch
+		"reported sum of issued assets and inflation allowance doesn't match specified maximum supply"
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: abstract
+		errors: inflationMismatch, issuedMismatch
+		globals: issuedSupply, maxSupply, spec, terms
+		assigns: assetOwner(*), inflationAllowance(+)
+
+	transition issue: required, abstract
+		errors: inflationExceedsAllowance, issuedMismatch
+		meta: allowedInflation
+		globals: issuedSupply
+		assigns: assetOwner(*), inflationAllowance(*)
+		default: assetOwner
+		inputs: inflationAllowance(+)
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:yxQRcNJ4-yMnJ0$c-gLjwpdS-8DuJjFn-pWQ4i5C-To2R$U4#basil-gopher-music)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB20Burnable: NamedAsset, FungibleAsset, RGB20Base, BurnableAsset
+	meta burnProof: RGBContract.BurnMeta
+
+	global burnConsignmentUrl(?): RGBContract.Details
+	global burnedSupply(*): RGBContract.Amount
+	global issuedSupply: RGBContract.Amount
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	owned assetOwner(*): Zk64
+	public burnRight(+): Rights
+
+	error invalidBurnProof
+		"the provided proof of reserves is invalid"
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: abstract
+		errors: issuedMismatch
+		globals: issuedSupply, spec, terms
+		assigns: assetOwner(*), burnRight(+)
+
+	transition burn: required, final
+		errors: invalidBurnProof
+		meta: burnProof
+		globals: burnConsignmentUrl(?), burnedSupply
+		assigns: burnRight(*)
+		inputs: burnRight(+)
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:BWy2H0Nd-ykgandr-mR5fydi-U$7tFU2-R@z1F9B-MZW0tKo#bishop-poem-dublin)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB20InflatableBurnable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsset, RGB20Inflatable, BurnableAsset
+	meta allowedInflation: RGBContract.Amount
+	meta burnProof: RGBContract.BurnMeta
+
+	global burnConsignmentUrl(?): RGBContract.Details
+	global burnedSupply(*): RGBContract.Amount
+	global issuedSupply(+): RGBContract.Amount
+	global maxSupply: RGBContract.Amount
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	owned assetOwner(*): Zk64
+	public burnRight(+): Rights
+	public inflationAllowance(*): Zk64
+
+	error inflationExceedsAllowance
+		"you try to issue more assets than allowed by the contract terms"
+	error inflationMismatch
+		"reported sum of issued assets and inflation allowance doesn't match specified maximum supply"
+	error invalidBurnProof
+		"the provided proof of reserves is invalid"
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: abstract
+		errors: inflationMismatch, issuedMismatch
+		globals: issuedSupply, maxSupply, spec, terms
+		assigns: assetOwner(*), burnRight(+), inflationAllowance(+)
+
+	transition burn: required, final
+		errors: invalidBurnProof
+		meta: burnProof
+		globals: burnConsignmentUrl(?), burnedSupply
+		assigns: burnRight(*)
+		inputs: burnRight(+)
+
+	transition issue: required, abstract
+		errors: inflationExceedsAllowance, issuedMismatch
+		meta: allowedInflation
+		globals: issuedSupply
+		assigns: assetOwner(*), inflationAllowance(*)
+		default: assetOwner
+		inputs: inflationAllowance(+)
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:w0Z1Za2j-klpfWyT-4coOB@6-90qakW5-AfjmIc9-ejZbKZU#cycle-buzzer-british)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB20Replaceable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsset, RGB20Inflatable, BurnableAsset, RGB20InflatableBurnable, ReplaceableAsset
+	meta allowedInflation: RGBContract.Amount
+	meta burnProof: RGBContract.BurnMeta
+
+	global burnConsignmentUrl(?): RGBContract.Details
+	global burnedSupply(*): RGBContract.Amount
+	global issuedSupply(+): RGBContract.Amount
+	global maxSupply: RGBContract.Amount
+	global replacedSupply(*): RGBContract.Amount
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	owned assetOwner(*): Zk64
+	public burnRight(+): Rights
+	public inflationAllowance(*): Zk64
+	public replaceRight(+): Rights
+
+	error inflationExceedsAllowance
+		"you try to issue more assets than allowed by the contract terms"
+	error inflationMismatch
+		"reported sum of issued assets and inflation allowance doesn't match specified maximum supply"
+	error invalidBurnProof
+		"the provided proof of reserves is invalid"
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: abstract
+		errors: inflationMismatch, issuedMismatch
+		globals: issuedSupply, maxSupply, spec, terms
+		assigns: assetOwner(*), burnRight(+), inflationAllowance(+), replaceRight(+)
+
+	transition burn: required, final
+		errors: invalidBurnProof
+		meta: burnProof
+		globals: burnConsignmentUrl(?), burnedSupply
+		assigns: burnRight(*)
+		inputs: burnRight(+)
+
+	transition issue: required, abstract
+		errors: inflationExceedsAllowance, issuedMismatch
+		meta: allowedInflation
+		globals: issuedSupply
+		assigns: assetOwner(*), inflationAllowance(*)
+		default: assetOwner
+		inputs: inflationAllowance(+)
+
+	transition replace: required, final
+		errors: invalidBurnProof, issuedMismatch
+		meta: burnProof
+		globals: burnConsignmentUrl(?), replacedSupply
+		assigns: assetOwner(+), replaceRight(?)
+		default: assetOwner
+		inputs: replaceRight(+)
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:Gzd3DwVy-TtF3Z6V-h981qjU-WV9QmbS-$SB5Tyg-6y5PLPc#battery-consul-mercury)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB20RenamableInflatable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset, RGB20Renamable, InflatableAsset
+	meta allowedInflation: RGBContract.Amount
+
+	global issuedSupply(+): RGBContract.Amount
+	global maxSupply: RGBContract.Amount
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	owned assetOwner(*): Zk64
+	public inflationAllowance(*): Zk64
+	public updateRight: Rights
+
+	error inflationExceedsAllowance
+		"you try to issue more assets than allowed by the contract terms"
+	error inflationMismatch
+		"reported sum of issued assets and inflation allowance doesn't match specified maximum supply"
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: abstract
+		errors: inflationMismatch, issuedMismatch
+		globals: issuedSupply, maxSupply, spec, terms
+		assigns: assetOwner(*), inflationAllowance(+), updateRight
+
+	transition issue: required, abstract
+		errors: inflationExceedsAllowance, issuedMismatch
+		meta: allowedInflation
+		globals: issuedSupply
+		assigns: assetOwner(*), inflationAllowance(*)
+		default: assetOwner
+		inputs: inflationAllowance(+)
+
+	transition rename: required, final
+		globals: spec
+		assigns: updateRight(?)
+		default: updateRight
+		inputs: updateRight
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:FFfPPWDH-4$BWBn7-3QnE8WV-nHj98E8-IoAIZvt-4kiX7YA#theory-memo-puzzle)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB20RenamableBurnable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset, RGB20Renamable, BurnableAsset
+	meta burnProof: RGBContract.BurnMeta
+
+	global burnConsignmentUrl(?): RGBContract.Details
+	global burnedSupply(*): RGBContract.Amount
+	global issuedSupply: RGBContract.Amount
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	owned assetOwner(*): Zk64
+	public burnRight(+): Rights
+	public updateRight: Rights
+
+	error invalidBurnProof
+		"the provided proof of reserves is invalid"
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: abstract
+		errors: issuedMismatch
+		globals: issuedSupply, spec, terms
+		assigns: assetOwner(*), burnRight(+), updateRight
+
+	transition burn: required, final
+		errors: invalidBurnProof
+		meta: burnProof
+		globals: burnConsignmentUrl(?), burnedSupply
+		assigns: burnRight(*)
+		inputs: burnRight(+)
+
+	transition rename: required, final
+		globals: spec
+		assigns: updateRight(?)
+		default: updateRight
+		inputs: updateRight
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:MkSuvvz2-StGzuV8-Hewq0fo-hMigWm$-UMxXtdP-RCnZyec#asia-domino-respect)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB20RenamableInflatableBurnable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset, RGB20Renamable, InflatableAsset, RGB20RenamableInflatable, BurnableAsset
+	meta allowedInflation: RGBContract.Amount
+	meta burnProof: RGBContract.BurnMeta
+
+	global burnConsignmentUrl(?): RGBContract.Details
+	global burnedSupply(*): RGBContract.Amount
+	global issuedSupply(+): RGBContract.Amount
+	global maxSupply: RGBContract.Amount
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	owned assetOwner(*): Zk64
+	public burnRight(+): Rights
+	public inflationAllowance(*): Zk64
+	public updateRight: Rights
+
+	error inflationExceedsAllowance
+		"you try to issue more assets than allowed by the contract terms"
+	error inflationMismatch
+		"reported sum of issued assets and inflation allowance doesn't match specified maximum supply"
+	error invalidBurnProof
+		"the provided proof of reserves is invalid"
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: abstract
+		errors: inflationMismatch, issuedMismatch
+		globals: issuedSupply, maxSupply, spec, terms
+		assigns: assetOwner(*), burnRight(+), inflationAllowance(+), updateRight
+
+	transition burn: required, final
+		errors: invalidBurnProof
+		meta: burnProof
+		globals: burnConsignmentUrl(?), burnedSupply
+		assigns: burnRight(*)
+		inputs: burnRight(+)
+
+	transition issue: required, abstract
+		errors: inflationExceedsAllowance, issuedMismatch
+		meta: allowedInflation
+		globals: issuedSupply
+		assigns: assetOwner(*), inflationAllowance(*)
+		default: assetOwner
+		inputs: inflationAllowance(+)
+
+	transition rename: required, final
+		globals: spec
+		assigns: updateRight(?)
+		default: updateRight
+		inputs: updateRight
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:r6$dLeVy-H0HQpUy-F2XbX2E-P2JqbHp-wsISD4f-xUEaOKQ#postage-plaza-almond)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB20RenamableReplaceable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset, RGB20Renamable, InflatableAsset, RGB20RenamableInflatable, BurnableAsset, RGB20RenamableInflatableBurnable, ReplaceableAsset
+	meta allowedInflation: RGBContract.Amount
+	meta burnProof: RGBContract.BurnMeta
+
+	global burnConsignmentUrl(?): RGBContract.Details
+	global burnedSupply(*): RGBContract.Amount
+	global issuedSupply(+): RGBContract.Amount
+	global maxSupply: RGBContract.Amount
+	global replacedSupply(*): RGBContract.Amount
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+
+	owned assetOwner(*): Zk64
+	public burnRight(+): Rights
+	public inflationAllowance(*): Zk64
+	public replaceRight(+): Rights
+	public updateRight: Rights
+
+	error inflationExceedsAllowance
+		"you try to issue more assets than allowed by the contract terms"
+	error inflationMismatch
+		"reported sum of issued assets and inflation allowance doesn't match specified maximum supply"
+	error invalidBurnProof
+		"the provided proof of reserves is invalid"
+	error issuedMismatch
+		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
+	error nonEqualAmounts
+		"the sum of spent assets doesn't equal to the sum of assets in outputs"
+
+	genesis: abstract
+		errors: inflationMismatch, issuedMismatch
+		globals: issuedSupply, maxSupply, spec, terms
+		assigns: assetOwner(*), burnRight(+), inflationAllowance(+), replaceRight(+), updateRight
+
+	transition burn: required, final
+		errors: invalidBurnProof
+		meta: burnProof
+		globals: burnConsignmentUrl(?), burnedSupply
+		assigns: burnRight(*)
+		inputs: burnRight(+)
+
+	transition issue: required, abstract
+		errors: inflationExceedsAllowance, issuedMismatch
+		meta: allowedInflation
+		globals: issuedSupply
+		assigns: assetOwner(*), inflationAllowance(*)
+		default: assetOwner
+		inputs: inflationAllowance(+)
+
+	transition rename: required, final
+		globals: spec
+		assigns: updateRight(?)
+		default: updateRight
+		inputs: updateRight
+
+	transition replace: required, final
+		errors: invalidBurnProof, issuedMismatch
+		meta: burnProof
+		globals: burnConsignmentUrl(?), replacedSupply
+		assigns: assetOwner(+), replaceRight(?)
+		default: assetOwner
+		inputs: replaceRight(+)
+
+	transition transfer: required, default, abstract
+		errors: nonEqualAmounts
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
