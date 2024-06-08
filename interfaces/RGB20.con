@@ -1,5 +1,5 @@
 @version(1)
-@id(rgb:ifc:naFrAfgG-Kfu$A@c-3L@bC$4-s1LWJQV-4Iv@62u-4B3ab8Y#mailbox-dialog-iron)
+@id(rgb:ifc:naFrAfgG-Kfu$A!c-3L!bC$4-s1LWJQV-4Iv!62u-4B3ab8Y#mailbox-dialog-iron)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20Base: NamedAsset, FungibleAsset
@@ -62,7 +62,7 @@ interface RGB20Renamable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset
 
 
 @version(1)
-@id(rgb:ifc:$iUnO9aO-1xhqUd6-1Jm5S5@-wM3ngby-5GVEylQ-ZTAMYDk#tornado-pioneer-bucket)
+@id(rgb:ifc:$iUnO9aO-1xhqUd6-1Jm5S5!-wM3ngby-5GVEylQ-ZTAMYDk#tornado-pioneer-bucket)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20Fixed: NamedAsset, FungibleAsset, RGB20Base, FixedAsset
@@ -90,7 +90,7 @@ interface RGB20Fixed: NamedAsset, FungibleAsset, RGB20Base, FixedAsset
 
 
 @version(1)
-@id(rgb:ifc:meHrtVTZ-6xAdd0w-rjDttLh-cs2n7zn-sZBzfwz-FcU@i24#jungle-wizard-dollar)
+@id(rgb:ifc:meHrtVTZ-6xAdd0w-rjDttLh-cs2n7zn-sZBzfwz-FcU!i24#jungle-wizard-dollar)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20RenamableFixed: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset, RGB20Renamable, FixedAsset
@@ -211,7 +211,7 @@ interface RGB20Burnable: NamedAsset, FungibleAsset, RGB20Base, BurnableAsset
 
 
 @version(1)
-@id(rgb:ifc:BWy2H0Nd-ykgandr-mR5fydi-U$7tFU2-R@z1F9B-MZW0tKo#bishop-poem-dublin)
+@id(rgb:ifc:BWy2H0Nd-ykgandr-mR5fydi-U$7tFU2-R!z1F9B-MZW0tKo#bishop-poem-dublin)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20InflatableBurnable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsset, RGB20Inflatable, BurnableAsset
@@ -268,7 +268,7 @@ interface RGB20InflatableBurnable: NamedAsset, FungibleAsset, RGB20Base, Inflata
 
 
 @version(1)
-@id(rgb:ifc:w0Z1Za2j-klpfWyT-4coOB@6-90qakW5-AfjmIc9-ejZbKZU#cycle-buzzer-british)
+@id(rgb:ifc:w0Z1Za2j-klpfWyT-4coOB!6-90qakW5-AfjmIc9-ejZbKZU#cycle-buzzer-british)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20Replaceable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsset, RGB20Inflatable, BurnableAsset, RGB20InflatableBurnable, ReplaceableAsset

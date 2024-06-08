@@ -11,7 +11,7 @@ interface NamedAsset
 
 
 @version(1)
-@id(rgb:ifc:VPnE3vly-SyuCUze-soMpdCb-jvSuziU-M@dOCU@-QBt6KVA#pierre-night-plate)
+@id(rgb:ifc:VPnE3vly-SyuCUze-soMpdCb-jvSuziU-M!dOCU!-QBt6KVA#pierre-night-plate)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RenameableAsset
@@ -29,7 +29,7 @@ interface RenameableAsset
 
 
 @version(1)
-@id(rgb:ifc:13N6PRwT-T68@FGY-lBwX2cm-qesgJ11-j0nQkM1-WSCJFj4#ariel-gizmo-evita)
+@id(rgb:ifc:13N6PRwT-T68!FGY-lBwX2cm-qesgJ11-j0nQkM1-WSCJFj4#ariel-gizmo-evita)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface FungibleAsset
@@ -55,7 +55,7 @@ interface FungibleAsset
 
 
 @version(1)
-@id(rgb:ifc:w3Lk9Mt3-gKt$n5y-TYpVGg0-IDpK0p9-sHQ@hb6-m2Qr3a0#unicorn-reward-ladder)
+@id(rgb:ifc:w3Lk9Mt3-gKt$n5y-TYpVGg0-IDpK0p9-sHQ!hb6-m2Qr3a0#unicorn-reward-ladder)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface FixedAsset
@@ -68,7 +68,7 @@ interface FixedAsset
 
 
 @version(1)
-@id(rgb:ifc:vOVfWwQ7-2TDwbAN-36Yrvum-8nAF$lT-vNzw@Zt-7ZmBGR0#ammonia-antonio-norway)
+@id(rgb:ifc:vOVfWwQ7-2TDwbAN-36Yrvum-8nAF$lT-vNzw!Zt-7ZmBGR0#ammonia-antonio-norway)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface BurnableAsset
@@ -94,7 +94,7 @@ interface BurnableAsset
 
 
 @version(1)
-@id(rgb:ifc:0RhF@uRt-geU8$Hc-hvvG6j4-e1wxCwQ-CWBtpfB-gZIIY6s#brazil-olympic-marvin)
+@id(rgb:ifc:0RhF!uRt-geU8$Hc-hvvG6j4-e1wxCwQ-CWBtpfB-gZIIY6s#brazil-olympic-marvin)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface InflatableAsset
@@ -146,7 +146,7 @@ interface ReplaceableAsset
 
 
 @version(1)
-@id(rgb:ifc:cqaDYTzY-SR6opg8-yAwXW23-QH5ge@v-KJK8kzy-xqGZ4gI#cake-museum-karl)
+@id(rgb:ifc:cqaDYTzY-SR6opg8-yAwXW23-QH5ge!v-KJK8kzy-xqGZ4gI#cake-museum-karl)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface NonFungibleToken
@@ -179,7 +179,7 @@ interface NonFungibleToken
 
 
 @version(1)
-@id(rgb:ifc:EiusZVYz-zpXSkSo-3c0Tqoc-t@N4Jnr-6$TxTgX-Ur1CFWM#tropic-joel-data)
+@id(rgb:ifc:EiusZVYz-zpXSkSo-3c0Tqoc-t!N4Jnr-6$TxTgX-Ur1CFWM#tropic-joel-data)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface EngravableNft
@@ -199,7 +199,7 @@ interface EngravableNft
 
 
 @version(1)
-@id(rgb:ifc:gpfNDb9S-qdSEAmR-MH2bn@3-ZQtY$Az-GxASNVG-dVIhFzM#bernard-nikita-detail)
+@id(rgb:ifc:gpfNDb9S-qdSEAmR-MH2bn!3-ZQtY$Az-GxASNVG-dVIhFzM#bernard-nikita-detail)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface UniqueNft
@@ -229,7 +229,7 @@ interface LimitedNft
 
 
 @version(1)
-@id(rgb:ifc:aXanqSSq-fn3fX@7-fPNkIir-jzgZDkR-Qf2cZ08-C0P2xc0#baron-front-report)
+@id(rgb:ifc:to80AGDM-Dmi7SvS-KYgBysc-qVYsjqf-N0sm1ED-ng3KevA#survive-humor-order)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface IssuableNft
@@ -243,7 +243,7 @@ interface IssuableNft
 		assigns: inflationAllowance(+)
 
 	transition issue: required, abstract
-		errors: fractionOverflow, insufficientReserves, invalidAttachmentType, invalidProof, issueExceedsAllowance, unknownToken
+		errors: fractionOverflow, invalidAttachmentType, issueExceedsAllowance, unknownToken
 		globals: attachmentTypes(*), tokens(*)
 		assigns: assetOwner(*), inflationAllowance(*)
 		default: assetOwner
@@ -251,7 +251,7 @@ interface IssuableNft
 
 
 @version(1)
-@id(rgb:ifc:KRRDrxL0-3yhKX13-O9CSpIF-y9a1y5f-jbAak89-fH4Qnfc#left-oxygen-goblin)
+@id(rgb:ifc:gvx80qo7-lpHXzWN-fADtFHA-MI6$$fu-VXHTNji-nXo1oWQ#format-oliver-latin)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface NamedContract
@@ -262,6 +262,6 @@ interface NamedContract
 	global terms: RGBContract.ContractTerms
 
 	genesis: abstract
-		globals: spec, terms
+		globals: art(?), details(?), name, precision, terms
 
 
