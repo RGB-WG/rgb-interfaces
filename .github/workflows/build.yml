@@ -39,8 +39,6 @@ jobs:
       fail-fast: false
       matrix:
         feature:
-          - esplora_blocking
-          - log
           - serde
     steps:
       - uses: actions/checkout@v4
@@ -59,7 +57,7 @@ jobs:
         os: [ ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, windows-2019, windows-2022 ]
     steps:
       - uses: actions/checkout@v4
-      # NOTE: Dont use nix in platform checks everything should based on the host system
+      # NOTE: Don't use nix in platform checks - everything should be based on the host system
       - name: Install rust stable
         uses: actions-rs/toolchain@v1
         with:
