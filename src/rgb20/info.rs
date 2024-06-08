@@ -24,7 +24,7 @@ use std::fmt::{self, Display, Formatter, Write};
 use chrono::{DateTime, Utc};
 use rgbstd::info::ContractInfo;
 use rgbstd::stl::Attachment;
-use rgbstd::{Amount, CoinAmount, Precision, XOutpoint, XWitnessId};
+use rgbstd::{Amount, Precision, XOutpoint, XWitnessId};
 
 use crate::rgb20::Features;
 
@@ -59,7 +59,7 @@ impl Display for Rgb20Info {
         f.write_char(f.fill())?;
         write!(f, "{: >2}", self.precision as u8)?;
         f.write_char(f.fill())?;
-        write!(f, "{}", CoinAmount::with(self.issued, self.precision))?;
+        write!(f, "{}", self.issued)?;
         f.write_char(f.fill())?;
         writeln!(f, "{}", self.features)?;
         if let Some(details) = &self.details {
