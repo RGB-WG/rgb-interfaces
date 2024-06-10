@@ -22,7 +22,7 @@
 pub mod iface;
 mod types;
 mod wrapper;
-
+mod issuer;
 use amplify::confinement::Confined;
 use rgbstd::info::FeatureList;
 pub use types::{

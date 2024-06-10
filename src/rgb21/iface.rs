@@ -26,8 +26,14 @@ use rgbstd::interface::{
 use rgbstd::stl::StandardTypes;
 use rgbstd::{Identity, Occurrences};
 
+use crate::rgb20::iface::{named_asset, renameable};
 use crate::rgb21::wrapper::Rgb21;
 use crate::LNPBP_IDENTITY;
+
+pub fn rgb21_base() -> Iface { named_asset().expect_extended(nft(), tn!("RGB21Base")) }
+pub fn rgb21_renamable() -> Iface {
+    rgb21_base().expect_extended(renameable(), tn!("RGB21Renamable"))
+}
 
 pub fn nft() -> Iface {
     let types = StandardTypes::with(Rgb21::stl());

@@ -20,19 +20,22 @@
 // limitations under the License.
 
 use rgbstd::interface::{
-    ContractIface, DataAllocation, Iface, IfaceClass, IfaceId, OutpointFilter,
+    ContractIface, DataAllocation, Iface, IfaceClass, IfaceId, OutpointFilter, RightsAllocation,
 };
 use rgbstd::stl::{bp_tx_stl, rgb_contract_stl, AssetSpec, ContractTerms};
-use rgbstd::Allocation;
+use rgbstd::{Allocation, AssetTag, Precision};
+use strict_encoding::InvalidRString;
 use strict_types::stl::std_stl;
 use strict_types::{CompileError, LibBuilder, TypeLib};
 
 use super::iface::*;
+use super::issuer::Rgb21PrimaryIssue;
 use super::{
     AttachmentType, EngravingData, Features, Issues, ItemsCount, TokenData, LIB_NAME_RGB21,
 };
 use crate::rgb20::iface::{named_asset, renameable};
 use crate::rgb20::Rgb20Info;
+use crate::IssuerWrapper;
 
 pub const RGB21_UNIQUE_IFACE_ID: IfaceId = IfaceId::from_array([
     0xcd, 0xa8, 0x94, 0x87, 0x6e, 0xc5, 0xd9, 0xc6, 0x16, 0x7d, 0xc7, 0x45, 0x7c, 0xbe, 0x65, 0x05,
@@ -114,6 +117,27 @@ impl IfaceClass for Rgb21 {
 }
 
 impl Rgb21 {
+    pub fn testnet<C: IssuerWrapper<IssuingIface = Self>>(
+        issuer: &str,
+        ticker: &str,
+        name: &str,
+        details: Option<&str>,
+        precision: Precision,
+    ) -> Result<Rgb21PrimaryIssue, InvalidRString> {
+        Rgb21PrimaryIssue::testnet::<C>(issuer, ticker, name, details, precision)
+    }
+
+    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Self>>(
+        issuer: &str,
+        ticker: &str,
+        name: &str,
+        details: Option<&str>,
+        precision: Precision,
+        asset_tag: AssetTag,
+    ) -> Result<Rgb21PrimaryIssue, InvalidRString> {
+        Rgb21PrimaryIssue::testnet_det::<C>(issuer, ticker, name, details, precision, asset_tag)
+    }
+
     pub fn spec(&self) -> AssetSpec {
         let strict_val = &self
             .0
@@ -146,6 +170,15 @@ impl Rgb21 {
         EngravingData::from_strict_val_unchecked(strict_val)
     }
 
+    pub fn update_right<'c>(
+        &'c self,
+        filter: impl OutpointFilter + 'c,
+    ) -> impl Iterator<Item = RightsAllocation> + 'c {
+        self.0
+            .rights("updateRight", filter)
+            .expect("RGB21 interface requires `updateRight` state")
+    }
+
     pub fn allocations<'c>(
         &'c self,
         filter: impl OutpointFilter + 'c,
@@ -153,5 +186,47 @@ impl Rgb21 {
         self.0
             .data("assetOwner", filter)
             .expect("RGB21 interface requires `assetOwner` state")
+    }
+
+    pub fn features(&self) -> Features {
+        let renaming = self
+            .0
+            .iface
+            .transitions
+            .iter()
+            .any(|field| field.name.as_str() == "rename");
+
+        let engraving = self
+            .0
+            .iface
+            .transitions
+            .iter()
+            .any(|field| field.name.as_str() == "engrave");
+        let inflatable = self
+            .0
+            .iface
+            .transitions
+            .iter()
+            .any(|field| field.name.as_str() == "issue");
+        let issues = match inflatable {
+            true => Issues::MultiIssue,
+            false => Issues::Unique,
+            _ => Issues::Limited,
+        };
+
+        Features {
+            renaming,
+            engraving,
+            issues,
+        }
+    }
+
+    pub fn inflation_allowance_allocations<'c>(
+        &'c self,
+        filter: impl OutpointFilter + 'c,
+    ) -> impl Iterator<Item = DataAllocation> + 'c {
+        self.0
+            .data("inflationAllowance", filter)
+            .expect("RGB21 interface requires `inflationAllowance` state")
     }
 }

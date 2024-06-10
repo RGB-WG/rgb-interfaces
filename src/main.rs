@@ -180,5 +180,21 @@ fn main() -> io::Result<()> {
         writeln!(file, "{}", iface.display(&map, &ifsys)).unwrap();
     }
 
+    let mut ifaces = vec![rgb21::iface::rgb21_base(), rgb21::iface::rgb21_renamable()];
+    ifaces.extend(rgb21::Features::ENUMERATE.iter().copied().map(Rgb21::iface));
+
+    map.extend(
+        ifaces
+            .iter()
+            .map(|iface| (iface.iface_id(), iface.name.clone())),
+    );
+
+    filename.pop();
+    filename.push("RGB21.con");
+    let mut file = fs::File::create(&filename).unwrap();
+    for iface in ifaces {
+        writeln!(file, "{}", iface.display(&map, &ifsys)).unwrap();
+    }
+
     Ok(())
 }
