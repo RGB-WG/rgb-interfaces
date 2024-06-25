@@ -35,7 +35,7 @@ use super::{
 };
 use crate::rgb20::iface::{named_asset, renameable};
 use crate::rgb20::Rgb20Info;
-use crate::{IssuerWrapper, SchemaIssuer};
+use crate::IssuerWrapper;
 
 pub const RGB21_UNIQUE_IFACE_ID: IfaceId = IfaceId::from_array([
     0xcd, 0xa8, 0x94, 0x87, 0x6e, 0xc5, 0xd9, 0xc6, 0x16, 0x7d, 0xc7, 0x45, 0x7c, 0xbe, 0x65, 0x05,
@@ -117,7 +117,6 @@ impl IfaceClass for Rgb21 {
 }
 
 impl Rgb21 {
-
     pub fn testnet<C: IssuerWrapper<IssuingIface = Self>>(
         issuer: &str,
         ticker: &str,

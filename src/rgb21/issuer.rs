@@ -201,4 +201,3 @@ impl PrimaryIssue {
             .add_global_state("terms", self.terms)?)
     }
 }
-
