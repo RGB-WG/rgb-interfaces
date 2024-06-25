@@ -29,13 +29,13 @@ use strict_types::stl::std_stl;
 use strict_types::{CompileError, LibBuilder, TypeLib};
 
 use super::iface::*;
-use super::issuer::Rgb21PrimaryIssue;
+use super::issuer::PrimaryIssue;
 use super::{
     AttachmentType, EngravingData, Features, Issues, ItemsCount, TokenData, LIB_NAME_RGB21,
 };
 use crate::rgb20::iface::{named_asset, renameable};
 use crate::rgb20::Rgb20Info;
-use crate::IssuerWrapper;
+use crate::{IssuerWrapper, SchemaIssuer};
 
 pub const RGB21_UNIQUE_IFACE_ID: IfaceId = IfaceId::from_array([
     0xcd, 0xa8, 0x94, 0x87, 0x6e, 0xc5, 0xd9, 0xc6, 0x16, 0x7d, 0xc7, 0x45, 0x7c, 0xbe, 0x65, 0x05,
@@ -117,14 +117,15 @@ impl IfaceClass for Rgb21 {
 }
 
 impl Rgb21 {
+
     pub fn testnet<C: IssuerWrapper<IssuingIface = Self>>(
         issuer: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
-    ) -> Result<Rgb21PrimaryIssue, InvalidRString> {
-        Rgb21PrimaryIssue::testnet::<C>(issuer, ticker, name, details, precision)
+    ) -> Result<PrimaryIssue, InvalidRString> {
+        PrimaryIssue::testnet::<C>(issuer, ticker, name, details, precision)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Self>>(
@@ -134,8 +135,8 @@ impl Rgb21 {
         details: Option<&str>,
         precision: Precision,
         asset_tag: AssetTag,
-    ) -> Result<Rgb21PrimaryIssue, InvalidRString> {
-        Rgb21PrimaryIssue::testnet_det::<C>(issuer, ticker, name, details, precision, asset_tag)
+    ) -> Result<PrimaryIssue, InvalidRString> {
+        PrimaryIssue::testnet_det::<C>(issuer, ticker, name, details, precision, asset_tag)
     }
 
     pub fn spec(&self) -> AssetSpec {

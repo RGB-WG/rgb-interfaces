@@ -21,9 +21,9 @@ pub enum IssuerError {
     NoLiquidSupport,
     /// the amount of token fractions in outputs exceeds 1.
     FractionOverflow,
-    /// attachment has a type which is not allowed for the token
+    /// attachment has a type which is not allowed for the token.
     InvalidAttachmentType,
-    /// allocation of unknown token ID {0}
+    /// allocation of unknown token ID {0}.
     UnknownToken,
 }
 
@@ -37,12 +37,12 @@ impl From<BuilderError> for IssuerError {
 }
 
 #[derive(Clone, Debug)]
-pub struct Rgb21PrimaryIssue {
+pub struct PrimaryIssue {
     builder: ContractBuilder,
     terms: ContractTerms,
 }
 
-impl Rgb21PrimaryIssue {
+impl PrimaryIssue {
     pub fn testnet_with(
         issuer: SchemaIssuer<Rgb21>,
         by: &str,
@@ -76,9 +76,10 @@ impl Rgb21PrimaryIssue {
         me.builder = me
             .builder
             .add_asset_tag("assetOwner", asset_tag)
-            .expect("invalid RGB20 schema (assetOwner mismatch)");
+            .expect("invalid RGB21 schema (assetOwner mismatch)");
         Ok(me)
     }
+
     fn testnet_int(
         issuer: SchemaIssuer<Rgb21>,
         by: &str,
@@ -170,10 +171,10 @@ impl Rgb21PrimaryIssue {
     pub fn issue_contract(
         self,
         token_index: u32,
-        image_url: &str,
+        media_bytes: &[u8],
     ) -> Result<ValidContract, IssuerError> {
         Ok(self
-            .pre_issue_contract(token_index, image_url)?
+            .pre_issue_contract(token_index, media_bytes)?
             .issue_contract()?)
     }
 
@@ -181,13 +182,12 @@ impl Rgb21PrimaryIssue {
     fn pre_issue_contract(
         self,
         token_index: u32,
-        image_url: &str,
+        media_bytes: &[u8],
     ) -> Result<ContractBuilder, IssuerError> {
         let index = TokenIndex::from_inner(token_index);
-        let image_bytes = image_url.as_bytes().to_vec();
         let preview = EmbeddedMedia {
             ty: MediaType::with("image/*"),
-            data: SmallBlob::try_from_iter(image_bytes).expect("invalid data"),
+            data: SmallBlob::try_from_iter(media_bytes.to_vec()).expect("invalid data"),
         };
         let token_data = TokenData {
             index,
@@ -197,7 +197,8 @@ impl Rgb21PrimaryIssue {
 
         Ok(self
             .builder
-            .add_global_state("token", token_data)?
+            .add_global_state("tokens", token_data)?
             .add_global_state("terms", self.terms)?)
     }
 }
+
