@@ -251,6 +251,16 @@ impl Rgb20 {
             .sum()
     }
 
+    // max_supply for the inflation asset
+    pub fn max_supply(&self) -> Amount {
+        self.0
+            .global("maxSupply")
+            .expect("RGB20 interface requires global `maxSupply`")
+            .iter()
+            .map(Amount::from_strict_val_unchecked)
+            .sum()
+    }
+
     pub fn total_burned_supply(&self) -> Amount {
         self.0
             .global("burnedSupply")
