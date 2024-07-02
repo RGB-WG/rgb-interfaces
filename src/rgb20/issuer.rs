@@ -270,7 +270,7 @@ impl PrimaryIssue {
                 self.builder = self
                     .builder
                     .add_asset_tag("inflationAllowance", tag)
-                    .expect("invalid RGB20 schema (max supply mismatch)");
+                    .expect("invalid RGB20 inflation allowance tag (inflation allowance mismatch)");
                 self.inflation = Some(supply)
             }
         }
