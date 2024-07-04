@@ -162,6 +162,11 @@ impl PrimaryIssue {
         Ok(self)
     }
 
+    pub fn add_inflation_metadata(mut self, amount: Amount) -> Result<Self, IssuerError> {
+        self.builder = self.builder.add_metadata("allowedInflation", amount)?;
+        Ok(self)
+    }
+
     pub fn allocate<O: TxOutpoint>(
         mut self,
         method: Method,
