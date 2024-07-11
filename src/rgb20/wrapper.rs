@@ -256,11 +256,11 @@ impl Rgb20 {
     pub fn max_supply(&self) -> Amount {
         self.0
             .global("maxSupply")
-            .unwrap_or(
+            .unwrap_or_else(|_| {
                 self.0
                     .global("issuedSupply")
-                    .expect("RGB20 interface requires global `issuedSupply`"),
-            )
+                    .expect("RGB20 interface requires global `issuedSupply`")
+            })
             .iter()
             .map(Amount::from_strict_val_unchecked)
             .sum()
