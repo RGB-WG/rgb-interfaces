@@ -251,6 +251,21 @@ impl Rgb20 {
             .sum()
     }
 
+    // Max supply for the inflation asset, if there is no `max supply`, then it will
+    // default to the non-inflatable asset `issued supply`
+    pub fn max_supply(&self) -> Amount {
+        self.0
+            .global("maxSupply")
+            .unwrap_or_else(|_| {
+                self.0
+                    .global("issuedSupply")
+                    .expect("RGB20 interface requires global `issuedSupply`")
+            })
+            .iter()
+            .map(Amount::from_strict_val_unchecked)
+            .sum()
+    }
+
     pub fn total_burned_supply(&self) -> Amount {
         self.0
             .global("burnedSupply")
