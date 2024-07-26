@@ -1,0 +1,176 @@
+@version(1)
+@id(rgb:ifc:zLZ5H1If-IedNbQ3-kzhoYO1-12djZWD-CHeHlEH-4CjQYM4#quasi-noise-martin)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB21Base: NamedAsset, NonFungibleToken
+	global attachmentTypes(*): RGB21.AttachmentType
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+	global tokens(*): RGB21.TokenData
+
+	owned assetOwner(*): RGBContract.Allocation
+
+	error fractionOverflow
+		"the amount of token fractions in outputs exceeds 1"
+	error invalidAttachmentType
+		"attachment has a type which is not allowed for the token"
+	error nonEqualValues
+		"the sum of spent token fractions doesn't equal to the sum of token fractions in outputs"
+	error nonFractionalToken
+		"attempt to transfer a fraction of non-fractionable token"
+	error unknownToken
+		"allocation of unknown token ID"
+
+	genesis: abstract
+		errors: fractionOverflow, invalidAttachmentType, unknownToken
+		globals: attachmentTypes(*), spec, terms, tokens(*)
+		assigns: assetOwner(*)
+
+	transition transfer: required, default, final
+		errors: fractionOverflow, nonEqualValues, nonFractionalToken, unknownToken
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:3AEpY1Iv-Ybh$o5x-yJRdQjA-dmwy3@b-Rx5XZUI-8yldqFg#brazil-graph-license)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB21Renamable: NamedAsset, NonFungibleToken, RGB21Base, RenameableAsset
+	global attachmentTypes(*): RGB21.AttachmentType
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+	global tokens(*): RGB21.TokenData
+
+	owned assetOwner(*): RGBContract.Allocation
+	public updateRight: Rights
+
+	error fractionOverflow
+		"the amount of token fractions in outputs exceeds 1"
+	error invalidAttachmentType
+		"attachment has a type which is not allowed for the token"
+	error nonEqualValues
+		"the sum of spent token fractions doesn't equal to the sum of token fractions in outputs"
+	error nonFractionalToken
+		"attempt to transfer a fraction of non-fractionable token"
+	error unknownToken
+		"allocation of unknown token ID"
+
+	genesis: abstract
+		errors: fractionOverflow, invalidAttachmentType, unknownToken
+		globals: attachmentTypes(*), spec, terms, tokens(*)
+		assigns: assetOwner(*), updateRight
+
+	transition rename: required, final
+		globals: spec
+		assigns: updateRight(?)
+		default: updateRight
+		inputs: updateRight
+
+	transition transfer: required, default, final
+		errors: fractionOverflow, nonEqualValues, nonFractionalToken, unknownToken
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:zaiUh27F-2cYWfcd-FfL5lBc-uUenO66-IYZE0D9-GeVIvGU#forest-heroic-energy)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB21Unique: NamedAsset, NonFungibleToken, RGB21Base, UniqueNft
+	global attachmentTypes: RGB21.AttachmentType
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+	global tokens: RGB21.TokenData
+
+	owned assetOwner(+): RGBContract.Allocation
+
+	error fractionOverflow
+		"the amount of token fractions in outputs exceeds 1"
+	error invalidAttachmentType
+		"attachment has a type which is not allowed for the token"
+	error nonEqualValues
+		"the sum of spent token fractions doesn't equal to the sum of token fractions in outputs"
+	error nonFractionalToken
+		"attempt to transfer a fraction of non-fractionable token"
+	error unknownToken
+		"allocation of unknown token ID"
+
+	genesis: abstract
+		errors: fractionOverflow, invalidAttachmentType, unknownToken
+		globals: attachmentTypes, spec, terms, tokens
+		assigns: assetOwner(+)
+
+	transition transfer: required, default, final
+		errors: fractionOverflow, nonEqualValues, nonFractionalToken, unknownToken
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
+@version(1)
+@id(rgb:ifc:MTbC0xIy-t4kjnRO-6lrefMT-QDDxtSN-SNOHen$-WEeyyfc#cubic-motif-corona)
+@developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
+@timestamp(1711405444)
+interface RGB21Issuable: NamedAsset, NonFungibleToken, RGB21Base, RenameableAsset, gBnlwlsh-tuErFnK-EX4V40v-mx1P0OP-orty2gq-10yH4fc#hair-unicorn-initial
+, EngravableNft, $@VBEHez-6$MHRU0-kPIulCv-oTDRpmd-OnRANMo-3$Snnng#current-metal-guitar
+, IssuableNft
+	global attachmentTypes(*): RGB21.AttachmentType
+	global engravings(*): RGB21.EngravingData
+	global spec: RGBContract.AssetSpec
+	global terms: RGBContract.ContractTerms
+	global tokens(*): RGB21.TokenData
+
+	owned assetOwner(*): RGBContract.Allocation
+	public inflationAllowance(+): RGB21.ItemsCount
+	public updateRight: Rights
+
+	error fractionOverflow
+		"the amount of token fractions in outputs exceeds 1"
+	error invalidAttachmentType
+		"attachment has a type which is not allowed for the token"
+	error issueExceedsAllowance
+		"you try to issue more assets than allowed by the contract terms"
+	error nonEngravableToken
+		"attempt to engrave on a token which prohibit engraving"
+	error nonEqualValues
+		"the sum of spent token fractions doesn't equal to the sum of token fractions in outputs"
+	error nonFractionalToken
+		"attempt to transfer a fraction of non-fractionable token"
+	error unknownToken
+		"allocation of unknown token ID"
+
+	genesis: abstract
+		errors: fractionOverflow, invalidAttachmentType, unknownToken
+		globals: attachmentTypes(*), spec, terms, tokens(*)
+		assigns: assetOwner(*), inflationAllowance(+), updateRight
+
+	transition engrave: required, final
+		errors: fractionOverflow, nonEngravableToken, nonEqualValues, nonFractionalToken, unknownToken
+		globals: engravings
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+	transition issue: required, abstract
+		errors: fractionOverflow, invalidAttachmentType, issueExceedsAllowance, unknownToken
+		globals: attachmentTypes(*), tokens(*)
+		assigns: assetOwner(*), inflationAllowance(*)
+		default: assetOwner
+		inputs: inflationAllowance(+)
+
+	transition rename: required, final
+		globals: spec
+		assigns: updateRight(?)
+		default: updateRight
+		inputs: updateRight
+
+	transition transfer: required, default, final
+		errors: fractionOverflow, nonEqualValues, nonFractionalToken, unknownToken
+		assigns: assetOwner(+)
+		default: assetOwner
+		inputs: assetOwner(+)
+
+
