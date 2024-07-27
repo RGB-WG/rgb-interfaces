@@ -25,7 +25,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use std::{fs, io};
 
-use ifaces::{rgb20, rgb21, rgb25, Rgb20, Rgb21, Rgb25, LNPBP_IDENTITY};
+use ifaces::{rgb20, rgb21, rgb25, Dumb, Rgb20, Rgb21, Rgb25, LNPBP_IDENTITY};
 use rgbstd::containers::{
     FileContent, Kit, Supplement, SUPPL_ANNOT_IFACE_CLASS, SUPPL_ANNOT_IFACE_FEATURES,
 };
@@ -37,7 +37,7 @@ use strict_types::{StlFormat, SystemBuilder};
 
 fn main() -> io::Result<()> {
     let ifsys = SystemBuilder::new()
-        .import(Rgb21::stl())
+        .import(Rgb21::<Dumb>::stl())
         .unwrap()
         .import(rgb_contract_stl())
         .unwrap()
@@ -76,7 +76,7 @@ fn main() -> io::Result<()> {
 
     let mut kit = Kit::default();
     for features in rgb20::Features::ENUMERATE {
-        let iface = Rgb20::iface(*features);
+        let iface = Rgb20::<Dumb>::iface(*features);
         let types = typesys.extract(iface.types()).unwrap();
         let mut suppl = Supplement::new(iface.iface_id(), LNPBP_IDENTITY);
         suppl
@@ -94,7 +94,7 @@ fn main() -> io::Result<()> {
 
     let mut kit = Kit::default();
     for features in rgb21::Features::ENUMERATE {
-        let iface = Rgb21::iface(*features);
+        let iface = Rgb21::<Dumb>::iface(*features);
         let types = typesys.extract(iface.types()).unwrap();
         let mut suppl = Supplement::new(iface.iface_id(), LNPBP_IDENTITY);
         suppl
@@ -112,7 +112,7 @@ fn main() -> io::Result<()> {
 
     let mut kit = Kit::default();
     for features in rgb25::Features::ENUMERATE {
-        let iface = Rgb25::iface(*features);
+        let iface = Rgb25::<Dumb>::iface(*features);
         let types = typesys.extract(iface.types()).unwrap();
         let mut suppl = Supplement::new(iface.iface_id(), LNPBP_IDENTITY);
         suppl
@@ -129,7 +129,7 @@ fn main() -> io::Result<()> {
     kit.save_armored("interfaces/RGB25.rgba")?;
 
     let dir = PathBuf::from_str("interfaces").unwrap();
-    let stl = Rgb21::stl();
+    let stl = Rgb21::<Dumb>::stl();
     stl.serialize(StlFormat::Binary, Some(&dir), "0.11.0", None)
         .expect("unable to write to the file");
     stl.serialize(StlFormat::Armored, Some(&dir), "0.11.0", None)
@@ -165,7 +165,12 @@ fn main() -> io::Result<()> {
     }
 
     let mut ifaces = vec![rgb20::iface::rgb20_base(), rgb20::iface::rgb20_renamable()];
-    ifaces.extend(rgb20::Features::ENUMERATE.iter().copied().map(Rgb20::iface));
+    ifaces.extend(
+        rgb20::Features::ENUMERATE
+            .iter()
+            .copied()
+            .map(Rgb20::<Dumb>::iface),
+    );
 
     map.extend(
         ifaces

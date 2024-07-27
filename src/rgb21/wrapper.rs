@@ -22,6 +22,7 @@
 use rgbstd::interface::{
     ContractIface, DataAllocation, Iface, IfaceClass, IfaceId, OutpointFilter,
 };
+use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{bp_tx_stl, rgb_contract_stl, AssetSpec, ContractTerms};
 use rgbstd::Allocation;
 use strict_types::stl::std_stl;
@@ -61,21 +62,19 @@ fn _rgb21_stl() -> Result<TypeLib, CompileError> {
 /// Generates strict type library providing data types for RGB21 interface.
 fn rgb21_stl() -> TypeLib { _rgb21_stl().expect("invalid strict type RGB21 library") }
 
-#[derive(Wrapper, WrapperMut, Clone, Eq, PartialEq, Debug)]
-#[wrapper(Deref)]
-#[wrapper_mut(DerefMut)]
-pub struct Rgb21(ContractIface);
+#[derive(Clone, Eq, PartialEq, Debug)]
+pub struct Rgb21<S: ContractStateRead>(ContractIface<S>);
 
-impl From<ContractIface> for Rgb21 {
-    fn from(iface: ContractIface) -> Self {
-        if !Rgb21::IFACE_IDS.contains(&iface.iface.iface_id) {
+impl<S: ContractStateRead> From<ContractIface<S>> for Rgb21<S> {
+    fn from(iface: ContractIface<S>) -> Self {
+        if !Rgb21::<S>::IFACE_IDS.contains(&iface.iface.iface_id) {
             panic!("the provided interface is not RGB21 interface");
         }
         Self(iface)
     }
 }
 
-impl IfaceClass for Rgb21 {
+impl<S: ContractStateRead> IfaceClass for Rgb21<S> {
     const IFACE_NAME: &'static str = LIB_NAME_RGB21;
     const IFACE_IDS: &'static [IfaceId] = &[RGB21_UNIQUE_IFACE_ID, RGB21_IFACE_ID];
 
@@ -105,7 +104,7 @@ impl IfaceClass for Rgb21 {
 
     fn iface_id(features: Self::Features) -> IfaceId {
         // TODO: Optimize with constants
-        Rgb21::iface(features).iface_id()
+        Rgb21::<S>::iface(features).iface_id()
     }
 
     fn stl() -> TypeLib { rgb21_stl() }
@@ -113,12 +112,14 @@ impl IfaceClass for Rgb21 {
     fn info(&self) -> Self::Info { todo!() }
 }
 
-impl Rgb21 {
+impl<S: ContractStateRead> Rgb21<S> {
     pub fn spec(&self) -> AssetSpec {
         let strict_val = &self
             .0
             .global("spec")
-            .expect("RGB21 interface requires global `spec`")[0];
+            .expect("RGB21 interface requires global `spec`")
+            .next()
+            .expect("RGB21 interface requires global state `spec` to have at least one item");
         AssetSpec::from_strict_val_unchecked(strict_val)
     }
 
@@ -126,7 +127,9 @@ impl Rgb21 {
         let strict_val = &self
             .0
             .global("terms")
-            .expect("RGB21 interface requires global `terms`")[0];
+            .expect("RGB21 interface requires global `terms`")
+            .next()
+            .expect("RGB21 interface requires global state `terms` to have at least one item");
         ContractTerms::from_strict_val_unchecked(strict_val)
     }
 
@@ -134,16 +137,17 @@ impl Rgb21 {
         let strict_val = &self
             .0
             .global("tokens")
-            .expect("RGB21 interface requires global `tokens`")[0];
+            .expect("RGB21 interface requires global `tokens`")
+            .next()
+            .expect("RGB21 interface requires global state `tokens` to have at least one item");
         TokenData::from_strict_val_unchecked(strict_val)
     }
 
-    pub fn engarving_data(&self) -> EngravingData {
-        let strict_val = &self
-            .0
+    pub fn engraving_data(&self) -> impl Iterator<Item = EngravingData> + '_ {
+        self.0
             .global("engravings")
-            .expect("RGB21 interface requires global state `engravings`")[0];
-        EngravingData::from_strict_val_unchecked(strict_val)
+            .expect("RGB21 interface requires global state `engravings`")
+            .map(|strict_val| EngravingData::from_strict_val_unchecked(&strict_val))
     }
 
     pub fn allocations<'c>(

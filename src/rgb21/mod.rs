@@ -86,26 +86,27 @@ mod test {
     use rgbstd::interface::IfaceClass;
 
     use super::*;
+    use crate::Dumb;
 
     #[test]
     fn iface_id() {
-        let iface_id = Rgb21::iface(Features::NONE).iface_id();
+        let iface_id = Rgb21::<Dumb>::iface(Features::NONE).iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb21::IFACE_IDS[0], iface_id);
-        let iface_id = Rgb21::iface(Features::ALL).iface_id();
+        assert_eq!(Rgb21::<Dumb>::IFACE_IDS[0], iface_id);
+        let iface_id = Rgb21::<Dumb>::iface(Features::ALL).iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb21::IFACE_IDS[1], iface_id);
+        assert_eq!(Rgb21::<Dumb>::IFACE_IDS[1], iface_id);
     }
 
     #[test]
     fn iface_check() {
-        if let Err(err) = Rgb21::iface(Features::NONE).check() {
+        if let Err(err) = Rgb21::<Dumb>::iface(Features::NONE).check() {
             for e in err {
                 eprintln!("{e}");
             }
             panic!("invalid RGB21Unique interface definition");
         }
-        if let Err(err) = Rgb21::iface(Features::ALL).check() {
+        if let Err(err) = Rgb21::<Dumb>::iface(Features::ALL).check() {
             for e in err {
                 eprintln!("{e}");
             }

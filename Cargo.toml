@@ -32,3 +32,10 @@ default = []
 all = ["serde", "fs"]
 serde = ["serde_crate", "rgb-std/serde", "chrono/serde"]
 fs = ["rgb-std/fs"]
+
+[patch.crates-io]
+bp-consensus = { git = "https://github.com/BP-WG/bp-core", branch = "master" }
+bp-invoice = { git = "https://github.com/BP-WG/bp-std", branch = "master" }
+rgb-core = { git = "https://github.com/RGB-WG/rgb-core", branch = "mining" }
+rgb-invoice = { git = "https://github.com/RGB-WG/rgb-std", branch = "mining" }
+rgb-std = { git = "https://github.com/RGB-WG/rgb-std", branch = "mining" }

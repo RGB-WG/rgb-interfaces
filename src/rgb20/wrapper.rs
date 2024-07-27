@@ -23,9 +23,10 @@ use std::collections::HashMap;
 
 use rgbstd::interface::{
     AmountChange, ContractIface, FungibleAllocation, Iface, IfaceClass, IfaceId, IfaceOp,
-    OutpointFilter, RightsAllocation, WitnessFilter,
+    OutpointFilter, RightsAllocation,
 };
 use rgbstd::invoice::{Amount, Precision};
+use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms, Details};
 use rgbstd::{AssetTag, XWitnessId};
 use strict_encoding::InvalidRString;
@@ -44,12 +45,10 @@ pub const RGB20_IFACE_ID: IfaceId = IfaceId::from_array([
     0x43, 0xf6, 0x26, 0xa6, 0xc7, 0xa7, 0x0b, 0x08, 0x48, 0x3e, 0x1f, 0xc5, 0x41, 0x1a, 0x38, 0xa4,
 ]);
 
-#[derive(Wrapper, WrapperMut, Clone, Eq, PartialEq, Debug, From)]
-#[wrapper(Deref)]
-#[wrapper_mut(DerefMut)]
-pub struct Rgb20(ContractIface);
+#[derive(Clone, Eq, PartialEq, Debug, From)]
+pub struct Rgb20<S: ContractStateRead>(ContractIface<S>);
 
-impl IfaceClass for Rgb20 {
+impl<S: ContractStateRead> IfaceClass for Rgb20<S> {
     const IFACE_NAME: &'static str = "RGB20";
     const IFACE_IDS: &'static [IfaceId] = &[RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID];
 
@@ -85,7 +84,7 @@ impl IfaceClass for Rgb20 {
 
     fn iface_id(features: Self::Features) -> IfaceId {
         // TODO: Optimize with constants
-        Rgb20::iface(features).iface_id()
+        Rgb20::<S>::iface(features).iface_id()
     }
 
     fn stl() -> TypeLib { rgb_contract_stl() }
@@ -109,7 +108,7 @@ impl IfaceClass for Rgb20 {
     }
 }
 
-impl Rgb20 {
+impl<S: ContractStateRead> Rgb20<S> {
     pub fn testnet<C: IssuerWrapper<IssuingIface = Self>>(
         issuer: &str,
         ticker: &str,
@@ -117,7 +116,7 @@ impl Rgb20 {
         details: Option<&str>,
         precision: Precision,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet::<C>(issuer, ticker, name, details, precision)
+        PrimaryIssue::testnet::<C, S>(issuer, ticker, name, details, precision)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Self>>(
@@ -128,7 +127,7 @@ impl Rgb20 {
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet_det::<C>(issuer, ticker, name, details, precision, asset_tag)
+        PrimaryIssue::testnet_det::<C, S>(issuer, ticker, name, details, precision, asset_tag)
     }
 
     pub fn features(&self) -> Features {
@@ -179,7 +178,9 @@ impl Rgb20 {
         let strict_val = &self
             .0
             .global("spec")
-            .expect("RGB20 interface requires global state `spec`")[0];
+            .expect("RGB20 interface requires global state `spec`")
+            .next()
+            .expect("RGB20 interface requires global state `spec` to have at least one item");
         AssetSpec::from_strict_val_unchecked(strict_val)
     }
 
@@ -238,7 +239,9 @@ impl Rgb20 {
         let strict_val = &self
             .0
             .global("terms")
-            .expect("RGB20 interface requires global `terms`")[0];
+            .expect("RGB20 interface requires global `terms`")
+            .next()
+            .expect("RGB20 interface requires global state `terms` to have at least one item");
         ContractTerms::from_strict_val_unchecked(strict_val)
     }
 
@@ -246,8 +249,7 @@ impl Rgb20 {
         self.0
             .global("issuedSupply")
             .expect("RGB20 interface requires global `issuedSupply`")
-            .iter()
-            .map(Amount::from_strict_val_unchecked)
+            .map(|amount| Amount::from_strict_val_unchecked(&amount))
             .sum()
     }
 
@@ -261,26 +263,25 @@ impl Rgb20 {
                     .global("issuedSupply")
                     .expect("RGB20 interface requires global `issuedSupply`")
             })
-            .iter()
-            .map(Amount::from_strict_val_unchecked)
+            .map(|amount| Amount::from_strict_val_unchecked(&amount))
             .sum()
     }
 
     pub fn total_burned_supply(&self) -> Amount {
         self.0
             .global("burnedSupply")
-            .unwrap_or_default()
-            .iter()
-            .map(Amount::from_strict_val_unchecked)
+            .into_iter()
+            .flatten()
+            .map(|amount| Amount::from_strict_val_unchecked(&amount))
             .sum()
     }
 
     pub fn total_replaced_supply(&self) -> Amount {
         self.0
             .global("replacedSupply")
-            .unwrap_or_default()
-            .iter()
-            .map(Amount::from_strict_val_unchecked)
+            .into_iter()
+            .flatten()
+            .map(|amount| Amount::from_strict_val_unchecked(&amount))
             .sum()
     }
 
@@ -288,11 +289,10 @@ impl Rgb20 {
 
     pub fn transfer_history(
         &self,
-        witness_filter: impl WitnessFilter + Copy,
         outpoint_filter: impl OutpointFilter + Copy,
     ) -> HashMap<XWitnessId, IfaceOp<AmountChange>> {
         self.0
-            .fungible_ops("assetOwner", witness_filter, outpoint_filter)
+            .fungible_ops("assetOwner", outpoint_filter)
             .expect("state name is not correct")
     }
 }

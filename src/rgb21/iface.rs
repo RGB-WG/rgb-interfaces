@@ -27,10 +27,10 @@ use rgbstd::stl::StandardTypes;
 use rgbstd::{Identity, Occurrences};
 
 use crate::rgb21::wrapper::Rgb21;
-use crate::LNPBP_IDENTITY;
+use crate::{Dumb, LNPBP_IDENTITY};
 
 pub fn nft() -> Iface {
-    let types = StandardTypes::with(Rgb21::stl());
+    let types = StandardTypes::with(Rgb21::<Dumb>::stl());
     Iface {
         version: VerNo::V1,
         name: tn!("NonFungibleToken"),
@@ -107,7 +107,7 @@ pub fn nft() -> Iface {
 }
 
 pub fn unique() -> Iface {
-    let types = StandardTypes::with(Rgb21::stl());
+    let types = StandardTypes::with(Rgb21::<Dumb>::stl());
     Iface {
         version: VerNo::V1,
         name: tn!("UniqueNft"),
@@ -144,7 +144,7 @@ pub fn unique() -> Iface {
 }
 
 pub fn limited() -> Iface {
-    let types = StandardTypes::with(Rgb21::stl());
+    let types = StandardTypes::with(Rgb21::<Dumb>::stl());
     Iface {
         version: VerNo::V1,
         name: tn!("LimitedNft"),
@@ -181,7 +181,7 @@ pub fn limited() -> Iface {
 }
 
 pub fn engravable() -> Iface {
-    let types = StandardTypes::with(Rgb21::stl());
+    let types = StandardTypes::with(Rgb21::<Dumb>::stl());
     Iface {
         version: VerNo::V1,
         name: tn!("EngravableNft"),
@@ -237,7 +237,7 @@ pub fn engravable() -> Iface {
 }
 
 pub fn issuable() -> Iface {
-    let types = StandardTypes::with(Rgb21::stl());
+    let types = StandardTypes::with(Rgb21::<Dumb>::stl());
     Iface {
         version: VerNo::V1,
         name: tn!("IssuableNft"),
