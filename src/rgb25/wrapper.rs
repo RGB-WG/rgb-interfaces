@@ -19,7 +19,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use rgbstd::interface::{ContractIface, Iface, IfaceClass, IfaceId};
+use rgbstd::interface::{
+    ContractIface, FungibleAllocation, Iface, IfaceClass, IfaceId, OutpointFilter,
+};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{rgb_contract_stl, ContractTerms, Details, Name};
@@ -128,6 +130,15 @@ impl<S: ContractStateRead> Rgb25<S> {
             .next()
             .expect("RGB25 interface requires global state `precision` to have at least one item");
         Precision::from_strict_val_unchecked(strict_val)
+    }
+
+    pub fn allocations<'c>(
+        &'c self,
+        filter: impl OutpointFilter + 'c,
+    ) -> impl Iterator<Item = FungibleAllocation> + 'c {
+        self.0
+            .fungible("assetOwner", filter)
+            .expect("RGB25 interface requires `assetOwner` state")
     }
 
     pub fn total_issued_supply(&self) -> Amount {
