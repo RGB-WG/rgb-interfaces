@@ -22,18 +22,16 @@
 use std::collections::HashMap;
 
 use rgbstd::interface::{
-    AmountChange, ContractIface, FungibleAllocation, Iface, IfaceClass, IfaceId, IfaceOp,
+    AmountChange, ContractIface, FungibleAllocation, IfaceClass, IfaceId, IfaceOp, IfaceWrapper,
     OutpointFilter, RightsAllocation,
 };
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::ContractStateRead;
-use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms, Details};
+use rgbstd::stl::{AssetSpec, ContractTerms, Details};
 use rgbstd::{AssetTag, XWitnessId};
 use strict_encoding::InvalidRString;
-use strict_types::TypeLib;
 
-use super::iface::*;
-use super::{Features, Inflation, PrimaryIssue, Rgb20Info};
+use super::{Inflation, PrimaryIssue, Rgb20, Rgb20Info};
 use crate::IssuerWrapper;
 
 pub const RGB20_FIXED_IFACE_ID: IfaceId = IfaceId::from_array([
@@ -46,48 +44,17 @@ pub const RGB20_IFACE_ID: IfaceId = IfaceId::from_array([
 ]);
 
 #[derive(Clone, Eq, PartialEq, Debug, From)]
-pub struct Rgb20<S: ContractStateRead>(ContractIface<S>);
+pub struct Rgb20Wrapper<S: ContractStateRead>(ContractIface<S>);
 
-impl<S: ContractStateRead> IfaceClass for Rgb20<S> {
-    const IFACE_NAME: &'static str = "RGB20";
-    const IFACE_IDS: &'static [IfaceId] = &[RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID];
-
-    type Features = Features;
+impl<S: ContractStateRead> IfaceWrapper<S> for Rgb20Wrapper<S> {
     type Info = Rgb20Info;
 
-    fn iface(features: Features) -> Iface {
-        let (mut name, mut iface) = if features.renaming {
-            (tn!("RGB20Renamable"), rgb20_renamable())
-        } else {
-            (tn!("RGB20"), rgb20_base())
-        };
-        if features.inflation.is_fixed() {
-            iface = iface.expect_extended(fixed(), tn!(format!("{name}Fixed")));
-        } else if features.inflation.is_inflatable() {
-            iface = iface.expect_extended(inflatable(), tn!(format!("{name}Inflatable")));
-            name = tn!(format!("{name}Inflatable"));
+    fn with(iface: ContractIface<S>) -> Self {
+        if !Rgb20::IFACE_IDS.contains(&iface.iface.iface_id) {
+            panic!("the provided interface is not RGB21 interface");
         }
-        if features.inflation.is_burnable() {
-            iface = iface.expect_extended(burnable(), tn!(format!("{name}Burnable")));
-            if features.inflation.is_replaceable() {
-                name = tn!(format!("{}Replaceable", name.to_string().replace("Inflatable", "")));
-                iface = iface.expect_extended(replaceable(), name);
-            }
-        }
-        /* TODO: Complete reservable interface
-        if features.reserves {
-            iface = iface.expect_extended(reservable(), "RGB20Reservable");
-        }
-         */
-        iface
+        Self(iface)
     }
-
-    fn iface_id(features: Self::Features) -> IfaceId {
-        // TODO: Optimize with constants
-        Rgb20::<S>::iface(features).iface_id()
-    }
-
-    fn stl() -> TypeLib { rgb_contract_stl() }
 
     fn info(&self) -> Self::Info {
         let spec = self.spec();
@@ -108,18 +75,18 @@ impl<S: ContractStateRead> IfaceClass for Rgb20<S> {
     }
 }
 
-impl<S: ContractStateRead> Rgb20<S> {
-    pub fn testnet<C: IssuerWrapper<IssuingIface = Self>>(
+impl<S: ContractStateRead> Rgb20Wrapper<S> {
+    pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb20>>(
         issuer: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet::<C, S>(issuer, ticker, name, details, precision)
+        PrimaryIssue::testnet::<C>(issuer, ticker, name, details, precision)
     }
 
-    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Self>>(
+    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb20>>(
         issuer: &str,
         ticker: &str,
         name: &str,
@@ -127,10 +94,10 @@ impl<S: ContractStateRead> Rgb20<S> {
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet_det::<C, S>(issuer, ticker, name, details, precision, asset_tag)
+        PrimaryIssue::testnet_det::<C>(issuer, ticker, name, details, precision, asset_tag)
     }
 
-    pub fn features(&self) -> Features {
+    pub fn features(&self) -> Rgb20 {
         let renaming = self
             .0
             .iface
@@ -168,7 +135,7 @@ impl<S: ContractStateRead> Rgb20<S> {
             (false, true, true) => panic!("replaceable but non-inflatible asset"),
         };
 
-        Features {
+        Rgb20 {
             renaming,
             inflation,
         }

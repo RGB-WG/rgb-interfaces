@@ -25,10 +25,16 @@ mod issuer;
 mod info;
 
 use amplify::confinement::Confined;
-pub use info::{Rgb20Info, SupplyEvent, SupplyInfo};
-pub use issuer::{IssuerError, PrimaryIssue};
 use rgbstd::info::FeatureList;
-pub use wrapper::{Rgb20, RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID};
+use rgbstd::interface::{Iface, IfaceClass, IfaceId};
+use rgbstd::persistence::ContractStateRead;
+use rgbstd::stl::rgb_contract_stl;
+use strict_types::TypeLib;
+
+use self::iface::{burnable, fixed, inflatable, replaceable, rgb20_base, rgb20_renamable};
+pub use self::info::{Rgb20Info, SupplyEvent, SupplyInfo};
+pub use self::issuer::{IssuerError, PrimaryIssue};
+pub use self::wrapper::{Rgb20Wrapper, RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID};
 
 pub const LIB_NAME_RGB20: &str = "RGB20";
 
@@ -66,59 +72,59 @@ impl Inflation {
     derive(Serialize, Deserialize),
     serde(crate = "serde_crate", rename_all = "camelCase")
 )]
-pub struct Features {
+pub struct Rgb20 {
     pub renaming: bool,
     // pub reserves: bool,
     pub inflation: Inflation,
 }
 
-impl Features {
-    pub const FIXED: Self = Features {
+impl Rgb20 {
+    pub const FIXED: Self = Rgb20 {
         renaming: false,
         // reserves: false,
         inflation: Inflation::Fixed,
     };
-    pub const RENAMABLE: Self = Features {
+    pub const RENAMABLE: Self = Rgb20 {
         renaming: true,
         // reserves: false,
         inflation: Inflation::Fixed,
     };
-    pub const INFLATABLE: Self = Features {
+    pub const INFLATABLE: Self = Rgb20 {
         renaming: false,
         // reserves: false,
         inflation: Inflation::Inflatable,
     };
-    pub const BURNABLE: Self = Features {
+    pub const BURNABLE: Self = Rgb20 {
         renaming: false,
         // reserves: false,
         inflation: Inflation::Burnable,
     };
-    pub const INFLATABLE_BURNABLE: Self = Features {
+    pub const INFLATABLE_BURNABLE: Self = Rgb20 {
         renaming: false,
         // reserves: false,
         inflation: Inflation::InflatableBurnable,
     };
-    pub const REPLACEABLE: Self = Features {
+    pub const REPLACEABLE: Self = Rgb20 {
         renaming: false,
         // reserves: false,
         inflation: Inflation::Replaceable,
     };
-    pub const INFLATABLE_RENAMABLE: Self = Features {
+    pub const INFLATABLE_RENAMABLE: Self = Rgb20 {
         renaming: true,
         // reserves: false,
         inflation: Inflation::Inflatable,
     };
-    pub const BURNABLE_RENAMABLE: Self = Features {
+    pub const BURNABLE_RENAMABLE: Self = Rgb20 {
         renaming: true,
         // reserves: false,
         inflation: Inflation::Burnable,
     };
-    pub const INFLATABLE_BURNABLE_RENAMABLE: Self = Features {
+    pub const INFLATABLE_BURNABLE_RENAMABLE: Self = Rgb20 {
         renaming: true,
         // reserves: false,
         inflation: Inflation::InflatableBurnable,
     };
-    pub const ALL: Self = Features {
+    pub const ALL: Self = Rgb20 {
         renaming: true,
         // reserves: true,
         inflation: Inflation::Replaceable,
@@ -154,12 +160,55 @@ impl Features {
     }
 }
 
+impl IfaceClass for Rgb20 {
+    const IFACE_NAME: &'static str = LIB_NAME_RGB20;
+    const IFACE_IDS: &'static [IfaceId] = &[
+        RGB20_FIXED_IFACE_ID,
+        RGB20_IFACE_ID, // TODO: Add other iface ids
+    ];
+    type Wrapper<S: ContractStateRead> = Rgb20Wrapper<S>;
+
+    fn iface(&self) -> Iface {
+        let (mut name, mut iface) = if self.renaming {
+            (tn!("RGB20Renamable"), rgb20_renamable())
+        } else {
+            (tn!("RGB20"), rgb20_base())
+        };
+        if self.inflation.is_fixed() {
+            iface = iface.expect_extended(fixed(), tn!(format!("{name}Fixed")));
+        } else if self.inflation.is_inflatable() {
+            iface = iface.expect_extended(inflatable(), tn!(format!("{name}Inflatable")));
+            name = tn!(format!("{name}Inflatable"));
+        }
+        if self.inflation.is_burnable() {
+            iface = iface.expect_extended(burnable(), tn!(format!("{name}Burnable")));
+            if self.inflation.is_replaceable() {
+                name = tn!(format!("{}Replaceable", name.to_string().replace("Inflatable", "")));
+                iface = iface.expect_extended(replaceable(), name);
+            }
+        }
+        /* TODO: Complete reservable interface
+        if features.reserves {
+            iface = iface.expect_extended(reservable(), "RGB20Reservable");
+        }
+         */
+        iface
+    }
+
+    fn iface_id(&self) -> IfaceId {
+        // TODO: Optimize with constants
+        self.iface().iface_id()
+    }
+
+    fn stl(&self) -> TypeLib { rgb_contract_stl() }
+}
+
 mod _display {
     use std::fmt::{self, Display, Formatter};
 
     use super::*;
 
-    impl Display for Features {
+    impl Display for Rgb20 {
         fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
             if self.renaming {
                 f.write_str("renamable, ")?;
@@ -175,27 +224,26 @@ mod test {
     use rgbstd::interface::IfaceClass;
 
     use super::*;
-    use crate::Dumb;
 
     #[test]
     fn iface_id_all() {
-        let iface_id = Rgb20::<Dumb>::iface(Features::FIXED).iface_id();
+        let iface_id = Rgb20::FIXED.iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb20::<Dumb>::IFACE_IDS[0], iface_id);
-        let iface_id = Rgb20::<Dumb>::iface(Features::ALL).iface_id();
+        assert_eq!(Rgb20::IFACE_IDS[0], iface_id);
+        let iface_id = Rgb20::ALL.iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb20::<Dumb>::IFACE_IDS[1], iface_id);
+        assert_eq!(Rgb20::IFACE_IDS[1], iface_id);
     }
 
     #[test]
     fn iface_check() {
-        if let Err(err) = Rgb20::<Dumb>::iface(Features::FIXED).check() {
+        if let Err(err) = Rgb20::FIXED.iface().check() {
             for e in err {
                 eprintln!("{e}");
             }
             panic!("invalid RGB20Fixed interface definition");
         }
-        if let Err(err) = Rgb20::<Dumb>::iface(Features::ALL).check() {
+        if let Err(err) = Rgb20::ALL.iface().check() {
             for e in err {
                 eprintln!("{e}");
             }

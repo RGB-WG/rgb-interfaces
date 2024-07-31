@@ -26,7 +26,7 @@ use rgbstd::info::ContractInfo;
 use rgbstd::stl::Attachment;
 use rgbstd::{Amount, Precision, XOutpoint, XWitnessId};
 
-use crate::rgb20::Features;
+use crate::rgb20::Rgb20;
 
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 #[cfg_attr(
@@ -44,7 +44,7 @@ pub struct Rgb20Info {
     pub terms: String,
     pub attach: Option<Attachment>,
     pub precision: Precision,
-    pub features: Features,
+    pub features: Rgb20,
 
     pub issued: Amount,   // TODO: Replace with SupplyInfo
     pub burned: Amount,   // TODO: Replace with SupplyInfo

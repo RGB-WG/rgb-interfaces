@@ -20,18 +20,15 @@
 // limitations under the License.
 
 use rgbstd::interface::{
-    ContractIface, FungibleAllocation, Iface, IfaceClass, IfaceId, OutpointFilter,
+    ContractIface, FungibleAllocation, IfaceClass, IfaceId, IfaceWrapper, OutpointFilter,
 };
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::ContractStateRead;
-use rgbstd::stl::{rgb_contract_stl, ContractTerms, Details, Name};
+use rgbstd::stl::{ContractTerms, Details, Name};
 use rgbstd::AssetTag;
 use strict_encoding::InvalidRString;
-use strict_types::TypeLib;
 
-use super::{Features, Issue, Rgb25Info};
-use crate::rgb20::iface::*;
-use crate::rgb25::iface::named_contract;
+use super::{Issue, Rgb25, Rgb25Info};
 use crate::IssuerWrapper;
 
 pub const RGB25_BASE_IFACE_ID: IfaceId = IfaceId::from_array([
@@ -45,63 +42,37 @@ pub const RGB25_IFACE_ID: IfaceId = IfaceId::from_array([
 ]);
 
 #[derive(Clone, Eq, PartialEq, Debug)]
-pub struct Rgb25<S: ContractStateRead>(ContractIface<S>);
+pub struct Rgb25Wrapper<S: ContractStateRead>(ContractIface<S>);
 
-impl<S: ContractStateRead> From<ContractIface<S>> for Rgb25<S> {
-    fn from(iface: ContractIface<S>) -> Self {
-        if !Rgb25::<S>::IFACE_IDS.contains(&iface.iface.iface_id) {
+impl<S: ContractStateRead> IfaceWrapper<S> for Rgb25Wrapper<S> {
+    type Info = Rgb25Info;
+
+    fn with(iface: ContractIface<S>) -> Self {
+        if !Rgb25::IFACE_IDS.contains(&iface.iface.iface_id) {
             panic!("the provided interface is not RGB25 interface");
         }
         Self(iface)
     }
-}
-
-impl<S: ContractStateRead> IfaceClass for Rgb25<S> {
-    const IFACE_NAME: &'static str = "RGB25";
-    const IFACE_IDS: &'static [IfaceId] = &[RGB25_BASE_IFACE_ID, RGB25_IFACE_ID];
-
-    type Features = Features;
-    type Info = Rgb25Info;
-
-    fn iface(features: Features) -> Iface {
-        let mut iface = named_contract().expect_extended(fungible(), "RGB25Base");
-        /*
-        if features.reserves {
-            iface = iface.expect_extended(reservable(), "RGB25Reservable");
-        }
-         */
-        if features.burnable {
-            iface = iface.expect_extended(burnable(), "RGB25Burnable");
-        }
-        iface
-    }
-
-    fn iface_id(features: Self::Features) -> IfaceId {
-        // TODO: Optimize with constants
-        Rgb25::<S>::iface(features).iface_id()
-    }
-
-    fn stl() -> TypeLib { rgb_contract_stl() }
 
     fn info(&self) -> Self::Info { todo!() }
 }
 
-impl<S: ContractStateRead> Rgb25<S> {
-    pub fn testnet<C: IssuerWrapper<IssuingIface = Self>>(
+impl<S: ContractStateRead> Rgb25Wrapper<S> {
+    pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb25>>(
         issuer: &str,
         name: &str,
         precision: Precision,
     ) -> Result<Issue, InvalidRString> {
-        Issue::testnet::<C, S>(issuer, name, precision)
+        Issue::testnet::<C>(issuer, name, precision)
     }
 
-    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Self>>(
+    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb25>>(
         issuer: &str,
         name: &str,
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<Issue, InvalidRString> {
-        Issue::testnet_det::<C, S>(issuer, name, precision, asset_tag)
+        Issue::testnet_det::<C>(issuer, name, precision, asset_tag)
     }
 
     pub fn name(&self) -> Name {

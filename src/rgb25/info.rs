@@ -25,7 +25,7 @@ use rgbstd::info::ContractInfo;
 use rgbstd::stl::Attachment;
 use rgbstd::Precision;
 
-use crate::rgb25::Features;
+use crate::rgb25::Rgb25;
 
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 #[cfg_attr(
@@ -43,7 +43,7 @@ pub struct Rgb25Info {
     pub terms: String,
     pub attach: Option<Attachment>,
     pub precision: Precision,
-    pub features: Features,
+    pub features: Rgb25,
 }
 
 impl Display for Rgb25Info {

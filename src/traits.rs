@@ -19,8 +19,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::marker::PhantomData;
-
 use amplify::confinement::Confined;
 use rgbstd::containers::{ContainerVer, Kit, ValidKit};
 use rgbstd::interface::{IfaceClass, IfaceImpl};
@@ -30,8 +28,8 @@ use strict_types::typesys::UnknownType;
 use strict_types::TypeSystem;
 
 pub trait IssuerWrapper {
-    const FEATURES: <Self::IssuingIface as IfaceClass>::Features;
     type IssuingIface: IfaceClass;
+    const FEATURES: Self::IssuingIface;
 
     fn schema() -> Schema;
     fn issue_impl() -> IfaceImpl;
@@ -52,7 +50,7 @@ pub trait IssuerWrapper {
     fn kit() -> ValidKit {
         let kit = Kit {
             version: ContainerVer::V2,
-            ifaces: tiny_bset![Self::IssuingIface::iface(Self::FEATURES)],
+            ifaces: tiny_bset![Self::FEATURES.iface()],
             schemata: tiny_bset![Self::schema()],
             iimpls: tiny_bset![Self::issue_impl()],
             supplements: none!(),
@@ -68,10 +66,9 @@ pub trait IssuerWrapper {
 pub struct SchemaIssuer<I: IfaceClass> {
     schema: Schema,
     iimpl: IfaceImpl,
-    features: I::Features,
+    features: I,
     types: TypeSystem,
     scripts: Scripts,
-    phantom: PhantomData<I>,
 }
 
 impl<I: IfaceClass> SchemaIssuer<I> {
@@ -81,7 +78,7 @@ impl<I: IfaceClass> SchemaIssuer<I> {
         iimpl: IfaceImpl,
         type_system: TypeSystem,
         scripts: Scripts,
-        features: I::Features,
+        features: I,
     ) -> Result<Self, UnknownType> {
         let types = type_system.extract(schema.types())?;
         Ok(Self {
@@ -90,12 +87,11 @@ impl<I: IfaceClass> SchemaIssuer<I> {
             features,
             types,
             scripts,
-            phantom: default!(),
         })
     }
 
     #[inline]
-    pub fn into_split(self) -> (Schema, IfaceImpl, TypeSystem, Scripts, I::Features) {
+    pub fn into_split(self) -> (Schema, IfaceImpl, TypeSystem, Scripts, I) {
         (self.schema, self.iimpl, self.types, self.scripts, self.features)
     }
 }

@@ -28,7 +28,15 @@ use amplify::confinement::Confined;
 pub use info::Rgb25Info;
 pub use issuer::Issue;
 use rgbstd::info::FeatureList;
-pub use wrapper::{Rgb25, RGB25_IFACE_ID};
+use rgbstd::interface::{Iface, IfaceClass, IfaceId};
+use rgbstd::persistence::ContractStateRead;
+use rgbstd::stl::rgb_contract_stl;
+use strict_types::TypeLib;
+pub use wrapper::{Rgb25Wrapper, RGB25_IFACE_ID};
+
+use crate::rgb20::iface::{burnable, fungible};
+use crate::rgb25::iface::named_contract;
+use crate::rgb25::wrapper::RGB25_BASE_IFACE_ID;
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 #[cfg_attr(
@@ -36,13 +44,13 @@ pub use wrapper::{Rgb25, RGB25_IFACE_ID};
     derive(Serialize, Deserialize),
     serde(crate = "serde_crate", rename_all = "camelCase")
 )]
-pub struct Features {
+pub struct Rgb25 {
     pub burnable: bool,
 }
 
-impl Features {
-    pub const NONE: Self = Features { burnable: false };
-    pub const ALL: Self = Features { burnable: true };
+impl Rgb25 {
+    pub const NONE: Self = Rgb25 { burnable: false };
+    pub const ALL: Self = Rgb25 { burnable: true };
 
     pub const ENUMERATE: &'static [Self] = &[Self::NONE, Self::ALL];
 
@@ -55,33 +63,58 @@ impl Features {
     }
 }
 
+impl IfaceClass for Rgb25 {
+    const IFACE_NAME: &'static str = "RGB25";
+    const IFACE_IDS: &'static [IfaceId] = &[RGB25_BASE_IFACE_ID, RGB25_IFACE_ID];
+    type Wrapper<S: ContractStateRead> = Rgb25Wrapper<S>;
+
+    fn stl(&self) -> TypeLib { rgb_contract_stl() }
+
+    fn iface(&self) -> Iface {
+        let mut iface = named_contract().expect_extended(fungible(), "RGB25Base");
+        /*
+        if self.reserves {
+            iface = iface.expect_extended(reservable(), "RGB25Reservable");
+        }
+         */
+        if self.burnable {
+            iface = iface.expect_extended(burnable(), "RGB25Burnable");
+        }
+        iface
+    }
+
+    fn iface_id(&self) -> IfaceId {
+        // TODO: Optimize with constants
+        self.iface().iface_id()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use amplify::ByteArray;
     use rgbstd::interface::IfaceClass;
 
     use super::*;
-    use crate::Dumb;
 
     #[test]
     fn iface_id_all() {
-        let iface_id = Rgb25::<Dumb>::iface(Features::NONE).iface_id();
+        let iface_id = Rgb25::NONE.iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb25::<Dumb>::IFACE_IDS[0], iface_id);
-        let iface_id = Rgb25::<Dumb>::iface(Features::ALL).iface_id();
+        assert_eq!(Rgb25::IFACE_IDS[0], iface_id);
+        let iface_id = Rgb25::ALL.iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb25::<Dumb>::IFACE_IDS[1], iface_id);
+        assert_eq!(Rgb25::IFACE_IDS[1], iface_id);
     }
 
     #[test]
     fn iface_check() {
-        if let Err(err) = Rgb25::<Dumb>::iface(Features::NONE).check() {
+        if let Err(err) = Rgb25::NONE.iface().check() {
             for e in err {
                 eprintln!("- {e}");
             }
             panic!("invalid RGB25 interface definition");
         }
-        if let Err(err) = Rgb25::<Dumb>::iface(Features::ALL).check() {
+        if let Err(err) = Rgb25::ALL.iface().check() {
             for e in err {
                 eprintln!("- {e}");
             }

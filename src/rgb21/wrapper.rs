@@ -20,7 +20,7 @@
 // limitations under the License.
 
 use rgbstd::interface::{
-    ContractIface, DataAllocation, Iface, IfaceClass, IfaceId, OutpointFilter,
+    ContractIface, DataAllocation, IfaceClass, IfaceId, IfaceWrapper, OutpointFilter,
 };
 use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{bp_tx_stl, rgb_contract_stl, AssetSpec, ContractTerms};
@@ -28,11 +28,7 @@ use rgbstd::Allocation;
 use strict_types::stl::std_stl;
 use strict_types::{CompileError, LibBuilder, TypeLib};
 
-use super::iface::*;
-use super::{
-    AttachmentType, EngravingData, Features, Issues, ItemsCount, TokenData, LIB_NAME_RGB21,
-};
-use crate::rgb20::iface::{named_asset, renameable};
+use super::{AttachmentType, EngravingData, ItemsCount, Rgb21, TokenData, LIB_NAME_RGB21};
 use crate::rgb20::Rgb20Info;
 
 pub const RGB21_UNIQUE_IFACE_ID: IfaceId = IfaceId::from_array([
@@ -60,59 +56,25 @@ fn _rgb21_stl() -> Result<TypeLib, CompileError> {
 }
 
 /// Generates strict type library providing data types for RGB21 interface.
-fn rgb21_stl() -> TypeLib { _rgb21_stl().expect("invalid strict type RGB21 library") }
+pub fn rgb21_stl() -> TypeLib { _rgb21_stl().expect("invalid strict type RGB21 library") }
 
 #[derive(Clone, Eq, PartialEq, Debug)]
-pub struct Rgb21<S: ContractStateRead>(ContractIface<S>);
+pub struct Rgb21Wrapper<S: ContractStateRead>(ContractIface<S>);
 
-impl<S: ContractStateRead> From<ContractIface<S>> for Rgb21<S> {
-    fn from(iface: ContractIface<S>) -> Self {
-        if !Rgb21::<S>::IFACE_IDS.contains(&iface.iface.iface_id) {
+impl<S: ContractStateRead> IfaceWrapper<S> for Rgb21Wrapper<S> {
+    type Info = Rgb20Info;
+
+    fn with(iface: ContractIface<S>) -> Self {
+        if !Rgb21::IFACE_IDS.contains(&iface.iface.iface_id) {
             panic!("the provided interface is not RGB21 interface");
         }
         Self(iface)
     }
-}
-
-impl<S: ContractStateRead> IfaceClass for Rgb21<S> {
-    const IFACE_NAME: &'static str = LIB_NAME_RGB21;
-    const IFACE_IDS: &'static [IfaceId] = &[RGB21_UNIQUE_IFACE_ID, RGB21_IFACE_ID];
-
-    type Features = Features;
-    type Info = Rgb20Info;
-
-    fn iface(features: Self::Features) -> Iface {
-        let mut iface = named_asset().expect_extended(nft(), "RGB21Base");
-        if features.renaming {
-            iface = iface.expect_extended(renameable(), "RGB21Renameable");
-        }
-        if features.engraving {
-            iface = iface.expect_extended(engravable(), "RGB21Engravable");
-        }
-        iface = match features.issues {
-            Issues::Unique => iface.expect_extended(unique(), "RGB21Unique"),
-            Issues::Limited => iface.expect_extended(limited(), "RGB21Limited"),
-            Issues::MultiIssue => iface.expect_extended(issuable(), "RGB21Issuable"),
-        };
-        /*
-        if features.reserves {
-            iface = iface.expect_extended(reservable(), "RGB21Reservable");
-        }
-         */
-        iface
-    }
-
-    fn iface_id(features: Self::Features) -> IfaceId {
-        // TODO: Optimize with constants
-        Rgb21::<S>::iface(features).iface_id()
-    }
-
-    fn stl() -> TypeLib { rgb21_stl() }
 
     fn info(&self) -> Self::Info { todo!() }
 }
 
-impl<S: ContractStateRead> Rgb21<S> {
+impl<S: ContractStateRead> Rgb21Wrapper<S> {
     pub fn spec(&self) -> AssetSpec {
         let strict_val = &self
             .0
