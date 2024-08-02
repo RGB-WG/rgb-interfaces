@@ -34,7 +34,13 @@ use strict_types::TypeLib;
 use self::iface::{burnable, fixed, inflatable, replaceable, rgb20_base, rgb20_renamable};
 pub use self::info::{Rgb20Info, SupplyEvent, SupplyInfo};
 pub use self::issuer::{IssuerError, PrimaryIssue};
-pub use self::wrapper::{Rgb20Wrapper, RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID};
+pub use self::wrapper::{Rgb20Wrapper, RGB20_FIXED_IFACE_ID, RGB20_FULL_IFACE_ID};
+use crate::rgb20::wrapper::{
+    RGB20_BURNABLE_IFACE_ID, RGB20_INFLATABLE_BURNABLE_IFACE_ID, RGB20_INFLATABLE_IFACE_ID,
+    RGB20_RENAMABLE_BURNABLE_IFACE_ID, RGB20_RENAMABLE_IFACE_ID,
+    RGB20_RENAMABLE_INFLATABLE_BURNABLE_IFACE_ID, RGB20_RENAMABLE_INFLATABLE_IFACE_ID,
+    RGB20_REPLACABLE_IFACE_ID,
+};
 
 pub const LIB_NAME_RGB20: &str = "RGB20";
 
@@ -109,17 +115,17 @@ impl Rgb20 {
         // reserves: false,
         inflation: Inflation::Replaceable,
     };
-    pub const INFLATABLE_RENAMABLE: Self = Rgb20 {
+    pub const RENAMABLE_INFLATABLE: Self = Rgb20 {
         renaming: true,
         // reserves: false,
         inflation: Inflation::Inflatable,
     };
-    pub const BURNABLE_RENAMABLE: Self = Rgb20 {
+    pub const RENAMABLE_BURNABLE: Self = Rgb20 {
         renaming: true,
         // reserves: false,
         inflation: Inflation::Burnable,
     };
-    pub const INFLATABLE_BURNABLE_RENAMABLE: Self = Rgb20 {
+    pub const RENAMABLE_INFLATABLE_BURNABLE: Self = Rgb20 {
         renaming: true,
         // reserves: false,
         inflation: Inflation::InflatableBurnable,
@@ -136,9 +142,9 @@ impl Rgb20 {
         Self::BURNABLE,
         Self::INFLATABLE_BURNABLE,
         Self::REPLACEABLE,
-        Self::INFLATABLE_RENAMABLE,
-        Self::BURNABLE_RENAMABLE,
-        Self::INFLATABLE_BURNABLE_RENAMABLE,
+        Self::RENAMABLE_INFLATABLE,
+        Self::RENAMABLE_BURNABLE,
+        Self::RENAMABLE_INFLATABLE_BURNABLE,
         Self::ALL,
     ];
 
@@ -164,7 +170,15 @@ impl IfaceClass for Rgb20 {
     const IFACE_NAME: &'static str = LIB_NAME_RGB20;
     const IFACE_IDS: &'static [IfaceId] = &[
         RGB20_FIXED_IFACE_ID,
-        RGB20_IFACE_ID, // TODO: Add other iface ids
+        RGB20_RENAMABLE_IFACE_ID,
+        RGB20_INFLATABLE_IFACE_ID,
+        RGB20_BURNABLE_IFACE_ID,
+        RGB20_INFLATABLE_BURNABLE_IFACE_ID,
+        RGB20_REPLACABLE_IFACE_ID,
+        RGB20_RENAMABLE_INFLATABLE_IFACE_ID,
+        RGB20_RENAMABLE_BURNABLE_IFACE_ID,
+        RGB20_RENAMABLE_INFLATABLE_BURNABLE_IFACE_ID,
+        RGB20_FULL_IFACE_ID,
     ];
     type Wrapper<S: ContractStateRead> = Rgb20Wrapper<S>;
 
@@ -227,12 +241,12 @@ mod test {
 
     #[test]
     fn iface_id_all() {
-        let iface_id = Rgb20::FIXED.iface_id();
-        eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb20::IFACE_IDS[0], iface_id);
-        let iface_id = Rgb20::ALL.iface_id();
-        eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb20::IFACE_IDS[1], iface_id);
+        for (iface, iface_id) in Rgb20::ENUMERATE.iter().zip(Rgb20::IFACE_IDS) {
+            if iface.iface_id() != *iface_id {
+                eprintln!("{}: {:#04x?}", iface.iface().name, iface.iface_id().to_byte_array());
+            }
+            assert_eq!(iface.iface_id(), *iface_id);
+        }
     }
 
     #[test]
