@@ -61,26 +61,27 @@ mod test {
     use rgbstd::interface::IfaceClass;
 
     use super::*;
+    use crate::Dumb;
 
     #[test]
     fn iface_id_all() {
-        let iface_id = Rgb25::iface(Features::NONE).iface_id();
+        let iface_id = Rgb25::<Dumb>::iface(Features::NONE).iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb25::IFACE_IDS[0], iface_id);
-        let iface_id = Rgb25::iface(Features::ALL).iface_id();
+        assert_eq!(Rgb25::<Dumb>::IFACE_IDS[0], iface_id);
+        let iface_id = Rgb25::<Dumb>::iface(Features::ALL).iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb25::IFACE_IDS[1], iface_id);
+        assert_eq!(Rgb25::<Dumb>::IFACE_IDS[1], iface_id);
     }
 
     #[test]
     fn iface_check() {
-        if let Err(err) = Rgb25::iface(Features::NONE).check() {
+        if let Err(err) = Rgb25::<Dumb>::iface(Features::NONE).check() {
             for e in err {
                 eprintln!("- {e}");
             }
             panic!("invalid RGB25 interface definition");
         }
-        if let Err(err) = Rgb25::iface(Features::ALL).check() {
+        if let Err(err) = Rgb25::<Dumb>::iface(Features::ALL).check() {
             for e in err {
                 eprintln!("- {e}");
             }

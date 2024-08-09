@@ -32,7 +32,9 @@ mod traits;
 pub mod rgb20;
 pub mod rgb21;
 pub mod rgb25;
+mod dumb;
 
+pub use dumb::Dumb;
 pub use rgb20::Rgb20;
 pub use rgb21::Rgb21;
 pub use rgb25::Rgb25;

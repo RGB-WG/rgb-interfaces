@@ -175,26 +175,27 @@ mod test {
     use rgbstd::interface::IfaceClass;
 
     use super::*;
+    use crate::Dumb;
 
     #[test]
     fn iface_id_all() {
-        let iface_id = Rgb20::iface(Features::FIXED).iface_id();
+        let iface_id = Rgb20::<Dumb>::iface(Features::FIXED).iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb20::IFACE_IDS[0], iface_id);
-        let iface_id = Rgb20::iface(Features::ALL).iface_id();
+        assert_eq!(Rgb20::<Dumb>::IFACE_IDS[0], iface_id);
+        let iface_id = Rgb20::<Dumb>::iface(Features::ALL).iface_id();
         eprintln!("{:#04x?}", iface_id.to_byte_array());
-        assert_eq!(Rgb20::IFACE_IDS[1], iface_id);
+        assert_eq!(Rgb20::<Dumb>::IFACE_IDS[1], iface_id);
     }
 
     #[test]
     fn iface_check() {
-        if let Err(err) = Rgb20::iface(Features::FIXED).check() {
+        if let Err(err) = Rgb20::<Dumb>::iface(Features::FIXED).check() {
             for e in err {
                 eprintln!("{e}");
             }
             panic!("invalid RGB20Fixed interface definition");
         }
-        if let Err(err) = Rgb20::iface(Features::ALL).check() {
+        if let Err(err) = Rgb20::<Dumb>::iface(Features::ALL).check() {
             for e in err {
                 eprintln!("{e}");
             }

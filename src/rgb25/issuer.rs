@@ -25,7 +25,7 @@ use bp::dbc::Method;
 use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
-use rgbstd::persistence::PersistedState;
+use rgbstd::persistence::{ContractStateRead, PersistedState};
 use rgbstd::stl::{Attachment, ContractTerms, Details, Name, RicardianContract};
 use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal, Identity};
 use strict_encoding::InvalidRString;
@@ -43,8 +43,8 @@ pub struct Issue {
 }
 
 impl Issue {
-    fn testnet_int(
-        issuer: SchemaIssuer<Rgb25>,
+    fn testnet_int<S: ContractStateRead>(
+        issuer: SchemaIssuer<Rgb25<S>>,
         by: &str,
         name: &str,
         precision: Precision,
@@ -57,7 +57,7 @@ impl Issue {
         let (schema, main_iface_impl, types, scripts, features) = issuer.into_split();
         let builder = ContractBuilder::with(
             Identity::from_str(by).expect("invalid issuer identity string"),
-            Rgb25::iface(features),
+            Rgb25::<S>::iface(features),
             schema,
             main_iface_impl,
             types,
@@ -76,7 +76,7 @@ impl Issue {
         })
     }
 
-    pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb25>>(
+    pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb25<S>>, S: ContractStateRead>(
         by: &str,
         name: &str,
         precision: Precision,
@@ -84,8 +84,8 @@ impl Issue {
         Self::testnet_int(C::issuer(), by, name, precision)
     }
 
-    pub fn testnet_with(
-        issuer: SchemaIssuer<Rgb25>,
+    pub fn testnet_with<S: ContractStateRead>(
+        issuer: SchemaIssuer<Rgb25<S>>,
         by: &str,
         name: &str,
         precision: Precision,
@@ -93,7 +93,7 @@ impl Issue {
         Self::testnet_int(issuer, by, name, precision)
     }
 
-    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb25>>(
+    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb25<S>>, S: ContractStateRead>(
         by: &str,
         name: &str,
         precision: Precision,
