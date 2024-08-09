@@ -40,6 +40,6 @@ fs = ["rgb-std/fs"]
 [patch.crates-io]
 bp-consensus = { git = "https://github.com/BP-WG/bp-core", branch = "master" }
 bp-invoice = { git = "https://github.com/BP-WG/bp-std", branch = "master" }
-rgb-core = { git = "https://github.com/RGB-WG/rgb-core", branch = "develop" }
-rgb-invoice = { git = "https://github.com/RGB-WG/rgb-std", branch = "develop" }
-rgb-std = { git = "https://github.com/RGB-WG/rgb-std", branch = "develop" }
+rgb-core = { git = "https://github.com/RGB-WG/rgb-core", branch = "master" }
+rgb-invoice = { git = "https://github.com/RGB-WG/rgb-std", branch = "master" }
+rgb-std = { git = "https://github.com/RGB-WG/rgb-std", branch = "master" }
