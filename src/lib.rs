@@ -32,12 +32,10 @@ mod traits;
 pub mod rgb20;
 pub mod rgb21;
 pub mod rgb25;
-mod dumb;
 
-pub use dumb::Dumb;
-pub use rgb20::Rgb20;
-pub use rgb21::Rgb21;
-pub use rgb25::Rgb25;
+pub use rgb20::{Rgb20, Rgb20Info, Rgb20Wrapper};
+pub use rgb21::{Rgb21, Rgb21Wrapper};
+pub use rgb25::{Rgb25, Rgb25Info, Rgb25Wrapper};
 pub use traits::{IssuerWrapper, SchemaIssuer};
 
 pub const LNPBP_IDENTITY: &str = "ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w";

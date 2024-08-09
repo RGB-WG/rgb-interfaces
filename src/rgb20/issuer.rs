@@ -25,7 +25,6 @@ use bp::dbc::Method;
 use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
-use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{AssetSpec, Attachment, ContractTerms, RicardianContract};
 use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal, Identity};
 use strict_encoding::InvalidRString;
@@ -62,8 +61,8 @@ pub struct PrimaryIssue {
 }
 
 impl PrimaryIssue {
-    pub fn testnet_with<S: ContractStateRead>(
-        issuer: SchemaIssuer<Rgb20<S>>,
+    pub fn testnet_with(
+        issuer: SchemaIssuer<Rgb20>,
         by: &str,
         ticker: &str,
         name: &str,
@@ -73,7 +72,7 @@ impl PrimaryIssue {
         Self::testnet_int(issuer, by, ticker, name, details, precision, false)
     }
 
-    pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb20<S>>, S: ContractStateRead>(
+    pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb20>>(
         by: &str,
         ticker: &str,
         name: &str,
@@ -83,7 +82,7 @@ impl PrimaryIssue {
         Self::testnet_int(C::issuer(), by, ticker, name, details, precision, false)
     }
 
-    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb20<S>>, S: ContractStateRead>(
+    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb20>>(
         by: &str,
         ticker: &str,
         name: &str,
@@ -99,8 +98,8 @@ impl PrimaryIssue {
         Ok(me)
     }
 
-    fn testnet_int<S: ContractStateRead>(
-        issuer: SchemaIssuer<Rgb20<S>>,
+    fn testnet_int(
+        issuer: SchemaIssuer<Rgb20>,
         by: &str,
         ticker: &str,
         name: &str,
@@ -118,7 +117,7 @@ impl PrimaryIssue {
         let mut builder = match deterministic {
             false => ContractBuilder::with(
                 Identity::from_str(by).expect("invalid issuer identity string"),
-                Rgb20::<S>::iface(features),
+                features.iface(),
                 schema,
                 main_iface_impl,
                 types,
@@ -126,7 +125,7 @@ impl PrimaryIssue {
             ),
             true => ContractBuilder::deterministic(
                 Identity::from_str(by).expect("invalid issuer identity string"),
-                Rgb20::<S>::iface(features),
+                features.iface(),
                 schema,
                 main_iface_impl,
                 types,

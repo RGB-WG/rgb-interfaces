@@ -22,72 +22,71 @@
 use std::collections::HashMap;
 
 use rgbstd::interface::{
-    AmountChange, ContractIface, FungibleAllocation, Iface, IfaceClass, IfaceId, IfaceOp,
+    AmountChange, ContractIface, FungibleAllocation, IfaceClass, IfaceId, IfaceOp, IfaceWrapper,
     OutpointFilter, RightsAllocation,
 };
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::ContractStateRead;
-use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms, Details};
+use rgbstd::stl::{AssetSpec, ContractTerms, Details};
 use rgbstd::{AssetTag, XWitnessId};
 use strict_encoding::InvalidRString;
-use strict_types::TypeLib;
 
-use super::iface::*;
-use super::{Features, Inflation, PrimaryIssue, Rgb20Info};
+use super::{Inflation, PrimaryIssue, Rgb20, Rgb20Info};
 use crate::IssuerWrapper;
 
 pub const RGB20_FIXED_IFACE_ID: IfaceId = IfaceId::from_array([
     0xfe, 0x25, 0x27, 0x3b, 0xd6, 0x8e, 0xd7, 0x18, 0x6a, 0x51, 0xde, 0xb5, 0x26, 0x6e, 0x52, 0xe7,
     0xec, 0x0c, 0xde, 0x78, 0x1b, 0xcb, 0x91, 0x95, 0x13, 0x29, 0x50, 0x65, 0x30, 0x0c, 0x60, 0x39,
 ]);
-pub const RGB20_IFACE_ID: IfaceId = IfaceId::from_array([
+pub const RGB20_RENAMABLE_IFACE_ID: IfaceId = IfaceId::from_array([
+    0x99, 0xe1, 0xeb, 0xb5, 0x54, 0xd9, 0xeb, 0x10, 0x1d, 0x77, 0x4c, 0x2b, 0x8c, 0x3b, 0x6d, 0x2e,
+    0x17, 0x2c, 0xda, 0x7e, 0xf3, 0x9e, 0xc6, 0x41, 0xcd, 0xfc, 0x33, 0x15, 0xc5, 0x3e, 0x8b, 0x6e,
+]);
+pub const RGB20_INFLATABLE_IFACE_ID: IfaceId = IfaceId::from_array([
+    0x60, 0xba, 0x66, 0x6e, 0x76, 0x36, 0xc9, 0x99, 0xff, 0x25, 0xd1, 0xa0, 0x86, 0x3c, 0x28, 0x08,
+    0xfc, 0xe3, 0xdb, 0x5e, 0x72, 0xd3, 0xf5, 0xee, 0xc0, 0x0f, 0x74, 0xa3, 0xf0, 0x8f, 0xfe, 0x98,
+]);
+pub const RGB20_INFLATABLE_BURNABLE_IFACE_ID: IfaceId = IfaceId::from_array([
+    0x05, 0x6c, 0xb6, 0x1f, 0x43, 0x5d, 0xca, 0x48, 0x1a, 0x9d, 0xda, 0xe6, 0x47, 0x97, 0xf2, 0x76,
+    0x25, 0x3f, 0xee, 0xd1, 0x54, 0xd9, 0x1f, 0xb3, 0xd4, 0x5f, 0x41, 0x31, 0x95, 0xb4, 0xb4, 0xaa,
+]);
+pub const RGB20_BURNABLE_IFACE_ID: IfaceId = IfaceId::from_array([
+    0xcb, 0x14, 0x11, 0x70, 0xd2, 0x78, 0xc8, 0xc9, 0xc9, 0xd3, 0xf7, 0x20, 0x2e, 0x3c, 0x29, 0x75,
+    0x2f, 0x03, 0xb8, 0x98, 0xc5, 0x9e, 0x95, 0x90, 0xe2, 0x2e, 0x42, 0x4e, 0x8d, 0x91, 0xfd, 0x4e,
+]);
+pub const RGB20_RENAMABLE_INFLATABLE_IFACE_ID: IfaceId = IfaceId::from_array([
+    0x1b, 0x37, 0x77, 0x0f, 0x05, 0x72, 0x4e, 0xd1, 0x77, 0x67, 0xa5, 0x61, 0xf7, 0xcd, 0x6a, 0x8d,
+    0x45, 0x95, 0xf5, 0x09, 0x9b, 0x4b, 0xf4, 0x81, 0xe5, 0x3c, 0xa0, 0xeb, 0x2e, 0x4f, 0x2c, 0xf7,
+]);
+pub const RGB20_REPLACABLE_IFACE_ID: IfaceId = IfaceId::from_array([
+    0xc3, 0x46, 0x75, 0x65, 0xad, 0xa3, 0x92, 0x5a, 0x5f, 0x5b, 0x24, 0xf8, 0x72, 0x83, 0x81, 0xfb,
+    0xaf, 0x74, 0xa9, 0xa9, 0x16, 0xe4, 0x07, 0xe3, 0x98, 0x87, 0x3d, 0x7a, 0x36, 0x5b, 0x29, 0x95,
+]);
+pub const RGB20_RENAMABLE_BURNABLE_IFACE_ID: IfaceId = IfaceId::from_array([
+    0x14, 0x57, 0xcf, 0x3d, 0x60, 0xc7, 0xe3, 0xf0, 0x56, 0x06, 0x7e, 0xf7, 0x42, 0x71, 0x3c, 0x59,
+    0x59, 0xc7, 0x8f, 0xdf, 0x04, 0xf0, 0x8a, 0x00, 0x21, 0x9b, 0xed, 0xe2, 0x48, 0x97, 0xed, 0x80,
+]);
+pub const RGB20_RENAMABLE_INFLATABLE_BURNABLE_IFACE_ID: IfaceId = IfaceId::from_array([
+    0x32, 0x44, 0xae, 0xbe, 0xfc, 0xf6, 0x4a, 0xd1, 0xb3, 0xb9, 0x5f, 0x07, 0x7b, 0x0a, 0xb4, 0x7e,
+    0x88, 0x4c, 0x8a, 0x05, 0xa6, 0xfd, 0x43, 0x31, 0x5e, 0xd7, 0x4f, 0x44, 0x29, 0xd9, 0xc9, 0xe7,
+]);
+pub const RGB20_FULL_IFACE_ID: IfaceId = IfaceId::from_array([
     0xaf, 0xaf, 0xdd, 0x2d, 0xe5, 0x72, 0x1f, 0x41, 0xd0, 0xa5, 0x4c, 0x85, 0xd9, 0x76, 0xd7, 0xd8,
     0x43, 0xf6, 0x26, 0xa6, 0xc7, 0xa7, 0x0b, 0x08, 0x48, 0x3e, 0x1f, 0xc5, 0x41, 0x1a, 0x38, 0xa4,
 ]);
 
 #[derive(Clone, Eq, PartialEq, Debug, From)]
-pub struct Rgb20<S: ContractStateRead>(ContractIface<S>);
+pub struct Rgb20Wrapper<S: ContractStateRead>(ContractIface<S>);
 
-impl<S: ContractStateRead> IfaceClass for Rgb20<S> {
-    const IFACE_NAME: &'static str = "RGB20";
-    const IFACE_IDS: &'static [IfaceId] = &[RGB20_FIXED_IFACE_ID, RGB20_IFACE_ID];
-
-    type Features = Features;
+impl<S: ContractStateRead> IfaceWrapper<S> for Rgb20Wrapper<S> {
     type Info = Rgb20Info;
 
-    fn iface(features: Features) -> Iface {
-        let (mut name, mut iface) = if features.renaming {
-            (tn!("RGB20Renamable"), rgb20_renamable())
-        } else {
-            (tn!("RGB20"), rgb20_base())
-        };
-        if features.inflation.is_fixed() {
-            iface = iface.expect_extended(fixed(), tn!(format!("{name}Fixed")));
-        } else if features.inflation.is_inflatable() {
-            iface = iface.expect_extended(inflatable(), tn!(format!("{name}Inflatable")));
-            name = tn!(format!("{name}Inflatable"));
+    fn with(iface: ContractIface<S>) -> Self {
+        if !Rgb20::IFACE_IDS.contains(&iface.iface.iface_id) {
+            panic!("the provided interface is not RGB20 interface");
         }
-        if features.inflation.is_burnable() {
-            iface = iface.expect_extended(burnable(), tn!(format!("{name}Burnable")));
-            if features.inflation.is_replaceable() {
-                name = tn!(format!("{}Replaceable", name.to_string().replace("Inflatable", "")));
-                iface = iface.expect_extended(replaceable(), name);
-            }
-        }
-        /* TODO: Complete reservable interface
-        if features.reserves {
-            iface = iface.expect_extended(reservable(), "RGB20Reservable");
-        }
-         */
-        iface
+        Self(iface)
     }
-
-    fn iface_id(features: Self::Features) -> IfaceId {
-        // TODO: Optimize with constants
-        Rgb20::<S>::iface(features).iface_id()
-    }
-
-    fn stl() -> TypeLib { rgb_contract_stl() }
 
     fn info(&self) -> Self::Info {
         let spec = self.spec();
@@ -108,18 +107,18 @@ impl<S: ContractStateRead> IfaceClass for Rgb20<S> {
     }
 }
 
-impl<S: ContractStateRead> Rgb20<S> {
-    pub fn testnet<C: IssuerWrapper<IssuingIface = Self>>(
+impl<S: ContractStateRead> Rgb20Wrapper<S> {
+    pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb20>>(
         issuer: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet::<C, S>(issuer, ticker, name, details, precision)
+        PrimaryIssue::testnet::<C>(issuer, ticker, name, details, precision)
     }
 
-    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Self>>(
+    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb20>>(
         issuer: &str,
         ticker: &str,
         name: &str,
@@ -127,10 +126,10 @@ impl<S: ContractStateRead> Rgb20<S> {
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet_det::<C, S>(issuer, ticker, name, details, precision, asset_tag)
+        PrimaryIssue::testnet_det::<C>(issuer, ticker, name, details, precision, asset_tag)
     }
 
-    pub fn features(&self) -> Features {
+    pub fn features(&self) -> Rgb20 {
         let renaming = self
             .0
             .iface
@@ -168,7 +167,7 @@ impl<S: ContractStateRead> Rgb20<S> {
             (false, true, true) => panic!("replaceable but non-inflatible asset"),
         };
 
-        Features {
+        Rgb20 {
             renaming,
             inflation,
         }
