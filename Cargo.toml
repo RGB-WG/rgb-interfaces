@@ -1,6 +1,6 @@
 [package]
 name = "rgb-interfaces"
-version = "0.11.0-beta.6"
+version = "0.11.0-beta.7"
 description = "Collection of the standard RGB smart contract interface"
 keywords = ["bitcoin", "lightning", "rgb", "smart-contracts", "lnp-bp"]
 categories = ["cryptography::cryptocurrencies"]
