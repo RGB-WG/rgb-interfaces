@@ -103,8 +103,9 @@ pub struct EmbeddedMedia {
 impl EmbeddedMedia {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
         let ty = MediaType::from_strict_val_unchecked(value.unwrap_struct("type"));
-        let data =
-            SmallBlob::from_iter_checked(value.unwrap_struct("data").unwrap_bytes().iter().copied());
+        let data = SmallBlob::from_iter_checked(
+            value.unwrap_struct("data").unwrap_bytes().iter().copied(),
+        );
 
         Self { ty, data }
     }
