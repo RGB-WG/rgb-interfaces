@@ -1,0 +1,64 @@
+{-
+  Id: stl:URVJ768i-moZ15p1-NpCOpOv-E$nZffn-Wq2vgZh-MgmPyPM#omega-cactus-hazard
+  Name: RGB21
+  Version: 0.11.0
+  Description: Types for RGB21 interfaces
+  Author: Dr Maxim Orlovsky <orlovsky@lnp-bp.org>
+  Copyright (C) 2023-2024 LNP/BP Standards Association. All rights reserved.
+  License: Apache-2.0
+-}
+
+@context
+typelib RGB21
+
+import Std#ralph-blue-lucky
+  use AsciiPrintable#ultra-sunset-format
+  use AlphaNum#window-tractor-alamo
+  use Alpha#citizen-bicycle-stretch
+  use AlphaSmall#magnum-martin-soviet
+
+import Bitcoin#signal-color-cipher
+  use Vout#brush-gloria-heroic
+  use Txid#shallow-light-reverse
+  use Outpoint#logo-alamo-madam
+
+import RGBContract#rover-annual-disney
+  use ProofOfReserves#harmony-dolby-golf
+  use Allocation#amadeus-ohio-trust
+  use OwnedFraction#mission-person-armor
+  use MediaRegName#total-monkey-rondo
+  use MimeChar#amber-alarm-satire
+  use Details#trivial-halt-nobody
+  use Attachment#swim-cantina-july
+  use Ticker#newton-corona-aloha
+  use TokenIndex#giraffe-correct-modest
+  use Name#lexicon-monitor-madonna
+  use MediaType#mimic-turtle-monday
+
+
+@mnemonic(resume-telex-tower)
+data AttachmentName    : [Std.AsciiPrintable ^ 1..0x14]
+
+@mnemonic(brave-costume-percent)
+data AttachmentType    : id U8, name AttachmentName
+
+@mnemonic(agent-arcade-morris)
+data EmbeddedMedia     : type RGBContract.MediaType, data [Byte]
+
+@mnemonic(future-lesson-quiet)
+data EngravingData     : appliedTo RGBContract.TokenIndex, content EmbeddedMedia
+
+@mnemonic(tokyo-rose-ford)
+data ItemsCount        : U32
+
+@mnemonic(jimmy-jacket-violet)
+data TokenData         : index RGBContract.TokenIndex
+                       , ticker RGBContract.Ticker?
+                       , name RGBContract.Name?
+                       , details RGBContract.Details?
+                       , preview EmbeddedMedia?
+                       , media RGBContract.Attachment?
+                       , attachments {U8 -> ^ ..0x14 RGBContract.Attachment}
+                       , reserves RGBContract.ProofOfReserves?
+
+
