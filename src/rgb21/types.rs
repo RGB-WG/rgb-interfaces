@@ -103,8 +103,9 @@ pub struct EmbeddedMedia {
 impl EmbeddedMedia {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
         let ty = MediaType::from_strict_val_unchecked(value.unwrap_struct("type"));
-        let data =
-            SmallBlob::from_collection_unsafe(value.unwrap_struct("data").unwrap_bytes().into());
+        let data = SmallBlob::from_iter_checked(
+            value.unwrap_struct("data").unwrap_bytes().iter().copied(),
+        );
 
         Self { ty, data }
     }
@@ -242,10 +243,9 @@ impl TokenData {
             .map(Attachment::from_strict_val_unchecked);
 
         let attachments = if let StrictVal::Map(list) = value.unwrap_struct("attachments") {
-            Confined::from_collection_unsafe(
+            Confined::from_iter_checked(
                 list.iter()
-                    .map(|(k, v)| (k.unwrap_uint(), Attachment::from_strict_val_unchecked(v)))
-                    .collect(),
+                    .map(|(k, v)| (k.unwrap_uint(), Attachment::from_strict_val_unchecked(v))),
             )
         } else {
             Confined::default()

@@ -1,0 +1,26 @@
+name: Generate interfaces
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v[0-9]+\.*'
+  pull_request:
+    branches:
+      - master
+      - develop
+      - 'v[0-9]+.[0-9]+'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  gen-ifaces:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo run --features fs
+      # Due to timestamp there is a difference in supplements.
+      # - run: git diff | grep -q . && exit 1

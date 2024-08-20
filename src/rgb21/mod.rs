@@ -83,7 +83,7 @@ impl Rgb21 {
             Issues::Limited => list.insert(fname!("limited")),
             Issues::MultiIssue => list.insert(fname!("collection")),
         };
-        Confined::from_collection_unsafe(list).into()
+        Confined::from_checked(list).into()
     }
 }
 
