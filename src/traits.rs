@@ -55,7 +55,7 @@ pub trait IssuerWrapper {
             iimpls: tiny_bset![Self::issue_impl()],
             supplements: none!(),
             types: Self::types(),
-            scripts: Confined::from_iter_unsafe(Self::scripts().into_inner().into_values()),
+            scripts: Confined::from_iter_checked(Self::scripts().release().into_values()),
             signatures: none!(),
         };
         kit.validate().expect("invalid construction")

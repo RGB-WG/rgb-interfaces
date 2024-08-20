@@ -162,7 +162,7 @@ impl Rgb20 {
         if self.inflation.is_replaceable() {
             list.insert(fname!("replaceable"));
         }
-        Confined::from_collection_unsafe(list).into()
+        Confined::from_checked(list).into()
     }
 }
 

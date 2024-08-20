@@ -59,7 +59,7 @@ impl Rgb25 {
         if self.burnable {
             list.insert(fname!("burnable"));
         }
-        Confined::from_collection_unsafe(list).into()
+        Confined::from_checked(list).into()
     }
 }
 
