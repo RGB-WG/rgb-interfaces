@@ -25,7 +25,8 @@ use rgbstd::interface::{
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{ContractTerms, Details, Name};
-use rgbstd::AssetTag;
+use rgbstd::{AssetTag, ContractId, SchemaId, XWitnessId};
+use rgbstd::vm::WitnessOrd;
 use strict_encoding::InvalidRString;
 
 use super::{Issue, Rgb25, Rgb25Info};
@@ -55,6 +56,21 @@ impl<S: ContractStateRead> IfaceWrapper<S> for Rgb25Wrapper<S> {
     }
 
     fn info(&self) -> Self::Info { todo!() }
+
+    #[inline]
+    fn contract_id(&self) -> ContractId {
+        self.0.contract_id()
+    }
+
+    #[inline]
+    fn schema_id(&self) -> SchemaId {
+        self.0.state.schema_id()
+    }
+
+    #[inline]
+    fn witness_info(&self, witness_id: XWitnessId) -> Option<WitnessOrd> {
+        self.0.state.witness_info(witness_id)
+    }
 }
 
 impl<S: ContractStateRead> Rgb25Wrapper<S> {
