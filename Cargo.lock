@@ -669,8 +669,7 @@ dependencies = [
 [[package]]
 name = "rgb-core"
 version = "0.11.0-beta.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43dc70212f5eff8189f3cdfef2d11f53f7be4c4128db9839b5d56a0f9ef60c98"
+source = "git+https://github.com/RGB-WG/rgb-core?branch=fix/273#e2a451fa793fe5403b4114b5ed5e9e47c69674cd"
 dependencies = [
  "aluvm",
  "amplify",
@@ -711,7 +710,7 @@ dependencies = [
 [[package]]
 name = "rgb-invoice"
 version = "0.11.0-beta.8"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#d1d134df6d97d13a63c27c8c0aeb994be2c96822"
+source = "git+https://github.com/RGB-WG/rgb-std?branch=fix/rgb-252#94b5ebc6b998b4aa2321513c08b4ff2aebfd2a56"
 dependencies = [
  "amplify",
  "baid64",
@@ -731,7 +730,7 @@ dependencies = [
 [[package]]
 name = "rgb-std"
 version = "0.11.0-beta.8"
-source = "git+https://github.com/RGB-WG/rgb-std?branch=develop#d1d134df6d97d13a63c27c8c0aeb994be2c96822"
+source = "git+https://github.com/RGB-WG/rgb-std?branch=fix/rgb-252#94b5ebc6b998b4aa2321513c08b4ff2aebfd2a56"
 dependencies = [
  "aluvm",
  "amplify",

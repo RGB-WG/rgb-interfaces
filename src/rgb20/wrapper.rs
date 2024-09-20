@@ -19,17 +19,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::collections::HashMap;
-
 use rgbstd::interface::{
-    AmountChange, ContractIface, FungibleAllocation, IfaceClass, IfaceId, IfaceOp, IfaceWrapper,
-    OutpointFilter, RightsAllocation,
+    AssignmentsFilter, ContractIface, ContractOp, FungibleAllocation, IfaceClass, IfaceId,
+    IfaceWrapper, RightsAllocation,
 };
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{AssetSpec, ContractTerms, Details};
-use rgbstd::{AssetTag, ContractId, SchemaId, XWitnessId};
-use rgbstd::vm::WitnessOrd;
+use rgbstd::{AssetTag, ContractId, SchemaId, WitnessInfo, XWitnessId};
 use strict_encoding::InvalidRString;
 
 use super::{Inflation, PrimaryIssue, Rgb20, Rgb20Info};
@@ -108,18 +105,14 @@ impl<S: ContractStateRead> IfaceWrapper<S> for Rgb20Wrapper<S> {
     }
 
     #[inline]
-    fn contract_id(&self) -> ContractId {
-        self.0.contract_id()
-    }
+    fn contract_id(&self) -> ContractId { self.0.contract_id() }
 
     #[inline]
-    fn schema_id(&self) -> SchemaId {
-        self.0.state.schema_id()
-    }
+    fn schema_id(&self) -> SchemaId { self.0.state.schema_id() }
 
     #[inline]
-    fn witness_info(&self, witness_id: XWitnessId) -> Option<WitnessOrd> {
-        self.0.state.witness_info(witness_id)
+    fn witness_info(&self, witness_id: XWitnessId) -> Option<WitnessInfo> {
+        self.0.witness_info(witness_id)
     }
 }
 
@@ -199,7 +192,7 @@ impl<S: ContractStateRead> Rgb20Wrapper<S> {
         AssetSpec::from_strict_val_unchecked(strict_val)
     }
 
-    pub fn balance(&self, filter: impl OutpointFilter) -> Amount {
+    pub fn balance(&self, filter: impl AssignmentsFilter) -> Amount {
         self.allocations(filter)
             .map(|alloc| alloc.state)
             .sum::<Amount>()
@@ -207,7 +200,7 @@ impl<S: ContractStateRead> Rgb20Wrapper<S> {
 
     pub fn allocations<'c>(
         &'c self,
-        filter: impl OutpointFilter + 'c,
+        filter: impl AssignmentsFilter + 'c,
     ) -> impl Iterator<Item = FungibleAllocation> + 'c {
         self.0
             .fungible("assetOwner", filter)
@@ -216,7 +209,7 @@ impl<S: ContractStateRead> Rgb20Wrapper<S> {
 
     pub fn inflation_allowance_allocations<'c>(
         &'c self,
-        filter: impl OutpointFilter + 'c,
+        filter: impl AssignmentsFilter + 'c,
     ) -> impl Iterator<Item = FungibleAllocation> + 'c {
         self.0
             .fungible("inflationAllowance", filter)
@@ -225,7 +218,7 @@ impl<S: ContractStateRead> Rgb20Wrapper<S> {
 
     pub fn update_right<'c>(
         &'c self,
-        filter: impl OutpointFilter + 'c,
+        filter: impl AssignmentsFilter + 'c,
     ) -> impl Iterator<Item = RightsAllocation> + 'c {
         self.0
             .rights("updateRight", filter)
@@ -234,7 +227,7 @@ impl<S: ContractStateRead> Rgb20Wrapper<S> {
 
     pub fn burn_epoch<'c>(
         &'c self,
-        filter: impl OutpointFilter + 'c,
+        filter: impl AssignmentsFilter + 'c,
     ) -> impl Iterator<Item = RightsAllocation> + 'c {
         self.0
             .rights("burnEpoch", filter)
@@ -243,7 +236,7 @@ impl<S: ContractStateRead> Rgb20Wrapper<S> {
 
     pub fn burn_right<'c>(
         &'c self,
-        filter: impl OutpointFilter + 'c,
+        filter: impl AssignmentsFilter + 'c,
     ) -> impl Iterator<Item = RightsAllocation> + 'c {
         self.0
             .rights("burnRight", filter)
@@ -302,12 +295,11 @@ impl<S: ContractStateRead> Rgb20Wrapper<S> {
 
     pub fn total_supply(&self) -> Amount { self.total_issued_supply() - self.total_burned_supply() }
 
-    pub fn transfer_history(
+    pub fn history(
         &self,
-        outpoint_filter: impl OutpointFilter + Copy,
-    ) -> HashMap<XWitnessId, IfaceOp<AmountChange>> {
-        self.0
-            .fungible_ops("assetOwner", outpoint_filter)
-            .expect("state name is not correct")
+        filter_outpoints: impl AssignmentsFilter + Clone,
+        filter_witnesses: impl AssignmentsFilter + Clone,
+    ) -> Vec<ContractOp> {
+        self.0.history(filter_outpoints, filter_witnesses)
     }
 }

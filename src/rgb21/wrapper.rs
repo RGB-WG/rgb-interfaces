@@ -20,12 +20,11 @@
 // limitations under the License.
 
 use rgbstd::interface::{
-    ContractIface, DataAllocation, IfaceClass, IfaceId, IfaceWrapper, OutpointFilter,
+    AssignmentsFilter, ContractIface, ContractOp, DataAllocation, IfaceClass, IfaceId, IfaceWrapper,
 };
 use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{bp_tx_stl, rgb_contract_stl, AssetSpec, ContractTerms};
-use rgbstd::{Allocation, ContractId, SchemaId, XWitnessId};
-use rgbstd::vm::WitnessOrd;
+use rgbstd::{Allocation, ContractId, SchemaId, WitnessInfo, XWitnessId};
 use strict_types::stl::std_stl;
 use strict_types::{CompileError, LibBuilder, TypeLib};
 
@@ -75,18 +74,14 @@ impl<S: ContractStateRead> IfaceWrapper<S> for Rgb21Wrapper<S> {
     fn info(&self) -> Self::Info { todo!() }
 
     #[inline]
-    fn contract_id(&self) -> ContractId {
-        self.0.contract_id()
-    }
+    fn contract_id(&self) -> ContractId { self.0.contract_id() }
 
     #[inline]
-    fn schema_id(&self) -> SchemaId {
-        self.0.state.schema_id()
-    }
+    fn schema_id(&self) -> SchemaId { self.0.state.schema_id() }
 
     #[inline]
-    fn witness_info(&self, witness_id: XWitnessId) -> Option<WitnessOrd> {
-        self.0.state.witness_info(witness_id)
+    fn witness_info(&self, witness_id: XWitnessId) -> Option<WitnessInfo> {
+        self.0.witness_info(witness_id)
     }
 }
 
@@ -130,10 +125,18 @@ impl<S: ContractStateRead> Rgb21Wrapper<S> {
 
     pub fn allocations<'c>(
         &'c self,
-        filter: impl OutpointFilter + 'c,
+        filter: impl AssignmentsFilter + 'c,
     ) -> impl Iterator<Item = DataAllocation> + 'c {
         self.0
             .data("assetOwner", filter)
             .expect("RGB21 interface requires `assetOwner` state")
+    }
+
+    pub fn history(
+        &self,
+        filter_outpoints: impl AssignmentsFilter + Clone,
+        filter_witnesses: impl AssignmentsFilter + Clone,
+    ) -> Vec<ContractOp> {
+        self.0.history(filter_outpoints, filter_witnesses)
     }
 }
