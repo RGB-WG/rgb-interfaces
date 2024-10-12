@@ -47,3 +47,12 @@ wasm-bindgen-test = "0.3"
 
 [package.metadata.docs.rs]
 features = ["all"]
+
+[patch.crates-io]
+bp-consensus = { git = "https://github.com/BP-WG/bp-core", branch = "develop" }
+bp-dbc = { git = "https://github.com/BP-WG/bp-core", branch = "develop" }
+bp-seals = { git = "https://github.com/BP-WG/bp-core", branch = "develop" }
+bp-core = { git = "https://github.com/BP-WG/bp-core", branch = "develop" }
+rgb-core = { git = "https://github.com/RGB-WG/rgb-core", branch = "develop" }
+rgb-invoice = { git = "https://github.com/RGB-WG/rgb-std", branch = "develop" }
+rgb-std = { git = "https://github.com/RGB-WG/rgb-std", branch = "develop" }
