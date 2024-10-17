@@ -20,13 +20,12 @@
 // limitations under the License.
 
 use rgbstd::interface::{
-    AssignIface, GenesisIface, GlobalIface, Iface, Modifier, OwnedIface, Req, TransitionIface,
-    VerNo,
+    AssignIface, GenesisIface, GlobalIface, Iface, Modifier, TransitionIface, VerNo,
 };
 use rgbstd::schema::Occurrences;
-use rgbstd::stl::StandardTypes;
 use rgbstd::Identity;
 
+use crate::stl::StandardTypes;
 use crate::LNPBP_IDENTITY;
 
 pub fn rgb20_base() -> Iface { named_asset().expect_extended(fungible(), tn!("RGB20Base")) }
@@ -77,7 +76,7 @@ pub fn renameable() -> Iface {
         metadata: none!(),
         global_state: none!(),
         assignments: tiny_bmap! {
-            fname!("updateRight") => AssignIface::public(OwnedIface::Rights, Req::Required),
+            fname!("updateRight") => AssignIface::required().rights().public(),
         },
         valencies: none!(),
         genesis: GenesisIface {
@@ -128,7 +127,7 @@ pub fn fungible() -> Iface {
             fname!("issuedSupply") => GlobalIface::required(types.get("RGBContract.Amount")),
         },
         assignments: tiny_bmap! {
-            fname!("assetOwner") => AssignIface::private(OwnedIface::Amount, Req::NoneOrMore),
+            fname!("assetOwner") => AssignIface::none_or_many().typed(types.get("RGBContract.Amount")),
         },
         valencies: none!(),
         genesis: GenesisIface {
@@ -232,6 +231,7 @@ pub fn reservable() -> Iface {
  */
 
 pub fn fixed() -> Iface {
+    let types = StandardTypes::new();
     Iface {
         version: VerNo::V1,
         name: tn!("FixedAsset"),
@@ -241,7 +241,7 @@ pub fn fixed() -> Iface {
         metadata: none!(),
         global_state: none!(),
         assignments: tiny_bmap! {
-            fname!("assetOwner") => AssignIface::private(OwnedIface::Amount, Req::OneOrMore),
+            fname!("assetOwner") => AssignIface::one_or_many().typed(types.get("RGBContract.Amount")),
         },
         valencies: none!(),
         genesis: GenesisIface {
@@ -271,15 +271,13 @@ pub fn inflatable() -> Iface {
         developer: Identity::from(LNPBP_IDENTITY),
         timestamp: 1711405444,
         name: tn!("InflatableAsset"),
-        metadata: tiny_bmap! {
-            fname!("allowedInflation") => types.get("RGBContract.Amount"),
-        },
+        metadata: none!(),
         global_state: tiny_bmap! {
             fname!("issuedSupply") => GlobalIface::one_or_many(types.get("RGBContract.Amount")),
             fname!("maxSupply") => GlobalIface::required(types.get("RGBContract.Amount")),
         },
         assignments: tiny_bmap! {
-            fname!("inflationAllowance") => AssignIface::public(OwnedIface::Amount, Req::NoneOrMore),
+            fname!("inflationAllowance") => AssignIface::none_or_many().typed(types.get("RGBContract.Amount")).public(),
         },
         valencies: none!(),
         genesis: GenesisIface {
@@ -301,7 +299,7 @@ pub fn inflatable() -> Iface {
             fname!("issue") => TransitionIface {
                 modifier: Modifier::Abstract,
                 optional: false,
-                metadata: tiny_bset![fname!("allowedInflation")],
+                metadata: none!(),
                 globals: tiny_bmap! {
                     fname!("issuedSupply") => Occurrences::Once,
                 },
@@ -347,7 +345,7 @@ pub fn burnable() -> Iface {
             fname!("burnedSupply") => GlobalIface::none_or_many(types.get("RGBContract.Amount")),
         },
         assignments: tiny_bmap! {
-            fname!("burnRight") => AssignIface::public(OwnedIface::Rights, Req::OneOrMore),
+            fname!("burnRight") => AssignIface::one_or_many().rights().public(),
         },
         valencies: none!(),
         genesis: GenesisIface {
@@ -404,7 +402,7 @@ pub fn replaceable() -> Iface {
             fname!("replacedSupply") => GlobalIface::none_or_many(types.get("RGBContract.Amount")),
         },
         assignments: tiny_bmap! {
-            fname!("replaceRight") => AssignIface::public(OwnedIface::Rights, Req::OneOrMore),
+            fname!("replaceRight") => AssignIface::one_or_many().rights().public(),
         },
         valencies: none!(),
         genesis: GenesisIface {

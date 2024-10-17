@@ -28,7 +28,6 @@ use amplify::confinement::Confined;
 use rgbstd::info::FeatureList;
 use rgbstd::interface::{Iface, IfaceClass, IfaceId};
 use rgbstd::persistence::ContractStateRead;
-use rgbstd::stl::rgb_contract_stl;
 use strict_types::TypeLib;
 
 use self::iface::{burnable, fixed, inflatable, replaceable, rgb20_base, rgb20_renamable};
@@ -41,6 +40,7 @@ use crate::rgb20::wrapper::{
     RGB20_RENAMABLE_INFLATABLE_BURNABLE_IFACE_ID, RGB20_RENAMABLE_INFLATABLE_IFACE_ID,
     RGB20_REPLACABLE_IFACE_ID,
 };
+use crate::stl::rgb_contract_stl;
 
 pub const LIB_NAME_RGB20: &str = "RGB20";
 

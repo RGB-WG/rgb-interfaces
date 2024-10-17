@@ -20,37 +20,40 @@
 // limitations under the License.
 
 use rgbstd::interface::{
-    AssignmentsFilter, ContractIface, ContractOp, DataAllocation, IfaceClass, IfaceId, IfaceWrapper,
+    AssignmentsFilter, ContractIface, ContractOp, IfaceClass, IfaceId, IfaceWrapper, Output,
 };
 use rgbstd::persistence::ContractStateRead;
-use rgbstd::stl::{bp_tx_stl, rgb_contract_stl, AssetSpec, ContractTerms};
-use rgbstd::{Allocation, ContractId, SchemaId, WitnessInfo, XWitnessId};
+use rgbstd::stl::bp_tx_stl;
+use rgbstd::{ContractId, SchemaId, WitnessInfo, XWitnessId};
 use strict_types::stl::std_stl;
 use strict_types::{CompileError, LibBuilder, TypeLib};
 
-use super::{AttachmentType, EngravingData, ItemsCount, Rgb21, TokenData, LIB_NAME_RGB21};
+use super::{
+    AttachmentType, EngravingData, ItemsCount, NftAllocation, Rgb21, TokenData, LIB_NAME_RGB21,
+};
 use crate::rgb20::Rgb20Info;
+use crate::stl::{rgb_contract_stl, AssetSpec, ContractTerms};
 
 pub const RGB21_UNIQUE_IFACE_ID: IfaceId = IfaceId::from_array([
-    0xcd, 0xa8, 0x94, 0x87, 0x6e, 0xc5, 0xd9, 0xc6, 0x16, 0x7d, 0xc7, 0x45, 0x7c, 0xbe, 0x65, 0x05,
-    0xcb, 0x94, 0x7a, 0x73, 0xba, 0xe8, 0x86, 0x19, 0x13, 0x40, 0xfd, 0x19, 0xe5, 0x48, 0xbc, 0x65,
+    0x93, 0x29, 0x82, 0x38, 0x62, 0x1a, 0x36, 0x62, 0xaf, 0xc2, 0x99, 0xf5, 0x77, 0xab, 0x6f, 0x01,
+    0x97, 0xb8, 0xbe, 0x29, 0x5f, 0x12, 0xf9, 0xe5, 0xba, 0x03, 0xdf, 0xb3, 0x4c, 0x36, 0x3f, 0xf7,
 ]);
 
 pub const RGB21_IFACE_ID: IfaceId = IfaceId::from_array([
-    0x31, 0x36, 0xc2, 0xd3, 0x12, 0x32, 0xb7, 0x89, 0x23, 0x9d, 0x13, 0xba, 0x96, 0xb7, 0x9f, 0x31,
-    0x34, 0x03, 0x0f, 0x1b, 0x52, 0x35, 0x23, 0x4e, 0x1d, 0xe9, 0xff, 0x58, 0x47, 0xb2, 0xc9, 0xf7,
+    0x22, 0xf1, 0x39, 0x64, 0x48, 0x63, 0x2c, 0xfc, 0xe6, 0xb8, 0xa5, 0x2c, 0xb4, 0x55, 0xeb, 0x39,
+    0x81, 0x8c, 0x0e, 0x07, 0xe8, 0x3e, 0x2e, 0x47, 0x48, 0xc7, 0xb2, 0x9c, 0x5c, 0xc4, 0x59, 0xfd,
 ]);
 
 fn _rgb21_stl() -> Result<TypeLib, CompileError> {
     LibBuilder::new(libname!(LIB_NAME_RGB21), tiny_bset! {
         std_stl().to_dependency(),
         bp_tx_stl().to_dependency(),
-        rgb_contract_stl().to_dependency()
+        rgb_contract_stl().to_dependency(),
     })
     .transpile::<TokenData>()
     .transpile::<EngravingData>()
     .transpile::<ItemsCount>()
-    .transpile::<Allocation>()
+    .transpile::<NftAllocation>()
     .transpile::<AttachmentType>()
     .compile()
 }
@@ -87,48 +90,41 @@ impl<S: ContractStateRead> IfaceWrapper<S> for Rgb21Wrapper<S> {
 
 impl<S: ContractStateRead> Rgb21Wrapper<S> {
     pub fn spec(&self) -> AssetSpec {
-        let strict_val = &self
-            .0
-            .global("spec")
+        self.0
+            .global_typed::<AssetSpec>("spec")
             .expect("RGB21 interface requires global `spec`")
             .next()
-            .expect("RGB21 interface requires global state `spec` to have at least one item");
-        AssetSpec::from_strict_val_unchecked(strict_val)
+            .expect("RGB21 interface requires global state `spec` to have at least one item")
     }
 
     pub fn contract_terms(&self) -> ContractTerms {
-        let strict_val = &self
-            .0
-            .global("terms")
+        self.0
+            .global_typed::<ContractTerms>("terms")
             .expect("RGB21 interface requires global `terms`")
             .next()
-            .expect("RGB21 interface requires global state `terms` to have at least one item");
-        ContractTerms::from_strict_val_unchecked(strict_val)
+            .expect("RGB21 interface requires global state `terms` to have at least one item")
     }
 
     pub fn token_data(&self) -> TokenData {
-        let strict_val = &self
-            .0
-            .global("tokens")
+        self.0
+            .global_typed::<TokenData>("tokens")
             .expect("RGB21 interface requires global `tokens`")
             .next()
-            .expect("RGB21 interface requires global state `tokens` to have at least one item");
-        TokenData::from_strict_val_unchecked(strict_val)
+            .expect("RGB21 interface requires global state `tokens` to have at least one item")
     }
 
     pub fn engraving_data(&self) -> impl Iterator<Item = EngravingData> + '_ {
         self.0
-            .global("engravings")
+            .global_typed::<EngravingData>("engravings")
             .expect("RGB21 interface requires global state `engravings`")
-            .map(|strict_val| EngravingData::from_strict_val_unchecked(&strict_val))
     }
 
     pub fn allocations<'c>(
         &'c self,
         filter: impl AssignmentsFilter + 'c,
-    ) -> impl Iterator<Item = DataAllocation> + 'c {
+    ) -> impl Iterator<Item = Output<NftAllocation>> + 'c {
         self.0
-            .data("assetOwner", filter)
+            .outputs_typed::<NftAllocation>("assetOwner", filter)
             .expect("RGB21 interface requires `assetOwner` state")
     }
 

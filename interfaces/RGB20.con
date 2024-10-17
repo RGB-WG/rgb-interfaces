@@ -1,5 +1,5 @@
 @version(1)
-@id(rgb:ifc:naFrAfgG-Kfu$A!c-3L!bC$4-s1LWJQV-4Iv!62u-4B3ab8Y#mailbox-dialog-iron)
+@id(rgb:ifc:rdybH$jR-oSvSmO6-5Kd39Jr-tY1Gw8u-33Li1mr-kttA3js#script-calypso-balsa)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20Base: NamedAsset, FungibleAsset
@@ -7,7 +7,7 @@ interface RGB20Base: NamedAsset, FungibleAsset
 	global spec: RGBContract.AssetSpec
 	global terms: RGBContract.ContractTerms
 
-	owned assetOwner(*): Zk64
+	owned assetOwner(*): RGBContract.Amount
 
 	error issuedMismatch
 		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
@@ -27,7 +27,7 @@ interface RGB20Base: NamedAsset, FungibleAsset
 
 
 @version(1)
-@id(rgb:ifc:1$D4u$R8-gvvRAMs-SAZpZiR-IPGrUMf-6xizoHW-8UtBnJU#arena-ladder-left)
+@id(rgb:ifc:36$QIrdA-q26kocm-mFC1v!U-li0uQ$P-2rPjDsj-sPtt$7I#radical-human-decade)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20Renamable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset
@@ -35,8 +35,8 @@ interface RGB20Renamable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset
 	global spec: RGBContract.AssetSpec
 	global terms: RGBContract.ContractTerms
 
-	owned assetOwner(*): Zk64
-	public updateRight: Rights
+	owned assetOwner(*): RGBContract.Amount
+	public updateRight: 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
 
 	error issuedMismatch
 		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
@@ -62,7 +62,7 @@ interface RGB20Renamable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset
 
 
 @version(1)
-@id(rgb:ifc:$iUnO9aO-1xhqUd6-1Jm5S5!-wM3ngby-5GVEylQ-ZTAMYDk#tornado-pioneer-bucket)
+@id(rgb:ifc:Oq2rlfVG-m!!reli-q10Jxut-FBhzKXQ-mxtfYzg-Td1qVfQ#club-factor-montana)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20Fixed: NamedAsset, FungibleAsset, RGB20Base, FixedAsset
@@ -70,7 +70,7 @@ interface RGB20Fixed: NamedAsset, FungibleAsset, RGB20Base, FixedAsset
 	global spec: RGBContract.AssetSpec
 	global terms: RGBContract.ContractTerms
 
-	owned assetOwner(+): Zk64
+	owned assetOwner(+): RGBContract.Amount
 
 	error issuedMismatch
 		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
@@ -90,7 +90,7 @@ interface RGB20Fixed: NamedAsset, FungibleAsset, RGB20Base, FixedAsset
 
 
 @version(1)
-@id(rgb:ifc:meHrtVTZ-6xAdd0w-rjDttLh-cs2n7zn-sZBzfwz-FcU!i24#jungle-wizard-dollar)
+@id(rgb:ifc:8Ve9nkin-k!rNXag-4Jjb66h-vwHEyts-AUvDs5b-XjY9n7g#flute-darwin-arena)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20RenamableFixed: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset, RGB20Renamable, FixedAsset
@@ -98,8 +98,8 @@ interface RGB20RenamableFixed: NamedAsset, FungibleAsset, RGB20Base, RenameableA
 	global spec: RGBContract.AssetSpec
 	global terms: RGBContract.ContractTerms
 
-	owned assetOwner(+): Zk64
-	public updateRight: Rights
+	owned assetOwner(+): RGBContract.Amount
+	public updateRight: 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
 
 	error issuedMismatch
 		"supply specified as a global parameter doesn't match the issued supply allocated to the asset owners"
@@ -125,19 +125,17 @@ interface RGB20RenamableFixed: NamedAsset, FungibleAsset, RGB20Base, RenameableA
 
 
 @version(1)
-@id(rgb:ifc:YLpmbnY2-yZn$JdG-ghjwoCP-zj215y0-$XuwA90-o$CP$pg#camel-slogan-comrade)
+@id(rgb:ifc:4uhMBcJl-6nwJ79l-sVNo1E2-BB19rdl-rdQGt1X-3Iqq3YA#lopez-chant-journal)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20Inflatable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsset
-	meta allowedInflation: RGBContract.Amount
-
 	global issuedSupply(+): RGBContract.Amount
 	global maxSupply: RGBContract.Amount
 	global spec: RGBContract.AssetSpec
 	global terms: RGBContract.ContractTerms
 
-	owned assetOwner(*): Zk64
-	public inflationAllowance(*): Zk64
+	owned assetOwner(*): RGBContract.Amount
+	public inflationAllowance(*): RGBContract.Amount
 
 	error inflationExceedsAllowance
 		"you try to issue more assets than allowed by the contract terms"
@@ -155,7 +153,6 @@ interface RGB20Inflatable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsset
 
 	transition issue: required, abstract
 		errors: inflationExceedsAllowance, issuedMismatch
-		meta: allowedInflation
 		globals: issuedSupply
 		assigns: assetOwner(*), inflationAllowance(*)
 		default: assetOwner
@@ -169,7 +166,7 @@ interface RGB20Inflatable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsset
 
 
 @version(1)
-@id(rgb:ifc:yxQRcNJ4-yMnJ0$c-gLjwpdS-8DuJjFn-pWQ4i5C-To2R$U4#basil-gopher-music)
+@id(rgb:ifc:k$iPxrD7-8Og7n1Z-2uezBV8-ZH!dXm3-tRxgViG-6x5BVnc#button-express-igloo)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20Burnable: NamedAsset, FungibleAsset, RGB20Base, BurnableAsset
@@ -181,8 +178,8 @@ interface RGB20Burnable: NamedAsset, FungibleAsset, RGB20Base, BurnableAsset
 	global spec: RGBContract.AssetSpec
 	global terms: RGBContract.ContractTerms
 
-	owned assetOwner(*): Zk64
-	public burnRight(+): Rights
+	owned assetOwner(*): RGBContract.Amount
+	public burnRight(+): 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
 
 	error invalidBurnProof
 		"the provided proof of reserves is invalid"
@@ -211,11 +208,10 @@ interface RGB20Burnable: NamedAsset, FungibleAsset, RGB20Base, BurnableAsset
 
 
 @version(1)
-@id(rgb:ifc:BWy2H0Nd-ykgandr-mR5fydi-U$7tFU2-R!z1F9B-MZW0tKo#bishop-poem-dublin)
+@id(rgb:ifc:1Jrlq3oA-UMSu82N-dFRFq6T-pqnX0aF-xH17MPN-Y2r1Uqs#jargon-pedro-modern)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20InflatableBurnable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsset, RGB20Inflatable, BurnableAsset
-	meta allowedInflation: RGBContract.Amount
 	meta burnProof: RGBContract.BurnMeta
 
 	global burnConsignmentUrl(?): RGBContract.Details
@@ -225,9 +221,9 @@ interface RGB20InflatableBurnable: NamedAsset, FungibleAsset, RGB20Base, Inflata
 	global spec: RGBContract.AssetSpec
 	global terms: RGBContract.ContractTerms
 
-	owned assetOwner(*): Zk64
-	public burnRight(+): Rights
-	public inflationAllowance(*): Zk64
+	owned assetOwner(*): RGBContract.Amount
+	public burnRight(+): 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
+	public inflationAllowance(*): RGBContract.Amount
 
 	error inflationExceedsAllowance
 		"you try to issue more assets than allowed by the contract terms"
@@ -254,7 +250,6 @@ interface RGB20InflatableBurnable: NamedAsset, FungibleAsset, RGB20Base, Inflata
 
 	transition issue: required, abstract
 		errors: inflationExceedsAllowance, issuedMismatch
-		meta: allowedInflation
 		globals: issuedSupply
 		assigns: assetOwner(*), inflationAllowance(*)
 		default: assetOwner
@@ -268,11 +263,10 @@ interface RGB20InflatableBurnable: NamedAsset, FungibleAsset, RGB20Base, Inflata
 
 
 @version(1)
-@id(rgb:ifc:w0Z1Za2j-klpfWyT-4coOB!6-90qakW5-AfjmIc9-ejZbKZU#cycle-buzzer-british)
+@id(rgb:ifc:tsFbtLc7-ijbJ0C3-YdI2b6w-aeW!ofX-!DecY5g-bEs0eW4#agatha-poker-tango)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20Replaceable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsset, RGB20Inflatable, BurnableAsset, RGB20InflatableBurnable, ReplaceableAsset
-	meta allowedInflation: RGBContract.Amount
 	meta burnProof: RGBContract.BurnMeta
 
 	global burnConsignmentUrl(?): RGBContract.Details
@@ -283,10 +277,10 @@ interface RGB20Replaceable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsse
 	global spec: RGBContract.AssetSpec
 	global terms: RGBContract.ContractTerms
 
-	owned assetOwner(*): Zk64
-	public burnRight(+): Rights
-	public inflationAllowance(*): Zk64
-	public replaceRight(+): Rights
+	owned assetOwner(*): RGBContract.Amount
+	public burnRight(+): 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
+	public inflationAllowance(*): RGBContract.Amount
+	public replaceRight(+): 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
 
 	error inflationExceedsAllowance
 		"you try to issue more assets than allowed by the contract terms"
@@ -313,7 +307,6 @@ interface RGB20Replaceable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsse
 
 	transition issue: required, abstract
 		errors: inflationExceedsAllowance, issuedMismatch
-		meta: allowedInflation
 		globals: issuedSupply
 		assigns: assetOwner(*), inflationAllowance(*)
 		default: assetOwner
@@ -335,20 +328,18 @@ interface RGB20Replaceable: NamedAsset, FungibleAsset, RGB20Base, InflatableAsse
 
 
 @version(1)
-@id(rgb:ifc:Gzd3DwVy-TtF3Z6V-h981qjU-WV9QmbS-$SB5Tyg-6y5PLPc#battery-consul-mercury)
+@id(rgb:ifc:UZa96Pql-tG1kWRV-WB5yyVj-QCu5I4W-Kk!PG$U-ZMnmHvk#bruno-animal-totem)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20RenamableInflatable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset, RGB20Renamable, InflatableAsset
-	meta allowedInflation: RGBContract.Amount
-
 	global issuedSupply(+): RGBContract.Amount
 	global maxSupply: RGBContract.Amount
 	global spec: RGBContract.AssetSpec
 	global terms: RGBContract.ContractTerms
 
-	owned assetOwner(*): Zk64
-	public inflationAllowance(*): Zk64
-	public updateRight: Rights
+	owned assetOwner(*): RGBContract.Amount
+	public inflationAllowance(*): RGBContract.Amount
+	public updateRight: 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
 
 	error inflationExceedsAllowance
 		"you try to issue more assets than allowed by the contract terms"
@@ -366,7 +357,6 @@ interface RGB20RenamableInflatable: NamedAsset, FungibleAsset, RGB20Base, Rename
 
 	transition issue: required, abstract
 		errors: inflationExceedsAllowance, issuedMismatch
-		meta: allowedInflation
 		globals: issuedSupply
 		assigns: assetOwner(*), inflationAllowance(*)
 		default: assetOwner
@@ -386,7 +376,7 @@ interface RGB20RenamableInflatable: NamedAsset, FungibleAsset, RGB20Base, Rename
 
 
 @version(1)
-@id(rgb:ifc:FFfPPWDH-4$BWBn7-3QnE8WV-nHj98E8-IoAIZvt-4kiX7YA#theory-memo-puzzle)
+@id(rgb:ifc:4dWw9IYp-yzQdFgh-jwV!liK-j0K3hht-5N2IhWM-q1WK2KU#game-actor-diet)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20RenamableBurnable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset, RGB20Renamable, BurnableAsset
@@ -398,9 +388,9 @@ interface RGB20RenamableBurnable: NamedAsset, FungibleAsset, RGB20Base, Renameab
 	global spec: RGBContract.AssetSpec
 	global terms: RGBContract.ContractTerms
 
-	owned assetOwner(*): Zk64
-	public burnRight(+): Rights
-	public updateRight: Rights
+	owned assetOwner(*): RGBContract.Amount
+	public burnRight(+): 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
+	public updateRight: 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
 
 	error invalidBurnProof
 		"the provided proof of reserves is invalid"
@@ -435,11 +425,10 @@ interface RGB20RenamableBurnable: NamedAsset, FungibleAsset, RGB20Base, Renameab
 
 
 @version(1)
-@id(rgb:ifc:MkSuvvz2-StGzuV8-Hewq0fo-hMigWm$-UMxXtdP-RCnZyec#asia-domino-respect)
+@id(rgb:ifc:vc3ezu54-R44wAJK-KUnxzX2-oy3D4N3-KqdU8mh-Qp5evQA#garlic-piano-side)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20RenamableInflatableBurnable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset, RGB20Renamable, InflatableAsset, RGB20RenamableInflatable, BurnableAsset
-	meta allowedInflation: RGBContract.Amount
 	meta burnProof: RGBContract.BurnMeta
 
 	global burnConsignmentUrl(?): RGBContract.Details
@@ -449,10 +438,10 @@ interface RGB20RenamableInflatableBurnable: NamedAsset, FungibleAsset, RGB20Base
 	global spec: RGBContract.AssetSpec
 	global terms: RGBContract.ContractTerms
 
-	owned assetOwner(*): Zk64
-	public burnRight(+): Rights
-	public inflationAllowance(*): Zk64
-	public updateRight: Rights
+	owned assetOwner(*): RGBContract.Amount
+	public burnRight(+): 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
+	public inflationAllowance(*): RGBContract.Amount
+	public updateRight: 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
 
 	error inflationExceedsAllowance
 		"you try to issue more assets than allowed by the contract terms"
@@ -479,7 +468,6 @@ interface RGB20RenamableInflatableBurnable: NamedAsset, FungibleAsset, RGB20Base
 
 	transition issue: required, abstract
 		errors: inflationExceedsAllowance, issuedMismatch
-		meta: allowedInflation
 		globals: issuedSupply
 		assigns: assetOwner(*), inflationAllowance(*)
 		default: assetOwner
@@ -499,11 +487,10 @@ interface RGB20RenamableInflatableBurnable: NamedAsset, FungibleAsset, RGB20Base
 
 
 @version(1)
-@id(rgb:ifc:r6$dLeVy-H0HQpUy-F2XbX2E-P2JqbHp-wsISD4f-xUEaOKQ#postage-plaza-almond)
+@id(rgb:ifc:dhbZ77Ii-EjWn0vr-4dI0NMP-HDlpnNH-YhaurpI-QDGmCGY#pelican-scarlet-slang)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface RGB20RenamableReplaceable: NamedAsset, FungibleAsset, RGB20Base, RenameableAsset, RGB20Renamable, InflatableAsset, RGB20RenamableInflatable, BurnableAsset, RGB20RenamableInflatableBurnable, ReplaceableAsset
-	meta allowedInflation: RGBContract.Amount
 	meta burnProof: RGBContract.BurnMeta
 
 	global burnConsignmentUrl(?): RGBContract.Details
@@ -514,11 +501,11 @@ interface RGB20RenamableReplaceable: NamedAsset, FungibleAsset, RGB20Base, Renam
 	global spec: RGBContract.AssetSpec
 	global terms: RGBContract.ContractTerms
 
-	owned assetOwner(*): Zk64
-	public burnRight(+): Rights
-	public inflationAllowance(*): Zk64
-	public replaceRight(+): Rights
-	public updateRight: Rights
+	owned assetOwner(*): RGBContract.Amount
+	public burnRight(+): 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
+	public inflationAllowance(*): RGBContract.Amount
+	public replaceRight(+): 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
+	public updateRight: 2D!!4C8N-5bRs!A$-hHvf98G-HHjZddM-a3p7qK8-QJkznmw#toga-natural-solo -- type name unknown
 
 	error inflationExceedsAllowance
 		"you try to issue more assets than allowed by the contract terms"
@@ -545,7 +532,6 @@ interface RGB20RenamableReplaceable: NamedAsset, FungibleAsset, RGB20Base, Renam
 
 	transition issue: required, abstract
 		errors: inflationExceedsAllowance, issuedMismatch
-		meta: allowedInflation
 		globals: issuedSupply
 		assigns: assetOwner(*), inflationAllowance(*)
 		default: assetOwner
