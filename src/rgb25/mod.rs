@@ -30,13 +30,13 @@ pub use issuer::Issue;
 use rgbstd::info::FeatureList;
 use rgbstd::interface::{Iface, IfaceClass, IfaceId};
 use rgbstd::persistence::ContractStateRead;
-use rgbstd::stl::rgb_contract_stl;
 use strict_types::TypeLib;
 pub use wrapper::{Rgb25Wrapper, RGB25_IFACE_ID};
 
 use crate::rgb20::iface::{burnable, fungible};
 use crate::rgb25::iface::named_contract;
 use crate::rgb25::wrapper::RGB25_BASE_IFACE_ID;
+use crate::stl::rgb_contract_stl;
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 #[cfg_attr(

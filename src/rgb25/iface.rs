@@ -20,9 +20,9 @@
 // limitations under the License.
 
 use rgbstd::interface::{GenesisIface, GlobalIface, Iface, Modifier, VerNo};
-use rgbstd::stl::StandardTypes;
 use rgbstd::{Identity, Occurrences};
 
+use crate::stl::StandardTypes;
 use crate::LNPBP_IDENTITY;
 
 pub fn named_contract() -> Iface {

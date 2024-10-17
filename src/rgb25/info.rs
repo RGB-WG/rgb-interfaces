@@ -22,10 +22,9 @@
 use std::fmt::{self, Display, Formatter};
 
 use rgbstd::info::ContractInfo;
-use rgbstd::stl::Attachment;
-use rgbstd::Precision;
 
 use crate::rgb25::Rgb25;
+use crate::stl::{Attachment, Precision};
 
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 #[cfg_attr(

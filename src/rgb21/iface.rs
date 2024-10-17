@@ -20,13 +20,12 @@
 // limitations under the License.
 
 use rgbstd::interface::{
-    AssignIface, GenesisIface, GlobalIface, Iface, IfaceClass, Modifier, OwnedIface, Req,
-    TransitionIface, VerNo,
+    AssignIface, GenesisIface, GlobalIface, Iface, IfaceClass, Modifier, TransitionIface, VerNo,
 };
-use rgbstd::stl::StandardTypes;
 use rgbstd::{Identity, Occurrences};
 
 use super::Rgb21;
+use crate::stl::StandardTypes;
 use crate::LNPBP_IDENTITY;
 
 pub fn nft() -> Iface {
@@ -43,7 +42,7 @@ pub fn nft() -> Iface {
             fname!("attachmentTypes") => GlobalIface::none_or_many(types.get("RGB21.AttachmentType")),
         },
         assignments: tiny_bmap! {
-            fname!("assetOwner") => AssignIface::private(OwnedIface::Data(types.get("RGBContract.Allocation")), Req::NoneOrMore),
+            fname!("assetOwner") => AssignIface::none_or_many().typed(types.get("RGBContract.NftAllocation")),
         },
         valencies: none!(),
         genesis: GenesisIface {
@@ -120,7 +119,7 @@ pub fn unique() -> Iface {
             fname!("attachmentTypes") => GlobalIface::required(types.get("RGB21.AttachmentType")),
         },
         assignments: tiny_bmap! {
-            fname!("assetOwner") => AssignIface::private(OwnedIface::Data(types.get("RGBContract.Allocation")), Req::OneOrMore),
+            fname!("assetOwner") => AssignIface::one_or_many().typed(types.get("RGBContract.NftAllocation")),
         },
         valencies: none!(),
         genesis: GenesisIface {
@@ -157,7 +156,7 @@ pub fn limited() -> Iface {
             fname!("attachmentTypes") => GlobalIface::one_or_many(types.get("RGB21.AttachmentType")),
         },
         assignments: tiny_bmap! {
-            fname!("assetOwner") => AssignIface::private(OwnedIface::Data(types.get("RGBContract.Allocation")), Req::OneOrMore),
+            fname!("assetOwner") => AssignIface::one_or_many().typed(types.get("RGBContract.NftAllocation")),
         },
         valencies: none!(),
         genesis: GenesisIface {
@@ -247,7 +246,7 @@ pub fn issuable() -> Iface {
         metadata: none!(),
         global_state: none!(),
         assignments: tiny_bmap! {
-            fname!("inflationAllowance") => AssignIface::public(OwnedIface::Data(types.get("RGB21.ItemsCount")), Req::OneOrMore),
+            fname!("inflationAllowance") => AssignIface::one_or_many().typed(types.get("RGB21.ItemsCount")).public(),
         },
         valencies: none!(),
         genesis: GenesisIface {

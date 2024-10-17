@@ -23,10 +23,10 @@ use std::fmt::{self, Display, Formatter, Write};
 
 use chrono::{DateTime, Utc};
 use rgbstd::info::ContractInfo;
-use rgbstd::stl::Attachment;
-use rgbstd::{Amount, Precision, XOutpoint, XWitnessId};
+use rgbstd::{XOutpoint, XWitnessId};
 
 use crate::rgb20::Rgb20;
+use crate::stl::{Amount, Attachment, Precision};
 
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 #[cfg_attr(

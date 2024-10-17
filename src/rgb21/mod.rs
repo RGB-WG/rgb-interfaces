@@ -31,8 +31,8 @@ use strict_types::TypeLib;
 
 use self::iface::{engravable, issuable, limited, nft, unique};
 pub use self::types::{
-    AttachmentName, AttachmentType, EmbeddedMedia, EngravingData, ItemsCount, TokenData,
-    LIB_ID_RGB21, LIB_NAME_RGB21,
+    AttachmentName, AttachmentType, EmbeddedMedia, EngravingData, ItemsCount, NftAllocation,
+    TokenData, TokenIndex, LIB_ID_RGB21, LIB_NAME_RGB21,
 };
 pub use self::wrapper::{Rgb21Wrapper, RGB21_IFACE_ID, RGB21_UNIQUE_IFACE_ID};
 use crate::rgb20::iface::{named_asset, renameable};

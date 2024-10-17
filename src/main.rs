@@ -25,13 +25,14 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use std::{fs, io};
 
+use ifaces::stl::rgb_contract_stl;
 use ifaces::{rgb20, rgb21, rgb25, Rgb20, Rgb21, LNPBP_IDENTITY};
 use rgbstd::containers::{
     FileContent, Kit, Supplement, SUPPL_ANNOT_IFACE_CLASS, SUPPL_ANNOT_IFACE_FEATURES,
 };
 use rgbstd::info::IfaceClassName;
 use rgbstd::interface::IfaceClass;
-use rgbstd::stl::{bp_tx_stl, rgb_contract_stl};
+use rgbstd::stl::bp_tx_stl;
 use strict_types::stl::std_stl;
 use strict_types::{StlFormat, SystemBuilder};
 
@@ -71,8 +72,8 @@ fn main() -> io::Result<()> {
         kit.ifaces.push(iface.clone()).unwrap();
         kit.types.extend(types).unwrap();
     }
-    kit.save_file("interfaces/RGBStd.rgb")?;
-    kit.save_armored("interfaces/RGBStd.rgba")?;
+    kit.save_file("interfaces/IfaceStd.rgb")?;
+    kit.save_armored("interfaces/IfaceStd.rgba")?;
 
     let mut kit = Kit::default();
     for features in rgb20::Rgb20::ENUMERATE {
@@ -148,6 +149,28 @@ fn main() -> io::Result<()> {
     )
     .expect("unable to write to the file");
 
+    let contract_stl = rgb_contract_stl();
+    contract_stl
+        .serialize(StlFormat::Binary, Some(&dir), "0.11.0", None)
+        .expect("unable to write to the file");
+    contract_stl
+        .serialize(StlFormat::Armored, Some(&dir), "0.11.0", None)
+        .expect("unable to write to the file");
+    contract_stl
+        .serialize(
+            StlFormat::Source,
+            Some(&dir),
+            "0.11.0",
+            Some(
+                "
+  Description: Types for writing RGB contracts and interfaces
+  Author: Dr Maxim Orlovsky <orlovsky@lnp-bp.org>
+  Copyright (C) 2023-2024 LNP/BP Standards Association. All rights reserved.
+  License: Apache-2.0",
+            ),
+        )
+        .expect("unable to write to the file");
+
     let mut filename = dir.clone();
 
     let mut map = HashMap::new();
@@ -158,7 +181,7 @@ fn main() -> io::Result<()> {
             .map(|iface| (iface.iface_id(), iface.name.clone())),
     );
 
-    filename.push("RGBStd.con");
+    filename.push("IfaceStd.con");
     let mut file = fs::File::create(&filename).unwrap();
     for iface in ifaces {
         writeln!(file, "{}", iface.display(&map, &ifsys)).unwrap();

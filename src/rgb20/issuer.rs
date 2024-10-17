@@ -22,14 +22,14 @@
 use std::str::FromStr;
 
 use bp::dbc::Method;
+use rand::random;
 use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
-use rgbstd::invoice::{Amount, Precision};
-use rgbstd::stl::{AssetSpec, Attachment, ContractTerms, RicardianContract};
-use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal, Identity};
+use rgbstd::{AltLayer1, GenesisSeal, Identity};
 use strict_encoding::InvalidRString;
 
 use super::Rgb20;
+use crate::stl::{Amount, AssetSpec, Attachment, ContractTerms, Precision, RicardianContract};
 use crate::{IssuerWrapper, SchemaIssuer};
 
 #[derive(Clone, Eq, PartialEq, Hash, Debug, Display, Error)]
@@ -69,7 +69,7 @@ impl PrimaryIssue {
         details: Option<&str>,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(issuer, by, ticker, name, details, precision, false)
+        Self::testnet_int(issuer, by, ticker, name, details, precision)
     }
 
     pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb20>>(
@@ -79,23 +79,7 @@ impl PrimaryIssue {
         details: Option<&str>,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(C::issuer(), by, ticker, name, details, precision, false)
-    }
-
-    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb20>>(
-        by: &str,
-        ticker: &str,
-        name: &str,
-        details: Option<&str>,
-        precision: Precision,
-        asset_tag: AssetTag,
-    ) -> Result<Self, InvalidRString> {
-        let mut me = Self::testnet_int(C::issuer(), by, ticker, name, details, precision, true)?;
-        me.builder = me
-            .builder
-            .add_asset_tag("assetOwner", asset_tag)
-            .expect("invalid RGB20 schema (assetOwner mismatch)");
-        Ok(me)
+        Self::testnet_int(C::issuer(), by, ticker, name, details, precision)
     }
 
     fn testnet_int(
@@ -105,7 +89,6 @@ impl PrimaryIssue {
         name: &str,
         details: Option<&str>,
         precision: Precision,
-        deterministic: bool,
     ) -> Result<Self, InvalidRString> {
         let spec = AssetSpec::with(ticker, name, precision, details)?;
         let terms = ContractTerms {
@@ -114,27 +97,16 @@ impl PrimaryIssue {
         };
 
         let (schema, main_iface_impl, types, scripts, features) = issuer.into_split();
-        let mut builder = match deterministic {
-            false => ContractBuilder::with(
-                Identity::from_str(by).expect("invalid issuer identity string"),
-                features.iface(),
-                schema,
-                main_iface_impl,
-                types,
-                scripts,
-            ),
-            true => ContractBuilder::deterministic(
-                Identity::from_str(by).expect("invalid issuer identity string"),
-                features.iface(),
-                schema,
-                main_iface_impl,
-                types,
-                scripts,
-            ),
-        };
-        builder = builder
-            .add_global_state("spec", spec)
-            .expect("invalid RGB20 schema (token specification mismatch)");
+        let builder = ContractBuilder::with(
+            Identity::from_str(by).expect("invalid issuer identity string"),
+            features.iface(),
+            schema,
+            main_iface_impl,
+            types,
+            scripts,
+        )
+        .serialize_global_state("spec", &spec)
+        .expect("invalid RGB20 schema (token specification mismatch)");
 
         Ok(Self {
             builder,
@@ -163,27 +135,19 @@ impl PrimaryIssue {
     }
 
     pub fn add_inflation_metadata(mut self, amount: Amount) -> Result<Self, IssuerError> {
-        self.builder = self.builder.add_metadata("allowedInflation", amount)?;
+        self.builder = self
+            .builder
+            .serialize_metadata("allowedInflation", &amount)?;
         Ok(self)
     }
 
     pub fn allocate<O: TxOutpoint>(
-        mut self,
+        self,
         method: Method,
         beneficiary: O,
         amount: impl Into<Amount>,
     ) -> Result<Self, IssuerError> {
-        let amount = amount.into();
-        let beneficiary = beneficiary.map_to_xchain(|outpoint| {
-            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
-        });
-        self.issued
-            .checked_add_assign(amount)
-            .ok_or(IssuerError::AmountOverflow)?;
-        self.builder =
-            self.builder
-                .add_fungible_state("assetOwner", beneficiary, amount.value())?;
-        Ok(self)
+        self.allocate_det(method, beneficiary, random(), amount)
     }
 
     pub fn allocate_all<O: TxOutpoint>(
@@ -204,7 +168,6 @@ impl PrimaryIssue {
         beneficiary: O,
         seal_blinding: u64,
         amount: impl Into<Amount>,
-        amount_blinding: BlindingFactor,
     ) -> Result<Self, IssuerError> {
         let amount = amount.into();
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
@@ -213,52 +176,37 @@ impl PrimaryIssue {
         self.issued
             .checked_add_assign(amount)
             .ok_or(IssuerError::AmountOverflow)?;
-        self.builder = self.builder.add_fungible_state_det(
-            "assetOwner",
-            beneficiary,
-            amount,
-            amount_blinding,
-        )?;
+        self.builder =
+            self.builder
+                .serialize_owned_state("assetOwner", beneficiary, &amount, None)?;
         Ok(self)
     }
 
     pub fn allow_inflation<O: TxOutpoint>(
-        mut self,
+        self,
         method: Method,
         controller: O,
         supply: impl Into<Amount>,
     ) -> Result<Self, IssuerError> {
-        let supply = supply.into();
-        let controller = controller.map_to_xchain(|outpoint| {
-            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
-        });
-        self = self.update_max_supply(supply)?;
-        self.builder =
-            self.builder
-                .add_fungible_state("inflationAllowance", controller, supply.value())?;
-        Ok(self)
+        self.allow_inflation_det(method, controller, random(), supply)
     }
 
     /// Add asset allocation in a deterministic way.
     pub fn allow_inflation_det<O: TxOutpoint>(
         mut self,
         method: Method,
-        beneficiary: O,
+        controller: O,
         seal_blinding: u64,
         supply: impl Into<Amount>,
-        supply_blinding: BlindingFactor,
     ) -> Result<Self, IssuerError> {
         let supply = supply.into();
-        let beneficiary = beneficiary.map_to_xchain(|outpoint| {
+        let beneficiary = controller.map_to_xchain(|outpoint| {
             GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
         });
         self = self.update_max_supply(supply)?;
-        self.builder = self.builder.add_fungible_state_det(
-            "inflationAllowance",
-            beneficiary,
-            supply,
-            supply_blinding,
-        )?;
+        self.builder =
+            self.builder
+                .serialize_owned_state("inflationAllowance", beneficiary, &supply, None)?;
         Ok(self)
     }
 
@@ -267,17 +215,7 @@ impl PrimaryIssue {
             Some(max) => max
                 .checked_add_assign(supply)
                 .ok_or(IssuerError::AmountOverflow)?,
-            None => {
-                let tag = self
-                    .builder
-                    .asset_tag("assetOwner")
-                    .expect("asset tag must be already set");
-                self.builder = self
-                    .builder
-                    .add_asset_tag("inflationAllowance", tag)
-                    .expect("invalid RGB20 inflation allowance tag (inflation allowance mismatch)");
-                self.inflation = Some(supply)
-            }
+            None => self.inflation = Some(supply),
         }
         Ok(self)
     }
@@ -290,7 +228,7 @@ impl PrimaryIssue {
         let controller = controller.map_to_xchain(|outpoint| {
             GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
         });
-        self.builder = self.builder.add_rights("burnRight", controller)?;
+        self.builder = self.builder.add_rights("burnRight", controller, None)?;
         Ok(self)
     }
 
@@ -303,7 +241,7 @@ impl PrimaryIssue {
         let controller = controller.map_to_xchain(|outpoint| {
             GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
         });
-        self.builder = self.builder.add_rights("burnRight", controller)?;
+        self.builder = self.builder.add_rights("burnRight", controller, None)?;
         Ok(self)
     }
 
@@ -315,7 +253,7 @@ impl PrimaryIssue {
         let controller = controller.map_to_xchain(|outpoint| {
             GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
         });
-        self.builder = self.builder.add_rights("replaceRight", controller)?;
+        self.builder = self.builder.add_rights("replaceRight", controller, None)?;
         Ok(self)
     }
 
@@ -328,16 +266,9 @@ impl PrimaryIssue {
         let controller = controller.map_to_xchain(|outpoint| {
             GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
         });
-        self.builder = self.builder.add_rights("replaceRight", controller)?;
+        self.builder = self.builder.add_rights("replaceRight", controller, None)?;
         Ok(self)
     }
-
-    // TODO: implement when bulletproofs are supported
-    /*
-    pub fn conceal_allocations(mut self) -> Self {
-
-    }
-     */
 
     #[allow(clippy::result_large_err)]
     pub fn issue_contract(self) -> Result<ValidContract, IssuerError> {
@@ -356,13 +287,13 @@ impl PrimaryIssue {
                 .issued
                 .checked_add(inflation)
                 .ok_or(IssuerError::AmountOverflow)?;
-            self.builder = self.builder.add_global_state("maxSupply", max)?;
+            self.builder = self.builder.serialize_global_state("maxSupply", &max)?;
         }
         Ok(self
             .builder
-            .add_global_state("issuedSupply", self.issued)?
-            .add_global_state("terms", self.terms)?)
+            .serialize_global_state("issuedSupply", &self.issued)?
+            .serialize_global_state("terms", &self.terms)?)
     }
-
-    // TODO: Add secondary issuance and other methods
 }
+
+// TODO: Add secondary issuer and other actors

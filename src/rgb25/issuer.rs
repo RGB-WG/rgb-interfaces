@@ -24,14 +24,12 @@ use std::str::FromStr;
 use bp::dbc::Method;
 use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
-use rgbstd::invoice::{Amount, Precision};
-use rgbstd::persistence::PersistedState;
-use rgbstd::stl::{Attachment, ContractTerms, Details, Name, RicardianContract};
-use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal, Identity};
+use rgbstd::{AltLayer1, GenesisSeal, Identity};
 use strict_encoding::InvalidRString;
 
 use super::Rgb25;
 use crate::rgb20::IssuerError;
+use crate::stl::{Amount, Attachment, ContractTerms, Details, Name, Precision, RicardianContract};
 use crate::{IssuerWrapper, SchemaIssuer};
 
 #[derive(Clone, Debug)]
@@ -39,7 +37,6 @@ pub struct Issue {
     builder: ContractBuilder,
     issued: Amount,
     terms: ContractTerms,
-    deterministic: bool,
 }
 
 impl Issue {
@@ -63,16 +60,15 @@ impl Issue {
             types,
             scripts,
         )
-        .add_global_state("name", Name::try_from(name.to_owned())?)
+        .serialize_global_state("name", &Name::try_from(name.to_owned())?)
         .expect("invalid RGB25 schema (name mismatch)")
-        .add_global_state("precision", precision)
+        .serialize_global_state("precision", &precision)
         .expect("invalid RGB25 schema (precision mismatch)");
 
         Ok(Self {
             builder,
             terms,
             issued: Amount::ZERO,
-            deterministic: false,
         })
     }
 
@@ -93,21 +89,6 @@ impl Issue {
         Self::testnet_int(issuer, by, name, precision)
     }
 
-    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb25>>(
-        by: &str,
-        name: &str,
-        precision: Precision,
-        asset_tag: AssetTag,
-    ) -> Result<Self, InvalidRString> {
-        let mut me = Self::testnet_int(C::issuer(), by, name, precision)?;
-        me.builder = me
-            .builder
-            .add_asset_tag("assetOwner", asset_tag)
-            .expect("invalid RGB25 schema (assetOwner mismatch)");
-        me.deterministic = true;
-        Ok(me)
-    }
-
     pub fn support_liquid(mut self) -> Self {
         self.builder = self
             .builder
@@ -119,7 +100,7 @@ impl Issue {
     pub fn add_details(mut self, details: &str) -> Result<Self, InvalidRString> {
         self.builder = self
             .builder
-            .add_global_state("details", Details::try_from(details.to_owned())?)
+            .serialize_global_state("details", &Details::try_from(details.to_owned())?)
             .expect("invalid RGB25 schema (details mismatch)");
         Ok(self)
     }
@@ -140,11 +121,6 @@ impl Issue {
         beneficiary: O,
         amount: Amount,
     ) -> Result<Self, IssuerError> {
-        debug_assert!(
-            !self.deterministic,
-            "for creating deterministic contracts please use allocate_det method"
-        );
-
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
             GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
         });
@@ -153,7 +129,7 @@ impl Issue {
             .ok_or(IssuerError::AmountOverflow)?;
         self.builder =
             self.builder
-                .add_fungible_state("assetOwner", beneficiary, amount.value())?;
+                .serialize_owned_state("assetOwner", beneficiary, &amount, None)?;
         Ok(self)
     }
 
@@ -175,29 +151,16 @@ impl Issue {
         beneficiary: O,
         seal_blinding: u64,
         amount: Amount,
-        amount_blinding: BlindingFactor,
     ) -> Result<Self, IssuerError> {
-        debug_assert!(
-            self.deterministic,
-            "to add asset allocation in deterministic way the contract builder has to be created \
-             using `*_det` constructor"
-        );
-
-        let tag = self
-            .builder
-            .asset_tag("assetOwner")
-            .expect("internal library error: asset tag is unassigned");
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
             GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
         });
         self.issued
             .checked_add_assign(amount)
             .ok_or(IssuerError::AmountOverflow)?;
-        self.builder = self.builder.add_owned_state_det(
-            "assetOwner",
-            beneficiary,
-            PersistedState::Amount(amount, amount_blinding, tag),
-        )?;
+        self.builder =
+            self.builder
+                .serialize_owned_state("assetOwner", beneficiary, &amount, None)?;
         Ok(self)
     }
 
@@ -221,11 +184,11 @@ impl Issue {
     #[allow(clippy::result_large_err)]
     fn pre_issue_contract(self) -> ContractBuilder {
         self.builder
-            .add_global_state("issuedSupply", self.issued)
+            .serialize_global_state("issuedSupply", &self.issued)
             .expect("invalid RGB25 schema (issued supply mismatch)")
-            .add_global_state("terms", self.terms)
+            .serialize_global_state("terms", &self.terms)
             .expect("invalid RGB25 schema (contract terms mismatch)")
     }
-
-    // TODO: Add secondary issuance and other methods
 }
+
+// TODO: Add secondary issuance and other actors
