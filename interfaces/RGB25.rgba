@@ -1,16 +1,16 @@
 -----BEGIN RGB KIT-----
-Id: rgb:kit:P!kriius-nYRL2vB-Q4!5G5v-tV3NiU8-v9Nsr6k-N$gMf60
+Id: rgb:kit:TvVJba6S-b!Su4Zd-inuCRrI-gQDFupE-ECg8Lf1-DrdWUdc
 Version: 2
 Interface: RGB25Burnable;
 	id=NdM!B7HG-ueYCE0U-4XEEukR-tDiGezQ-TnzYrau-RNJSCtc#love-madam-biology;
 	dev=ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w;
-	suppl=nvymHwUN8QKrxu8BUSCY4jFNOdWCSHxv8EXlMV3rx$U
+	suppl=kpV!u4DCsgD5xrGD455J1!DH$bZWzNKnWD704qybwT4
 Interface: RGB25Base;
 	id=xCgpButl-IG39Nk!-aynmAEm-Od5vc99-5WGtRbI-ej5!FiY#edison-secret-elvis;
 	dev=ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w;
-	suppl=NdE$Q$eFihIPca7mr8hI0Olm!oNsXZJlTXtupvOEAvY
+	suppl=b4kTaGaEYvLpFZx5Kd7Sd!3AdI9W5gFKKKsC9C!oK$Y
 Type-System: sts:3pzOQ8jc-nE9lsSp-a51hPfv-xeYwyK0-evp1qcM-rR!COak#wedding-gong-mental
-Check-SHA256: eac20e19e7cb8071ba7866c16fb59bef9b60ae6e454c3ac0a1a5b134e8d0cef7
+Check-SHA256: f9c68f72dd5a2d0bc4890ab5745404ab69908838e237e35858215ef47d23a206
 
 0s;XIQb$5EH9~cAZee0<Wdwr!eA22rmXX)ZV_yI}MH~YN>;K=mRmV)&;+=Xmp=5=Yl+T7onDsqJ)(GyQ
 zUOj0_|udNLf4!^9@NX6Lz%=VDF*9hAZ`6NPnybkfD&V!=J!4Km4>wz$a+407AElMy;IhYGOY@y%3F1_
@@ -45,10 +45,10 @@ Ze?-+0SI(*VQzC~WpV-zX>)URWn@ihb8TUCV`yY^b#QQOc_4FeWn*b(X=P*}VRIm1AZKiEVqt6`aA9&`
 ZDn+2av)@HWpi#PbRcbEbYo~BbZBKDX>)URWn>_8b#QQOc_3kIY;R*>bY)~9bZ;PZXk{Q_b8}^MAa8eW
 WpZ;5Zf|ZyadlyAL2Yk!Zgg`+bZBKDb9HSXZ)PBKaAj_EAYpTJWpr~OWN&42ZYOjgWpQ<3Y#?-RAarPD
 AaiwXAa7<MVRLh3baNnSZXj=UbZ~Wab2I>Rb7?wET2nD~cr9mYL^*C)P)03JV`X$zRclu*HgYp{Q$tfW
-En!h;b2(QvW-T~MMK^Z<00IIv(>@2W#<}JK6Gb>&K`xOSLx^XyK{@kcwys3dQVQ4JY!PPw0000q0CRI`
+En!h;b2(QvW-T~MMK^Z<00IIv(>@2W#<}JK6Gb>&K`xOSLx^XyK{@kcwys3dQVQ22{}N{a0000q0CRI`
 I!szqF?Dz?XKF+_Zdg!8El*=*bX8SrS1mSjGj&r#Q#LJOQD}2HS2boWI7&q~cL4wa00Ia`Wnpx6a%FQB
 00IbNb#iWDVr*p!W^!R;bZKvHVQdIfbYX5}VRB>!00mM<LNYZ1#3(5S>t!Hq{WedU%6WhiW1Z&rJ@=J{
-wHC;FK7JM^-fR(P00000GyrpRX*x_=Q!#aTEoW*(Ic```MlDZcWpq_lYga8cax-;PLsK>_VNqyvIaf7i
+wHC;FK7JM^BmWX-00000GyrpRX*x_=Q!#aTEoW*(Ic```MlDZcWpq_lYga8cax-;PLsK>_VNqyvIaf7i
 EjUU=H+KO50RRFBMrC1ib#i5M3;+QNW^!R;bZKvHVQdIfbYX5}VRB>!00mM<LNYZd000is8ao+<`1M~J
 |HmdBRUd1sOY#QI#7O<im$$@73C#uq1a)+HZ|G`3&0Hn<z2b!bX{8Y|r$H+rRlN>Y62ZUYgq2{$1_f|(
 Z*OMux+H)Wo_#t<{Qxj6AK!qv;}MSmqFbhQEq%{{?+7>;%am^tlg}6qop{{FTg974FaQ3n`}K{nn9PGH

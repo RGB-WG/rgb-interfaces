@@ -34,7 +34,7 @@ use crate::stl::ProofOfReserves;
 /// Strict types id for the library providing standard data types which may be
 /// used in RGB smart contracts.
 pub const LIB_ID_RGB_CONTRACT: &str =
-    "stl:7GmoWq88-jLLJ!cA-VvIr8On-6LIDMVf-sqL4LmV-R7H$kyY#atlas-iron-figure";
+    "stl:I4NuYOF!-OOlJuQ4-0$UOl8W-wEg5DOL-E8EP6!h-zfMxr2U#llama-flex-aztec";
 
 fn _rgb_contract_stl() -> Result<TypeLib, CompileError> {
     LibBuilder::new(libname!(LIB_NAME_RGB_CONTRACT), tiny_bset! {

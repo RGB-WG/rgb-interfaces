@@ -143,7 +143,7 @@ interface ReplaceableAsset
 
 
 @version(1)
-@id(rgb:ifc:Ytoy2M11-IZleJ$q-94pFy0e-YQTLaB!-2bYpYkQ-f06fKT0#silver-sweet-reward)
+@id(rgb:ifc:7aMaCtW6-truZkFW-GV5M22$-1rvjmpN-mcyyH8S-Flm68Ik#condor-famous-cartoon)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface NonFungibleToken
@@ -196,7 +196,7 @@ interface EngravableNft
 
 
 @version(1)
-@id(rgb:ifc:m2WMDHDo-0WEduIs-dZCh0QW-i9sEB60-4bpv48W-4UuzzvQ#british-yogurt-shelter)
+@id(rgb:ifc:bmIfu8JT-jl30jL3-BVQgu5T-7Z3REZC-wE3SJmY-WSxFpHE#border-magnum-virtual)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface UniqueNft
@@ -211,7 +211,7 @@ interface UniqueNft
 
 
 @version(1)
-@id(rgb:ifc:VO$26JWw-mNq0z4I-85eQWUl-4VBXc4!-985m9s5-nZPw!xo#edition-alaska-popcorn)
+@id(rgb:ifc:fpFeLNST-FuW7aaJ-VvejHnw-Y3VyfFH-qujbK56-8!w0PSk#indigo-gloria-ventura)
 @developer("ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w")
 @timestamp(1711405444)
 interface LimitedNft
