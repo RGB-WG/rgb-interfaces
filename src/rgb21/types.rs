@@ -23,18 +23,18 @@
 
 use std::collections::BTreeMap;
 use std::fmt;
-use std::fmt::{Debug, Formatter};
+use std::fmt::{Debug, Display, Formatter};
 use std::str::FromStr;
 
 use amplify::ascii::AsciiString;
 use amplify::confinement::{Confined, NonEmptyVec, SmallBlob};
-use rgbstd::stl::{Attachment, Details, MediaType, Name, ProofOfReserves, Ticker};
-use rgbstd::TokenIndex;
 use strict_encoding::stl::AsciiPrintable;
 use strict_encoding::{
     InvalidRString, StrictDeserialize, StrictEncode, StrictSerialize, TypedWrite,
 };
-use strict_types::StrictVal;
+
+use crate::stl::{Attachment, Details, MediaType, Name, ProofOfReserves, Ticker};
+use crate::LIB_NAME_RGB_CONTRACT;
 
 pub const LIB_NAME_RGB21: &str = "RGB21";
 /// Strict types id for the library providing data types for RGB21 interface.
@@ -68,20 +68,12 @@ pub struct EngravingData {
     pub content: EmbeddedMedia,
 }
 
-impl EngravingData {
-    pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
-        let index = TokenIndex::from(
-            value
-                .unwrap_struct("index")
-                .unwrap_num()
-                .unwrap_uint::<u32>(),
-        );
-        let content = EmbeddedMedia::from_strict_val_unchecked(value.unwrap_struct("content"));
+impl StrictSerialize for EngravingData {}
+impl StrictDeserialize for EngravingData {}
 
-        Self {
-            applied_to: index,
-            content,
-        }
+impl Display for EngravingData {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "appliedTo {}, content {}", self.applied_to, self.content)
     }
 }
 
@@ -100,14 +92,9 @@ pub struct EmbeddedMedia {
     pub data: SmallBlob,
 }
 
-impl EmbeddedMedia {
-    pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
-        let ty = MediaType::from_strict_val_unchecked(value.unwrap_struct("type"));
-        let data = SmallBlob::from_iter_checked(
-            value.unwrap_struct("data").unwrap_bytes().iter().copied(),
-        );
-
-        Self { ty, data }
+impl Display for EmbeddedMedia {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "type {}, data 0x{:X}", self.ty, self.data)
     }
 }
 
@@ -210,60 +197,274 @@ pub struct TokenData {
 impl StrictSerialize for TokenData {}
 impl StrictDeserialize for TokenData {}
 
-impl TokenData {
-    pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
-        let index = TokenIndex::from(
-            value
-                .unwrap_struct("index")
-                .unwrap_num()
-                .unwrap_uint::<u32>(),
-        );
-        let ticker = value
-            .unwrap_struct("ticker")
-            .unwrap_option()
-            .map(|x| Ticker::from_str(&x.unwrap_string()).expect("invalid uda ticker"));
+impl Display for TokenData {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "index {}", self.index)?;
 
-        let name = value
-            .unwrap_struct("name")
-            .unwrap_option()
-            .map(|x| Name::from_str(&x.unwrap_string()).expect("invalid uda name"));
-
-        let details = value
-            .unwrap_struct("details")
-            .unwrap_option()
-            .map(|x| Details::from_str(&x.unwrap_string()).expect("invalid uda details"));
-
-        let preview = value
-            .unwrap_struct("preview")
-            .unwrap_option()
-            .map(EmbeddedMedia::from_strict_val_unchecked);
-        let media = value
-            .unwrap_struct("media")
-            .unwrap_option()
-            .map(Attachment::from_strict_val_unchecked);
-
-        let attachments = if let StrictVal::Map(list) = value.unwrap_struct("attachments") {
-            Confined::from_iter_checked(
-                list.iter()
-                    .map(|(k, v)| (k.unwrap_uint(), Attachment::from_strict_val_unchecked(v))),
-            )
+        f.write_str(", ticker ")?;
+        if let Some(ticker) = &self.ticker {
+            write!(f, "{ticker}")?;
         } else {
-            Confined::default()
+            f.write_str("~")?;
+        }
+
+        f.write_str(", name ")?;
+        if let Some(name) = &self.name {
+            write!(f, "{name}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        f.write_str(", details ")?;
+        if let Some(details) = &self.details {
+            write!(f, "{details}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        f.write_str(",\npreview ")?;
+        if let Some(preview) = &self.preview {
+            write!(f, "{preview}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        f.write_str(",\nmedia ")?;
+        if let Some(media) = &self.media {
+            write!(f, "{media}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        f.write_str(",\nattachments {")?;
+        for (id, attach) in &self.attachments {
+            writeln!(f, "  {id} -> {attach}")?;
+        }
+
+        f.write_str("},\nreserves ")?;
+        if let Some(reserves) = &self.reserves {
+            write!(f, "{reserves}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Clone, PartialEq, Eq, Debug, Display, Error, From)]
+#[display(inner)]
+pub enum AllocationParseError {
+    #[display(doc_comments)]
+    /// invalid token index {0}.
+    InvalidIndex(String),
+
+    #[display(doc_comments)]
+    /// invalid fraction {0}.
+    InvalidFraction(String),
+
+    #[display(doc_comments)]
+    /// allocation must have format <fraction>@<token_index>.
+    WrongFormat,
+}
+
+#[derive(
+    Wrapper, WrapperMut, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default, From
+)]
+#[wrapper(Display, FromStr, Add, Sub, Mul, Div, Rem)]
+#[wrapper_mut(AddAssign, SubAssign, MulAssign, DivAssign, RemAssign)]
+#[derive(StrictType, StrictEncode, StrictDecode)]
+#[strict_type(lib = LIB_NAME_RGB_CONTRACT)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(crate = "serde_crate", transparent)
+)]
+pub struct TokenIndex(u32);
+
+#[derive(
+    Wrapper, WrapperMut, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default, From
+)]
+#[wrapper(Display, FromStr, Add, Sub, Mul, Div, Rem)]
+#[wrapper_mut(AddAssign, SubAssign, MulAssign, DivAssign, RemAssign)]
+#[derive(StrictType, StrictEncode, StrictDecode)]
+#[strict_type(lib = LIB_NAME_RGB_CONTRACT)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(crate = "serde_crate", transparent)
+)]
+pub struct OwnedFraction(u64);
+
+impl OwnedFraction {
+    pub const ZERO: Self = OwnedFraction(0);
+
+    pub fn value(self) -> u64 { self.0 }
+
+    pub fn saturating_add(&self, other: impl Into<Self>) -> Self {
+        self.0.saturating_add(other.into().0).into()
+    }
+    pub fn saturating_sub(&self, other: impl Into<Self>) -> Self {
+        self.0.saturating_sub(other.into().0).into()
+    }
+
+    pub fn saturating_add_assign(&mut self, other: impl Into<Self>) {
+        *self = self.0.saturating_add(other.into().0).into();
+    }
+    pub fn saturating_sub_assign(&mut self, other: impl Into<Self>) {
+        *self = self.0.saturating_sub(other.into().0).into();
+    }
+
+    #[must_use]
+    pub fn checked_add(&self, other: impl Into<Self>) -> Option<Self> {
+        self.0.checked_add(other.into().0).map(Self)
+    }
+    #[must_use]
+    pub fn checked_sub(&self, other: impl Into<Self>) -> Option<Self> {
+        self.0.checked_sub(other.into().0).map(Self)
+    }
+
+    #[must_use]
+    pub fn checked_add_assign(&mut self, other: impl Into<Self>) -> Option<()> {
+        *self = self.0.checked_add(other.into().0).map(Self)?;
+        Some(())
+    }
+    #[must_use]
+    pub fn checked_sub_assign(&mut self, other: impl Into<Self>) -> Option<()> {
+        *self = self.0.checked_sub(other.into().0).map(Self)?;
+        Some(())
+    }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
+#[derive(StrictType, StrictEncode, StrictDecode)]
+#[strict_type(lib = LIB_NAME_RGB_CONTRACT)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(crate = "serde_crate"))]
+pub struct NftAllocation {
+    pub token: TokenIndex,
+    pub fraction: OwnedFraction,
+}
+
+impl NftAllocation {
+    pub fn with(index: impl Into<TokenIndex>, fraction: impl Into<OwnedFraction>) -> NftAllocation {
+        NftAllocation {
+            token: index.into(),
+            fraction: fraction.into(),
+        }
+    }
+
+    pub fn token_index(self) -> TokenIndex { self.token }
+
+    pub fn fraction(self) -> OwnedFraction { self.fraction }
+}
+
+impl StrictSerialize for NftAllocation {}
+impl StrictDeserialize for NftAllocation {}
+
+impl Display for NftAllocation {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "token {}, fraction {}", self.token, self.fraction)
+    }
+}
+
+impl FromStr for NftAllocation {
+    type Err = AllocationParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if !s.contains('@') {
+            return Err(AllocationParseError::WrongFormat);
+        }
+
+        match s.split_once('@') {
+            Some((fraction, token_index)) => Ok(NftAllocation {
+                token: token_index
+                    .parse()
+                    .map_err(|_| AllocationParseError::InvalidIndex(token_index.to_owned()))?,
+                fraction: fraction
+                    .parse()
+                    .map_err(|_| AllocationParseError::InvalidFraction(fraction.to_lowercase()))?,
+            }),
+            None => Err(AllocationParseError::WrongFormat),
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn owned_fraction_from_str() {
+        let owned_fraction = match OwnedFraction::from_str("1") {
+            Ok(value) => value,
+            Err(_) => OwnedFraction::ZERO,
         };
 
-        let reserves = value
-            .unwrap_struct("reserves")
-            .unwrap_option()
-            .map(ProofOfReserves::from_strict_val_unchecked);
-        Self {
-            index,
-            ticker,
-            name,
-            details,
-            preview,
-            media,
-            attachments,
-            reserves,
-        }
+        assert_eq!(owned_fraction.value(), 1);
+        assert_eq!(format!("{owned_fraction}"), "1");
+    }
+
+    #[test]
+    fn owned_fraction_add_assign() {
+        let mut owned_fraction = match OwnedFraction::from_str("1") {
+            Ok(value) => value,
+            Err(_) => OwnedFraction::ZERO,
+        };
+
+        let _ = owned_fraction.checked_add_assign(OwnedFraction::ZERO);
+        assert_eq!(owned_fraction.value(), 1);
+        assert_eq!(format!("{owned_fraction}"), "1");
+    }
+
+    #[test]
+    fn owned_fraction_add() {
+        let owned_fraction = match OwnedFraction::from_str("1") {
+            Ok(value) => value,
+            Err(_) => OwnedFraction::ZERO,
+        };
+
+        let owned = match owned_fraction.checked_add(OwnedFraction::ZERO) {
+            Some(value) => value,
+            None => OwnedFraction::ZERO,
+        };
+        assert_eq!(owned.value(), 1);
+        assert_eq!(format!("{owned}"), "1");
+    }
+
+    #[test]
+    fn owned_fraction_sub() {
+        let owned_fraction = match OwnedFraction::from_str("1") {
+            Ok(value) => value,
+            Err(_) => OwnedFraction::ZERO,
+        };
+
+        let other_fraction = match OwnedFraction::from_str("1") {
+            Ok(value) => value,
+            Err(_) => OwnedFraction::ZERO,
+        };
+
+        let owned = match owned_fraction.checked_sub(other_fraction) {
+            Some(value) => value,
+            None => OwnedFraction::ZERO,
+        };
+        assert_eq!(owned.value(), 0);
+        assert_eq!(format!("{owned}"), "0");
+    }
+
+    #[test]
+    fn owned_fraction_sub_assign() {
+        let mut owned_fraction = match OwnedFraction::from_str("1") {
+            Ok(value) => value,
+            Err(_) => OwnedFraction::ZERO,
+        };
+
+        let other_fraction = match OwnedFraction::from_str("1") {
+            Ok(value) => value,
+            Err(_) => OwnedFraction::ZERO,
+        };
+
+        let _ = owned_fraction.checked_sub_assign(other_fraction);
+        assert_eq!(owned_fraction.value(), 0);
+        assert_eq!(format!("{owned_fraction}"), "0");
     }
 }

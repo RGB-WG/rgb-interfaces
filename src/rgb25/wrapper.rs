@@ -20,25 +20,24 @@
 // limitations under the License.
 
 use rgbstd::interface::{
-    AssignmentsFilter, ContractIface, FungibleAllocation, IfaceClass, IfaceId, IfaceWrapper,
+    AssignmentsFilter, ContractIface, IfaceClass, IfaceId, IfaceWrapper, Output,
 };
-use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::ContractStateRead;
-use rgbstd::stl::{ContractTerms, Details, Name};
-use rgbstd::{AssetTag, ContractId, SchemaId, WitnessInfo, XWitnessId};
+use rgbstd::{ContractId, SchemaId, WitnessInfo, XWitnessId};
 use strict_encoding::InvalidRString;
 
 use super::{Issue, Rgb25, Rgb25Info};
+use crate::stl::{Amount, ContractTerms, Details, Name, Precision};
 use crate::IssuerWrapper;
 
 pub const RGB25_BASE_IFACE_ID: IfaceId = IfaceId::from_array([
-    0x05, 0xd2, 0xa2, 0x30, 0x7b, 0x9b, 0x45, 0x94, 0xd8, 0xad, 0xb4, 0xb5, 0xdc, 0x6d, 0xf0, 0xb7,
-    0xae, 0x2e, 0x21, 0xc8, 0x72, 0x3c, 0xc4, 0x05, 0xd0, 0xa9, 0xa6, 0xb1, 0x88, 0x1e, 0x32, 0x46,
+    0xc4, 0x28, 0x29, 0x06, 0xeb, 0x65, 0x20, 0x6d, 0xfd, 0x36, 0x4f, 0x9a, 0xca, 0x79, 0x80, 0x12,
+    0x63, 0x9d, 0xe6, 0xf7, 0x3d, 0xf7, 0x95, 0x86, 0xb5, 0x16, 0xc8, 0x7a, 0x3e, 0x7e, 0x16, 0x26,
 ]);
 
 pub const RGB25_IFACE_ID: IfaceId = IfaceId::from_array([
-    0x09, 0x02, 0xdc, 0xc8, 0x58, 0x1c, 0x4c, 0xc0, 0xa1, 0xc5, 0x94, 0x3a, 0xff, 0xc3, 0xb0, 0x77,
-    0x31, 0xce, 0xca, 0xda, 0xe6, 0x85, 0x3f, 0x50, 0x0f, 0xcb, 0x4b, 0x78, 0x7c, 0xbc, 0x65, 0x41,
+    0x35, 0xd3, 0x3e, 0x07, 0xb1, 0xc6, 0xb9, 0xe6, 0x02, 0x13, 0x45, 0x38, 0x5c, 0x41, 0x2e, 0x91,
+    0x1b, 0x43, 0x88, 0x67, 0xb3, 0x41, 0x39, 0xf3, 0x62, 0xb6, 0xae, 0x44, 0xd2, 0x52, 0x0a, 0xd7,
 ]);
 
 #[derive(Clone, Eq, PartialEq, Debug)]
@@ -77,76 +76,58 @@ impl<S: ContractStateRead> Rgb25Wrapper<S> {
         Issue::testnet::<C>(issuer, name, precision)
     }
 
-    pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb25>>(
-        issuer: &str,
-        name: &str,
-        precision: Precision,
-        asset_tag: AssetTag,
-    ) -> Result<Issue, InvalidRString> {
-        Issue::testnet_det::<C>(issuer, name, precision, asset_tag)
-    }
-
     pub fn name(&self) -> Name {
-        let strict_val = &self
-            .0
-            .global("name")
+        self.0
+            .global_typed::<Name>("name")
             .expect("RGB25 interface requires global `name`")
             .next()
-            .expect("RGB25 interface requires global state `name`");
-        Name::from_strict_val_unchecked(strict_val)
+            .expect("RGB25 interface requires global state `name`")
     }
 
     pub fn details(&self) -> Option<Details> {
         self.0
-            .global("details")
+            .global_typed::<Details>("details")
             .expect("RGB25 interface requires global state `details`")
             .next()
-            .map(|strict_val| Details::from_strict_val_unchecked(&strict_val))
     }
 
     pub fn precision(&self) -> Precision {
-        let strict_val = &self
-            .0
-            .global("precision")
+        self.0
+            .global_typed::<Precision>("precision")
             .expect("RGB25 interface requires global state `precision`")
             .next()
-            .expect("RGB25 interface requires global state `precision` to have at least one item");
-        Precision::from_strict_val_unchecked(strict_val)
+            .expect("RGB25 interface requires global state `precision` to have at least one item")
     }
 
     pub fn allocations<'c>(
         &'c self,
         filter: impl AssignmentsFilter + 'c,
-    ) -> impl Iterator<Item = FungibleAllocation> + 'c {
+    ) -> impl Iterator<Item = Output<Amount>> + 'c {
         self.0
-            .fungible("assetOwner", filter)
+            .outputs_typed("assetOwner", filter)
             .expect("RGB25 interface requires `assetOwner` state")
     }
 
     pub fn total_issued_supply(&self) -> Amount {
         self.0
-            .global("issuedSupply")
+            .global_typed::<Amount>("issuedSupply")
             .expect("RGB25 interface requires global state `issuedSupply`")
-            .map(|strict_val| Amount::from_strict_val_unchecked(&strict_val))
             .sum()
     }
 
     pub fn total_burned_supply(&self) -> Amount {
         self.0
-            .global("burnedSupply")
+            .global_typed::<Amount>("burnedSupply")
             .into_iter()
             .flatten()
-            .map(|strict_val| Amount::from_strict_val_unchecked(&strict_val))
             .sum()
     }
 
     pub fn contract_terms(&self) -> ContractTerms {
-        let strict_val = &self
-            .0
-            .global("terms")
+        self.0
+            .global_typed::<ContractTerms>("terms")
             .expect("RGB25 interface requires global state `terms`")
             .next()
-            .expect("RGB25 interface requires global state `terms` to have at least one item");
-        ContractTerms::from_strict_val_unchecked(strict_val)
+            .expect("RGB25 interface requires global state `terms` to have at least one item")
     }
 }

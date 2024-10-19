@@ -24,12 +24,13 @@
 #[macro_use]
 extern crate amplify;
 #[macro_use]
-extern crate strict_types;
+extern crate strict_encoding;
 #[cfg(feature = "serde")]
 #[macro_use]
 extern crate serde_crate as serde;
 
 mod traits;
+pub mod stl;
 
 pub mod rgb20;
 pub mod rgb21;
@@ -38,6 +39,7 @@ pub mod rgb25;
 pub use rgb20::{Rgb20, Rgb20Info, Rgb20Wrapper};
 pub use rgb21::{Rgb21, Rgb21Wrapper};
 pub use rgb25::{Rgb25, Rgb25Info, Rgb25Wrapper};
+pub use stl::{LIB_ID_RGB_CONTRACT, LIB_NAME_RGB_CONTRACT};
 pub use traits::{IssuerWrapper, SchemaIssuer};
 
 pub const LNPBP_IDENTITY: &str = "ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w";
