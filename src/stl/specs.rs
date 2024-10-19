@@ -21,7 +21,7 @@
 
 #![allow(unused_braces)] // caused by rustc unable to understand strict_dumb
 
-use std::fmt::{self, Debug, Formatter};
+use std::fmt::{self, Debug, Display, Formatter};
 use std::hash::{Hash, Hasher};
 use std::str::FromStr;
 
@@ -49,6 +49,16 @@ pub struct BurnMeta {
 impl StrictSerialize for BurnMeta {}
 impl StrictDeserialize for BurnMeta {}
 
+impl Display for BurnMeta {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        writeln!(f, "burnProofs {{")?;
+        for proof in &self.burn_proofs {
+            writeln!(f, "  {proof}")?;
+        }
+        writeln!(f, "}}")
+    }
+}
+
 #[derive(Clone, Eq, PartialEq, Hash, Debug, Default)]
 #[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB_CONTRACT)]
@@ -62,6 +72,16 @@ pub struct IssueMeta {
 }
 impl StrictSerialize for IssueMeta {}
 impl StrictDeserialize for IssueMeta {}
+
+impl Display for IssueMeta {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        writeln!(f, "reserves {{")?;
+        for proof in &self.reserves {
+            writeln!(f, "  {proof}")?;
+        }
+        writeln!(f, "}}")
+    }
+}
 
 #[derive(Wrapper, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, From)]
 #[wrapper(Deref, Display, FromStr)]
@@ -191,6 +211,22 @@ pub struct AssetSpec {
 impl StrictSerialize for AssetSpec {}
 impl StrictDeserialize for AssetSpec {}
 
+impl Display for AssetSpec {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "ticker {}, name {}, details {}, precision {}",
+            self.ticker,
+            self.name,
+            self.details
+                .as_ref()
+                .map(Details::to_string)
+                .unwrap_or_else(|| s!("~")),
+            self.precision
+        )
+    }
+}
+
 impl AssetSpec {
     pub fn new(ticker: &'static str, name: &'static str, precision: Precision) -> AssetSpec {
         AssetSpec {
@@ -238,6 +274,28 @@ pub struct ContractSpec {
 }
 impl StrictSerialize for ContractSpec {}
 impl StrictDeserialize for ContractSpec {}
+
+impl Display for ContractSpec {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.write_str("article ")?;
+        if let Some(article) = &self.article {
+            write!(f, "{article}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        write!(f, ", name {}", self.name)?;
+
+        f.write_str(", details ")?;
+        if let Some(details) = &self.details {
+            write!(f, "{details}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        write!(f, ", precision {}", self.precision)
+    }
+}
 
 impl ContractSpec {
     pub fn new(name: &'static str, precision: Precision) -> ContractSpec {
@@ -314,6 +372,12 @@ pub struct Attachment {
 impl StrictSerialize for Attachment {}
 impl StrictDeserialize for Attachment {}
 
+impl Display for Attachment {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "type {}, digest 0x{}", self.ty, self.digest)
+    }
+}
+
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 #[derive(StrictDumb, StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB_CONTRACT)]
@@ -328,3 +392,18 @@ pub struct ContractTerms {
 }
 impl StrictSerialize for ContractTerms {}
 impl StrictDeserialize for ContractTerms {}
+
+impl Display for ContractTerms {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "text {}", self.text)?;
+
+        f.write_str(", media ")?;
+        if let Some(media) = &self.media {
+            write!(f, "{media}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        Ok(())
+    }
+}

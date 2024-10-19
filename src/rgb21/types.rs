@@ -23,7 +23,7 @@
 
 use std::collections::BTreeMap;
 use std::fmt;
-use std::fmt::{Debug, Formatter};
+use std::fmt::{Debug, Display, Formatter};
 use std::str::FromStr;
 
 use amplify::ascii::AsciiString;
@@ -71,6 +71,12 @@ pub struct EngravingData {
 impl StrictSerialize for EngravingData {}
 impl StrictDeserialize for EngravingData {}
 
+impl Display for EngravingData {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "appliedTo {}, content {}", self.applied_to, self.content)
+    }
+}
+
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 #[derive(StrictType, StrictDumb, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
@@ -84,6 +90,12 @@ pub struct EmbeddedMedia {
     #[cfg_attr(feature = "serde", serde(rename = "type"))]
     pub ty: MediaType,
     pub data: SmallBlob,
+}
+
+impl Display for EmbeddedMedia {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "type {}, data 0x{:X}", self.ty, self.data)
+    }
 }
 
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
@@ -185,6 +197,61 @@ pub struct TokenData {
 impl StrictSerialize for TokenData {}
 impl StrictDeserialize for TokenData {}
 
+impl Display for TokenData {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "index {}", self.index)?;
+
+        f.write_str(", ticker ")?;
+        if let Some(ticker) = &self.ticker {
+            write!(f, "{ticker}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        f.write_str(", name ")?;
+        if let Some(name) = &self.name {
+            write!(f, "{name}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        f.write_str(", details ")?;
+        if let Some(details) = &self.details {
+            write!(f, "{details}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        f.write_str(",\npreview ")?;
+        if let Some(preview) = &self.preview {
+            write!(f, "{preview}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        f.write_str(",\nmedia ")?;
+        if let Some(media) = &self.media {
+            write!(f, "{media}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        f.write_str(",\nattachments {")?;
+        for (id, attach) in &self.attachments {
+            writeln!(f, "  {id} -> {attach}")?;
+        }
+
+        f.write_str("},\nreserves ")?;
+        if let Some(reserves) = &self.reserves {
+            write!(f, "{reserves}")?;
+        } else {
+            f.write_str("~")?;
+        }
+
+        Ok(())
+    }
+}
+
 #[derive(Clone, PartialEq, Eq, Debug, Display, Error, From)]
 #[display(inner)]
 pub enum AllocationParseError {
@@ -206,7 +273,7 @@ pub enum AllocationParseError {
 )]
 #[wrapper(Display, FromStr, Add, Sub, Mul, Div, Rem)]
 #[wrapper_mut(AddAssign, SubAssign, MulAssign, DivAssign, RemAssign)]
-#[derive(StrictType, strict_encoding::StrictEncode, StrictDecode)]
+#[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB_CONTRACT)]
 #[cfg_attr(
     feature = "serde",
@@ -220,7 +287,7 @@ pub struct TokenIndex(u32);
 )]
 #[wrapper(Display, FromStr, Add, Sub, Mul, Div, Rem)]
 #[wrapper_mut(AddAssign, SubAssign, MulAssign, DivAssign, RemAssign)]
-#[derive(StrictType, strict_encoding::StrictEncode, StrictDecode)]
+#[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB_CONTRACT)]
 #[cfg_attr(
     feature = "serde",
@@ -269,25 +336,36 @@ impl OwnedFraction {
     }
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default, Display)]
-#[display("{1}@{0}")]
-#[derive(StrictType, strict_encoding::StrictEncode, StrictDecode)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
+#[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB_CONTRACT)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(crate = "serde_crate"))]
-pub struct NftAllocation(TokenIndex, OwnedFraction);
+pub struct NftAllocation {
+    pub token: TokenIndex,
+    pub fraction: OwnedFraction,
+}
 
 impl NftAllocation {
     pub fn with(index: impl Into<TokenIndex>, fraction: impl Into<OwnedFraction>) -> NftAllocation {
-        NftAllocation(index.into(), fraction.into())
+        NftAllocation {
+            token: index.into(),
+            fraction: fraction.into(),
+        }
     }
 
-    pub fn token_index(self) -> TokenIndex { self.0 }
+    pub fn token_index(self) -> TokenIndex { self.token }
 
-    pub fn fraction(self) -> OwnedFraction { self.1 }
+    pub fn fraction(self) -> OwnedFraction { self.fraction }
 }
 
 impl StrictSerialize for NftAllocation {}
 impl StrictDeserialize for NftAllocation {}
+
+impl Display for NftAllocation {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "token {}, fraction {}", self.token, self.fraction)
+    }
+}
 
 impl FromStr for NftAllocation {
     type Err = AllocationParseError;
@@ -298,14 +376,14 @@ impl FromStr for NftAllocation {
         }
 
         match s.split_once('@') {
-            Some((fraction, token_index)) => Ok(NftAllocation(
-                token_index
+            Some((fraction, token_index)) => Ok(NftAllocation {
+                token: token_index
                     .parse()
                     .map_err(|_| AllocationParseError::InvalidIndex(token_index.to_owned()))?,
-                fraction
+                fraction: fraction
                     .parse()
                     .map_err(|_| AllocationParseError::InvalidFraction(fraction.to_lowercase()))?,
-            )),
+            }),
             None => Err(AllocationParseError::WrongFormat),
         }
     }

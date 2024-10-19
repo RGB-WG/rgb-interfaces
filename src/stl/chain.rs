@@ -19,6 +19,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::fmt::{Display, Formatter};
+
 use amplify::confinement::SmallBlob;
 use bp::Outpoint;
 use strict_encoding::{StrictDeserialize, StrictSerialize};
@@ -35,6 +37,12 @@ pub struct ProofOfReserves {
 }
 impl StrictSerialize for ProofOfReserves {}
 impl StrictDeserialize for ProofOfReserves {}
+
+impl Display for ProofOfReserves {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "utxo {}, proof 0x{:X}", self.utxo, self.proof)
+    }
+}
 
 impl ProofOfReserves {
     pub fn new(utxo: Outpoint, proof: SmallBlob) -> ProofOfReserves {
