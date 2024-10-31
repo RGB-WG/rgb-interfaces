@@ -20,12 +20,12 @@
 // limitations under the License.
 
 use rgbstd::interface::{
-    ContractIface, FungibleAllocation, IfaceClass, IfaceId, IfaceWrapper, OutpointFilter,
+    AssignmentsFilter, ContractIface, FungibleAllocation, IfaceClass, IfaceId, IfaceWrapper,
 };
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{ContractTerms, Details, Name};
-use rgbstd::AssetTag;
+use rgbstd::{AssetTag, ContractId, SchemaId, WitnessInfo, XWitnessId};
 use strict_encoding::InvalidRString;
 
 use super::{Issue, Rgb25, Rgb25Info};
@@ -55,6 +55,17 @@ impl<S: ContractStateRead> IfaceWrapper<S> for Rgb25Wrapper<S> {
     }
 
     fn info(&self) -> Self::Info { todo!() }
+
+    #[inline]
+    fn contract_id(&self) -> ContractId { self.0.contract_id() }
+
+    #[inline]
+    fn schema_id(&self) -> SchemaId { self.0.state.schema_id() }
+
+    #[inline]
+    fn witness_info(&self, witness_id: XWitnessId) -> Option<WitnessInfo> {
+        self.0.witness_info(witness_id)
+    }
 }
 
 impl<S: ContractStateRead> Rgb25Wrapper<S> {
@@ -105,7 +116,7 @@ impl<S: ContractStateRead> Rgb25Wrapper<S> {
 
     pub fn allocations<'c>(
         &'c self,
-        filter: impl OutpointFilter + 'c,
+        filter: impl AssignmentsFilter + 'c,
     ) -> impl Iterator<Item = FungibleAllocation> + 'c {
         self.0
             .fungible("assetOwner", filter)
