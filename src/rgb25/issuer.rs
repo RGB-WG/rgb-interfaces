@@ -21,7 +21,7 @@
 
 use std::str::FromStr;
 
-use bp::dbc::Method;
+use bp::seals::txout::CloseMethod;
 use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
@@ -44,6 +44,7 @@ pub struct Issue {
 
 impl Issue {
     fn testnet_int(
+        close_method: CloseMethod,
         issuer: SchemaIssuer<Rgb25>,
         by: &str,
         name: &str,
@@ -56,6 +57,7 @@ impl Issue {
 
         let (schema, main_iface_impl, types, scripts, features) = issuer.into_split();
         let builder = ContractBuilder::with(
+            close_method,
             Identity::from_str(by).expect("invalid issuer identity string"),
             features.iface(),
             schema,
@@ -78,29 +80,32 @@ impl Issue {
     }
 
     pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb25>>(
+        close_method: CloseMethod,
         by: &str,
         name: &str,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(C::issuer(), by, name, precision)
+        Self::testnet_int(close_method, C::issuer(), by, name, precision)
     }
 
     pub fn testnet_with(
+        close_method: CloseMethod,
         issuer: SchemaIssuer<Rgb25>,
         by: &str,
         name: &str,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(issuer, by, name, precision)
+        Self::testnet_int(close_method, issuer, by, name, precision)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb25>>(
+        close_method: CloseMethod,
         by: &str,
         name: &str,
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<Self, InvalidRString> {
-        let mut me = Self::testnet_int(C::issuer(), by, name, precision)?;
+        let mut me = Self::testnet_int(close_method, C::issuer(), by, name, precision)?;
         me.builder = me
             .builder
             .add_asset_tag("assetOwner", asset_tag)
@@ -129,7 +134,6 @@ impl Issue {
 
     pub fn allocate<O: TxOutpoint>(
         mut self,
-        method: Method,
         beneficiary: O,
         amount: Amount,
     ) -> Result<Self, IssuerError> {
@@ -138,9 +142,8 @@ impl Issue {
             "for creating deterministic contracts please use allocate_det method"
         );
 
-        let beneficiary = beneficiary.map_to_xchain(|outpoint| {
-            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
-        });
+        let beneficiary = beneficiary
+            .map_to_xchain(|outpoint| GenesisSeal::new_random(outpoint.txid, outpoint.vout));
         self.issued
             .checked_add_assign(amount)
             .ok_or(IssuerError::AmountOverflow)?;
@@ -152,11 +155,10 @@ impl Issue {
 
     pub fn allocate_all<O: TxOutpoint>(
         mut self,
-        method: Method,
         allocations: impl IntoIterator<Item = (O, Amount)>,
     ) -> Result<Self, IssuerError> {
         for (beneficiary, amount) in allocations {
-            self = self.allocate(method, beneficiary, amount)?;
+            self = self.allocate(beneficiary, amount)?;
         }
         Ok(self)
     }
@@ -164,7 +166,6 @@ impl Issue {
     /// Add asset allocation in a deterministic way.
     pub fn allocate_det<O: TxOutpoint>(
         mut self,
-        method: Method,
         beneficiary: O,
         seal_blinding: u64,
         amount: Amount,
@@ -181,7 +182,7 @@ impl Issue {
             .asset_tag("assetOwner")
             .expect("internal library error: asset tag is unassigned");
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
-            GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
+            GenesisSeal::with_blinding(outpoint.txid, outpoint.vout, seal_blinding)
         });
         self.issued
             .checked_add_assign(amount)

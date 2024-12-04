@@ -21,7 +21,7 @@
 
 use std::str::FromStr;
 
-use bp::dbc::Method;
+use bp::seals::txout::CloseMethod;
 use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
@@ -62,6 +62,7 @@ pub struct PrimaryIssue {
 
 impl PrimaryIssue {
     pub fn testnet_with(
+        close_method: CloseMethod,
         issuer: SchemaIssuer<Rgb20>,
         by: &str,
         ticker: &str,
@@ -69,20 +70,22 @@ impl PrimaryIssue {
         details: Option<&str>,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(issuer, by, ticker, name, details, precision, false)
+        Self::testnet_int(close_method, issuer, by, ticker, name, details, precision, false)
     }
 
     pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb20>>(
+        close_method: CloseMethod,
         by: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(C::issuer(), by, ticker, name, details, precision, false)
+        Self::testnet_int(close_method, C::issuer(), by, ticker, name, details, precision, false)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb20>>(
+        close_method: CloseMethod,
         by: &str,
         ticker: &str,
         name: &str,
@@ -90,7 +93,16 @@ impl PrimaryIssue {
         precision: Precision,
         asset_tag: AssetTag,
     ) -> Result<Self, InvalidRString> {
-        let mut me = Self::testnet_int(C::issuer(), by, ticker, name, details, precision, true)?;
+        let mut me = Self::testnet_int(
+            close_method,
+            C::issuer(),
+            by,
+            ticker,
+            name,
+            details,
+            precision,
+            true,
+        )?;
         me.builder = me
             .builder
             .add_asset_tag("assetOwner", asset_tag)
@@ -99,6 +111,7 @@ impl PrimaryIssue {
     }
 
     fn testnet_int(
+        close_method: CloseMethod,
         issuer: SchemaIssuer<Rgb20>,
         by: &str,
         ticker: &str,
@@ -116,6 +129,7 @@ impl PrimaryIssue {
         let (schema, main_iface_impl, types, scripts, features) = issuer.into_split();
         let mut builder = match deterministic {
             false => ContractBuilder::with(
+                close_method,
                 Identity::from_str(by).expect("invalid issuer identity string"),
                 features.iface(),
                 schema,
@@ -125,6 +139,7 @@ impl PrimaryIssue {
                 Layer1::Bitcoin,
             ),
             true => ContractBuilder::deterministic(
+                close_method,
                 Identity::from_str(by).expect("invalid issuer identity string"),
                 features.iface(),
                 schema,
@@ -163,14 +178,12 @@ impl PrimaryIssue {
 
     pub fn allocate<O: TxOutpoint>(
         mut self,
-        method: Method,
         beneficiary: O,
         amount: impl Into<Amount>,
     ) -> Result<Self, IssuerError> {
         let amount = amount.into();
-        let beneficiary = beneficiary.map_to_xchain(|outpoint| {
-            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
-        });
+        let beneficiary = beneficiary
+            .map_to_xchain(|outpoint| GenesisSeal::new_random(outpoint.txid, outpoint.vout));
         self.issued
             .checked_add_assign(amount)
             .ok_or(IssuerError::AmountOverflow)?;
@@ -182,11 +195,10 @@ impl PrimaryIssue {
 
     pub fn allocate_all<O: TxOutpoint>(
         mut self,
-        method: Method,
         allocations: impl IntoIterator<Item = (O, impl Into<Amount>)>,
     ) -> Result<Self, IssuerError> {
         for (beneficiary, amount) in allocations {
-            self = self.allocate(method, beneficiary, amount)?;
+            self = self.allocate(beneficiary, amount)?;
         }
         Ok(self)
     }
@@ -194,7 +206,6 @@ impl PrimaryIssue {
     /// Add asset allocation in a deterministic way.
     pub fn allocate_det<O: TxOutpoint>(
         mut self,
-        method: Method,
         beneficiary: O,
         seal_blinding: u64,
         amount: impl Into<Amount>,
@@ -202,7 +213,7 @@ impl PrimaryIssue {
     ) -> Result<Self, IssuerError> {
         let amount = amount.into();
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
-            GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
+            GenesisSeal::with_blinding(outpoint.txid, outpoint.vout, seal_blinding)
         });
         self.issued
             .checked_add_assign(amount)
@@ -218,14 +229,12 @@ impl PrimaryIssue {
 
     pub fn allow_inflation<O: TxOutpoint>(
         mut self,
-        method: Method,
         controller: O,
         supply: impl Into<Amount>,
     ) -> Result<Self, IssuerError> {
         let supply = supply.into();
-        let controller = controller.map_to_xchain(|outpoint| {
-            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
-        });
+        let controller = controller
+            .map_to_xchain(|outpoint| GenesisSeal::new_random(outpoint.txid, outpoint.vout));
         self = self.update_max_supply(supply)?;
         self.builder =
             self.builder
@@ -236,7 +245,6 @@ impl PrimaryIssue {
     /// Add asset allocation in a deterministic way.
     pub fn allow_inflation_det<O: TxOutpoint>(
         mut self,
-        method: Method,
         beneficiary: O,
         seal_blinding: u64,
         supply: impl Into<Amount>,
@@ -244,7 +252,7 @@ impl PrimaryIssue {
     ) -> Result<Self, IssuerError> {
         let supply = supply.into();
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
-            GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
+            GenesisSeal::with_blinding(outpoint.txid, outpoint.vout, seal_blinding)
         });
         self = self.update_max_supply(supply)?;
         self.builder = self.builder.add_fungible_state_det(
@@ -276,51 +284,39 @@ impl PrimaryIssue {
         Ok(self)
     }
 
-    pub fn allow_burn<O: TxOutpoint>(
-        mut self,
-        method: Method,
-        controller: O,
-    ) -> Result<Self, IssuerError> {
-        let controller = controller.map_to_xchain(|outpoint| {
-            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
-        });
+    pub fn allow_burn<O: TxOutpoint>(mut self, controller: O) -> Result<Self, IssuerError> {
+        let controller = controller
+            .map_to_xchain(|outpoint| GenesisSeal::new_random(outpoint.txid, outpoint.vout));
         self.builder = self.builder.add_rights("burnRight", controller)?;
         Ok(self)
     }
 
     pub fn allow_burn_det<O: TxOutpoint>(
         mut self,
-        method: Method,
         controller: O,
         seal_blinding: u64,
     ) -> Result<Self, IssuerError> {
         let controller = controller.map_to_xchain(|outpoint| {
-            GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
+            GenesisSeal::with_blinding(outpoint.txid, outpoint.vout, seal_blinding)
         });
         self.builder = self.builder.add_rights("burnRight", controller)?;
         Ok(self)
     }
 
-    pub fn allow_replace<O: TxOutpoint>(
-        mut self,
-        method: Method,
-        controller: O,
-    ) -> Result<Self, IssuerError> {
-        let controller = controller.map_to_xchain(|outpoint| {
-            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
-        });
+    pub fn allow_replace<O: TxOutpoint>(mut self, controller: O) -> Result<Self, IssuerError> {
+        let controller = controller
+            .map_to_xchain(|outpoint| GenesisSeal::new_random(outpoint.txid, outpoint.vout));
         self.builder = self.builder.add_rights("replaceRight", controller)?;
         Ok(self)
     }
 
     pub fn allow_replace_det<O: TxOutpoint>(
         mut self,
-        method: Method,
         controller: O,
         seal_blinding: u64,
     ) -> Result<Self, IssuerError> {
         let controller = controller.map_to_xchain(|outpoint| {
-            GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
+            GenesisSeal::with_blinding(outpoint.txid, outpoint.vout, seal_blinding)
         });
         self.builder = self.builder.add_rights("replaceRight", controller)?;
         Ok(self)
