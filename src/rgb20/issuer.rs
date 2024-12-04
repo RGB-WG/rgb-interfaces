@@ -26,7 +26,7 @@ use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::stl::{AssetSpec, Attachment, ContractTerms, RicardianContract};
-use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal, Identity};
+use rgbstd::{AssetTag, BlindingFactor, GenesisSeal, Identity, Layer1};
 use strict_encoding::InvalidRString;
 
 use super::Rgb20;
@@ -122,6 +122,7 @@ impl PrimaryIssue {
                 main_iface_impl,
                 types,
                 scripts,
+                Layer1::Bitcoin,
             ),
             true => ContractBuilder::deterministic(
                 Identity::from_str(by).expect("invalid issuer identity string"),
@@ -130,6 +131,7 @@ impl PrimaryIssue {
                 main_iface_impl,
                 types,
                 scripts,
+                Layer1::Bitcoin,
             ),
         };
         builder = builder
@@ -142,14 +144,6 @@ impl PrimaryIssue {
             issued: Amount::ZERO,
             inflation: None,
         })
-    }
-
-    pub fn support_liquid(mut self) -> Self {
-        self.builder = self
-            .builder
-            .add_layer1(AltLayer1::Liquid)
-            .expect("only one layer1 can be added");
-        self
     }
 
     pub fn add_terms(

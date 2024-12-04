@@ -27,7 +27,7 @@ use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::PersistedState;
 use rgbstd::stl::{Attachment, ContractTerms, Details, Name, RicardianContract};
-use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal, Identity};
+use rgbstd::{AssetTag, BlindingFactor, GenesisSeal, Identity};
 use strict_encoding::InvalidRString;
 
 use super::Rgb25;
@@ -62,6 +62,7 @@ impl Issue {
             main_iface_impl,
             types,
             scripts,
+            rgbstd::Layer1::Bitcoin,
         )
         .add_global_state("name", Name::try_from(name.to_owned())?)
         .expect("invalid RGB25 schema (name mismatch)")
@@ -106,14 +107,6 @@ impl Issue {
             .expect("invalid RGB25 schema (assetOwner mismatch)");
         me.deterministic = true;
         Ok(me)
-    }
-
-    pub fn support_liquid(mut self) -> Self {
-        self.builder = self
-            .builder
-            .add_layer1(AltLayer1::Liquid)
-            .expect("only one layer1 can be added");
-        self
     }
 
     pub fn add_details(mut self, details: &str) -> Result<Self, InvalidRString> {
