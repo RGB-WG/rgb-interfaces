@@ -12,6 +12,8 @@ dependencies = [
  "amplify_num",
  "amplify_syn",
  "ascii",
+ "serde",
+ "stringly_conversions",
  "wasm-bindgen",
 ]
 
@@ -33,6 +35,7 @@ version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "99bcb75a2982047f733547042fc3968c0f460dfcf7d90b90dea3b2744580e9ad"
 dependencies = [
+ "serde",
  "wasm-bindgen",
 ]
 
@@ -52,6 +55,9 @@ name = "ascii"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d92bec98840b8f03a5ff5413de5293bfcd8bf96467cf5452609f939ec6f5de16"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "baid64"
@@ -241,6 +247,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1261fe7e33c73b354eab43b1273a57c8f967d0391e80353e51f764ac02cf6775"
 
 [[package]]
+name = "paste"
+version = "1.0.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
+
+[[package]]
 name = "ppv-lite86"
 version = "0.2.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -347,6 +359,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_str_helpers"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b744a7c94f2f3785496af33a0d93857dfc0c521e25c38e993e9c5bb45f09c841"
+dependencies = [
+ "serde",
+ "serde_derive",
+]
+
+[[package]]
 name = "sha2"
 version = "0.10.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -370,6 +392,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8fd36b71bb44ca146be0b2185ed6c6deb3684cc0d5c3a94284e97fe7fa6a642f"
 dependencies = [
  "amplify",
+ "serde",
  "strict_encoding_derive",
  "wasm-bindgen",
 ]
@@ -400,6 +423,16 @@ dependencies = [
  "strict_encoding",
  "vesper-lang",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "stringly_conversions"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ff63080f492dd4d289ffcaed8d7ece38adfb423db910eb342c0e04d409536a7a"
+dependencies = [
+ "paste",
+ "serde_str_helpers",
 ]
 
 [[package]]
