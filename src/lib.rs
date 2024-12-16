@@ -29,7 +29,9 @@ extern crate strict_encoding;
 extern crate serde;
 
 mod fungible;
+mod types;
 
 pub use fungible::*;
+pub use types::{rgb_contract_stl, CommonTypes};
 
 pub const LIB_NAME_RGB_CONTRACT: &str = "RGBContract";
