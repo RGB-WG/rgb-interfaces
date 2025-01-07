@@ -21,6 +21,7 @@
 use std::hash::{Hash, Hasher};
 use std::str::FromStr;
 
+use amplify::confinement::TinyString;
 use strict_encoding::stl::{Alpha, AlphaNum, AsciiPrintable};
 use strict_encoding::RString;
 use strict_types::StrictVal;
@@ -66,3 +67,10 @@ impl_ident_subtype!(AssetName);
 impl AssetName {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self { Self::from_str(&value.unwrap_string()).unwrap() }
 }
+
+#[derive(Wrapper, Clone, Ord, PartialOrd, PartialEq, Eq, From)]
+#[wrapper(Deref, Display, FromStr)]
+#[derive(StrictDumb, StrictType, StrictEncode, StrictDecode)]
+#[strict_type(lib = LIB_NAME_RGB_CONTRACT)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(transparent))]
+pub struct Details(TinyString);

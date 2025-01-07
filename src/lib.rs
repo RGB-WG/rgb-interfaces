@@ -33,7 +33,7 @@ mod types;
 mod names;
 
 pub use fungible::*;
-pub use names::{AssetName, Ticker};
+pub use names::{AssetName, Details, Ticker};
 pub use types::{rgb_contract_stl, CommonTypes};
 
 pub const LIB_NAME_RGB_CONTRACT: &str = "RGBContract";

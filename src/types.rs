@@ -21,7 +21,7 @@
 use strict_types::stl::std_stl;
 use strict_types::{LibBuilder, SemId, SymbolicSys, SystemBuilder, TypeLib, TypeSystem};
 
-use crate::{Amount, AssetName, Precision, Ticker, LIB_NAME_RGB_CONTRACT};
+use crate::{Amount, AssetName, Details, Precision, Ticker, LIB_NAME_RGB_CONTRACT};
 
 #[derive(Debug)]
 pub struct CommonTypes(SymbolicSys);
@@ -38,6 +38,7 @@ pub fn rgb_contract_stl() -> TypeLib {
     .transpile::<Precision>()
     .transpile::<Ticker>()
     .transpile::<AssetName>()
+    .transpile::<Details>()
     .compile()
     .expect("invalid common types library")
 }
