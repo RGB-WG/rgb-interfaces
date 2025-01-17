@@ -26,7 +26,7 @@ use rgbstd::interface::{
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{ContractTerms, Details, Name};
-use rgbstd::{AssetTag, ContractId, SchemaId, WitnessInfo, XWitnessId};
+use rgbstd::{ContractId, SchemaId, WitnessInfo, XWitnessId};
 use strict_encoding::InvalidRString;
 
 use super::{Issue, Rgb25, Rgb25Info};
@@ -84,9 +84,8 @@ impl<S: ContractStateRead> Rgb25Wrapper<S> {
         issuer: &str,
         name: &str,
         precision: Precision,
-        asset_tag: AssetTag,
     ) -> Result<Issue, InvalidRString> {
-        Issue::testnet_det::<C>(close_method, issuer, name, precision, asset_tag)
+        Issue::testnet_det::<C>(close_method, issuer, name, precision)
     }
 
     pub fn name(&self) -> Name {

@@ -26,7 +26,7 @@ use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::stl::{AssetSpec, Attachment, ContractTerms, RicardianContract};
-use rgbstd::{AssetTag, BlindingFactor, GenesisSeal, Identity, Layer1};
+use rgbstd::{GenesisSeal, Identity, Layer1};
 use strict_encoding::InvalidRString;
 
 use super::Rgb20;
@@ -91,23 +91,8 @@ impl PrimaryIssue {
         name: &str,
         details: Option<&str>,
         precision: Precision,
-        asset_tag: AssetTag,
     ) -> Result<Self, InvalidRString> {
-        let mut me = Self::testnet_int(
-            close_method,
-            C::issuer(),
-            by,
-            ticker,
-            name,
-            details,
-            precision,
-            true,
-        )?;
-        me.builder = me
-            .builder
-            .add_asset_tag("assetOwner", asset_tag)
-            .expect("invalid RGB20 schema (assetOwner mismatch)");
-        Ok(me)
+        Self::testnet_int(close_method, C::issuer(), by, ticker, name, details, precision, true)
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -210,7 +195,6 @@ impl PrimaryIssue {
         beneficiary: O,
         seal_blinding: u64,
         amount: impl Into<Amount>,
-        amount_blinding: BlindingFactor,
     ) -> Result<Self, IssuerError> {
         let amount = amount.into();
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
@@ -219,12 +203,9 @@ impl PrimaryIssue {
         self.issued
             .checked_add_assign(amount)
             .ok_or(IssuerError::AmountOverflow)?;
-        self.builder = self.builder.add_fungible_state_det(
-            "assetOwner",
-            beneficiary,
-            amount,
-            amount_blinding,
-        )?;
+        self.builder = self
+            .builder
+            .add_fungible_state("assetOwner", beneficiary, amount)?;
         Ok(self)
     }
 
@@ -249,19 +230,15 @@ impl PrimaryIssue {
         beneficiary: O,
         seal_blinding: u64,
         supply: impl Into<Amount>,
-        supply_blinding: BlindingFactor,
     ) -> Result<Self, IssuerError> {
         let supply = supply.into();
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
             GenesisSeal::with_blinding(outpoint.txid, outpoint.vout, seal_blinding)
         });
         self = self.update_max_supply(supply)?;
-        self.builder = self.builder.add_fungible_state_det(
-            "inflationAllowance",
-            beneficiary,
-            supply,
-            supply_blinding,
-        )?;
+        self.builder =
+            self.builder
+                .add_fungible_state("inflationAllowance", beneficiary, supply)?;
         Ok(self)
     }
 
@@ -270,17 +247,7 @@ impl PrimaryIssue {
             Some(max) => max
                 .checked_add_assign(supply)
                 .ok_or(IssuerError::AmountOverflow)?,
-            None => {
-                let tag = self
-                    .builder
-                    .asset_tag("assetOwner")
-                    .expect("asset tag must be already set");
-                self.builder = self
-                    .builder
-                    .add_asset_tag("inflationAllowance", tag)
-                    .expect("invalid RGB20 inflation allowance tag (inflation allowance mismatch)");
-                self.inflation = Some(supply)
-            }
+            None => self.inflation = Some(supply),
         }
         Ok(self)
     }
@@ -322,13 +289,6 @@ impl PrimaryIssue {
         self.builder = self.builder.add_rights("replaceRight", controller)?;
         Ok(self)
     }
-
-    // TODO: implement when bulletproofs are supported
-    /*
-    pub fn conceal_allocations(mut self) -> Self {
-
-    }
-     */
 
     #[allow(clippy::result_large_err)]
     pub fn issue_contract(self) -> Result<ValidContract, IssuerError> {

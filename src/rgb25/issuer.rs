@@ -27,7 +27,7 @@ use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::PersistedState;
 use rgbstd::stl::{Attachment, ContractTerms, Details, Name, RicardianContract};
-use rgbstd::{AssetTag, BlindingFactor, GenesisSeal, Identity};
+use rgbstd::{GenesisSeal, Identity};
 use strict_encoding::InvalidRString;
 
 use super::Rgb25;
@@ -103,13 +103,8 @@ impl Issue {
         by: &str,
         name: &str,
         precision: Precision,
-        asset_tag: AssetTag,
     ) -> Result<Self, InvalidRString> {
         let mut me = Self::testnet_int(close_method, C::issuer(), by, name, precision)?;
-        me.builder = me
-            .builder
-            .add_asset_tag("assetOwner", asset_tag)
-            .expect("invalid RGB25 schema (assetOwner mismatch)");
         me.deterministic = true;
         Ok(me)
     }
@@ -169,7 +164,6 @@ impl Issue {
         beneficiary: O,
         seal_blinding: u64,
         amount: Amount,
-        amount_blinding: BlindingFactor,
     ) -> Result<Self, IssuerError> {
         debug_assert!(
             self.deterministic,
@@ -177,10 +171,6 @@ impl Issue {
              using `*_det` constructor"
         );
 
-        let tag = self
-            .builder
-            .asset_tag("assetOwner")
-            .expect("internal library error: asset tag is unassigned");
         let beneficiary = beneficiary.map_to_xchain(|outpoint| {
             GenesisSeal::with_blinding(outpoint.txid, outpoint.vout, seal_blinding)
         });
@@ -190,17 +180,10 @@ impl Issue {
         self.builder = self.builder.add_owned_state_det(
             "assetOwner",
             beneficiary,
-            PersistedState::Amount(amount, amount_blinding, tag),
+            PersistedState::Amount(amount),
         )?;
         Ok(self)
     }
-
-    // TODO: implement when bulletproofs are supported
-    /*
-    pub fn conceal_allocations(mut self) -> Self {
-
-    }
-     */
 
     #[allow(clippy::result_large_err)]
     pub fn issue_contract(self) -> Result<ValidContract, BuilderError> {

@@ -27,7 +27,7 @@ use rgbstd::interface::{
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{AssetSpec, ContractTerms, Details};
-use rgbstd::{AssetTag, ContractId, SchemaId, WitnessInfo, XWitnessId};
+use rgbstd::{ContractId, SchemaId, WitnessInfo, XWitnessId};
 use strict_encoding::InvalidRString;
 
 use super::{Inflation, PrimaryIssue, Rgb20, Rgb20Info};
@@ -136,17 +136,8 @@ impl<S: ContractStateRead> Rgb20Wrapper<S> {
         name: &str,
         details: Option<&str>,
         precision: Precision,
-        asset_tag: AssetTag,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet_det::<C>(
-            close_method,
-            issuer,
-            ticker,
-            name,
-            details,
-            precision,
-            asset_tag,
-        )
+        PrimaryIssue::testnet_det::<C>(close_method, issuer, ticker, name, details, precision)
     }
 
     pub fn features(&self) -> Rgb20 {
