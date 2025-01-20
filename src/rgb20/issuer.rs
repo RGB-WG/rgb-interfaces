@@ -110,6 +110,7 @@ impl PrimaryIssue {
         Ok(me)
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn testnet_int(
         close_method: CloseMethod,
         issuer: SchemaIssuer<Rgb20>,
