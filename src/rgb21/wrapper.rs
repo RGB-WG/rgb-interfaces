@@ -24,7 +24,7 @@ use rgbstd::interface::{
 };
 use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{bp_tx_stl, rgb_contract_stl, AssetSpec, ContractTerms};
-use rgbstd::{Allocation, ContractId, SchemaId, WitnessInfo, XWitnessId};
+use rgbstd::{Allocation, ContractId, SchemaId, Txid, WitnessInfo};
 use strict_types::stl::std_stl;
 use strict_types::{CompileError, LibBuilder, TypeLib};
 
@@ -80,7 +80,7 @@ impl<S: ContractStateRead> IfaceWrapper<S> for Rgb21Wrapper<S> {
     fn schema_id(&self) -> SchemaId { self.0.state.schema_id() }
 
     #[inline]
-    fn witness_info(&self, witness_id: XWitnessId) -> Option<WitnessInfo> {
+    fn witness_info(&self, witness_id: Txid) -> Option<WitnessInfo> {
         self.0.witness_info(witness_id)
     }
 }

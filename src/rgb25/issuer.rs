@@ -22,8 +22,9 @@
 use std::str::FromStr;
 
 use bp::seals::txout::CloseMethod;
+use bp::Outpoint;
 use rgbstd::containers::ValidContract;
-use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
+use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::PersistedState;
 use rgbstd::stl::{Attachment, ContractTerms, Details, Name, RicardianContract};
@@ -127,18 +128,13 @@ impl Issue {
         Ok(self)
     }
 
-    pub fn allocate<O: TxOutpoint>(
-        mut self,
-        beneficiary: O,
-        amount: Amount,
-    ) -> Result<Self, IssuerError> {
+    pub fn allocate(mut self, outpoint: Outpoint, amount: Amount) -> Result<Self, IssuerError> {
         debug_assert!(
             !self.deterministic,
             "for creating deterministic contracts please use allocate_det method"
         );
 
-        let beneficiary = beneficiary
-            .map_to_xchain(|outpoint| GenesisSeal::new_random(outpoint.txid, outpoint.vout));
+        let beneficiary = GenesisSeal::new_random(outpoint.txid, outpoint.vout);
         self.issued
             .checked_add_assign(amount)
             .ok_or(IssuerError::AmountOverflow)?;
@@ -148,9 +144,9 @@ impl Issue {
         Ok(self)
     }
 
-    pub fn allocate_all<O: TxOutpoint>(
+    pub fn allocate_all(
         mut self,
-        allocations: impl IntoIterator<Item = (O, Amount)>,
+        allocations: impl IntoIterator<Item = (Outpoint, Amount)>,
     ) -> Result<Self, IssuerError> {
         for (beneficiary, amount) in allocations {
             self = self.allocate(beneficiary, amount)?;
@@ -159,9 +155,9 @@ impl Issue {
     }
 
     /// Add asset allocation in a deterministic way.
-    pub fn allocate_det<O: TxOutpoint>(
+    pub fn allocate_det(
         mut self,
-        beneficiary: O,
+        outpoint: Outpoint,
         seal_blinding: u64,
         amount: Amount,
     ) -> Result<Self, IssuerError> {
@@ -171,9 +167,7 @@ impl Issue {
              using `*_det` constructor"
         );
 
-        let beneficiary = beneficiary.map_to_xchain(|outpoint| {
-            GenesisSeal::with_blinding(outpoint.txid, outpoint.vout, seal_blinding)
-        });
+        let beneficiary = GenesisSeal::with_blinding(outpoint.txid, outpoint.vout, seal_blinding);
         self.issued
             .checked_add_assign(amount)
             .ok_or(IssuerError::AmountOverflow)?;

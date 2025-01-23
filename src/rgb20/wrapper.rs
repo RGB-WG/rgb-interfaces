@@ -27,7 +27,7 @@ use rgbstd::interface::{
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::ContractStateRead;
 use rgbstd::stl::{AssetSpec, ContractTerms, Details};
-use rgbstd::{ContractId, SchemaId, WitnessInfo, XWitnessId};
+use rgbstd::{ContractId, SchemaId, Txid, WitnessInfo};
 use strict_encoding::InvalidRString;
 
 use super::{Inflation, PrimaryIssue, Rgb20, Rgb20Info};
@@ -112,7 +112,7 @@ impl<S: ContractStateRead> IfaceWrapper<S> for Rgb20Wrapper<S> {
     fn schema_id(&self) -> SchemaId { self.0.state.schema_id() }
 
     #[inline]
-    fn witness_info(&self, witness_id: XWitnessId) -> Option<WitnessInfo> {
+    fn witness_info(&self, witness_id: Txid) -> Option<WitnessInfo> {
         self.0.witness_info(witness_id)
     }
 }
