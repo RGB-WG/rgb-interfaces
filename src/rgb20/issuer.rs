@@ -21,7 +21,6 @@
 
 use std::str::FromStr;
 
-use bp::seals::txout::CloseMethod;
 use bp::Outpoint;
 use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass};
@@ -63,7 +62,6 @@ pub struct PrimaryIssue {
 
 impl PrimaryIssue {
     pub fn testnet_with(
-        close_method: CloseMethod,
         issuer: SchemaIssuer<Rgb20>,
         by: &str,
         ticker: &str,
@@ -71,34 +69,31 @@ impl PrimaryIssue {
         details: Option<&str>,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(close_method, issuer, by, ticker, name, details, precision, false)
+        Self::testnet_int(issuer, by, ticker, name, details, precision, false)
     }
 
     pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb20>>(
-        close_method: CloseMethod,
         by: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(close_method, C::issuer(), by, ticker, name, details, precision, false)
+        Self::testnet_int(C::issuer(), by, ticker, name, details, precision, false)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb20>>(
-        close_method: CloseMethod,
         by: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(close_method, C::issuer(), by, ticker, name, details, precision, true)
+        Self::testnet_int(C::issuer(), by, ticker, name, details, precision, true)
     }
 
     #[allow(clippy::too_many_arguments)]
     fn testnet_int(
-        close_method: CloseMethod,
         issuer: SchemaIssuer<Rgb20>,
         by: &str,
         ticker: &str,
@@ -116,7 +111,6 @@ impl PrimaryIssue {
         let (schema, main_iface_impl, types, scripts, features) = issuer.into_split();
         let mut builder = match deterministic {
             false => ContractBuilder::with(
-                close_method,
                 Identity::from_str(by).expect("invalid issuer identity string"),
                 features.iface(),
                 schema,
@@ -126,7 +120,6 @@ impl PrimaryIssue {
                 Layer1::Bitcoin,
             ),
             true => ContractBuilder::deterministic(
-                close_method,
                 Identity::from_str(by).expect("invalid issuer identity string"),
                 features.iface(),
                 schema,

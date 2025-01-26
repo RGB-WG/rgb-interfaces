@@ -21,7 +21,6 @@
 
 use std::str::FromStr;
 
-use bp::seals::txout::CloseMethod;
 use bp::Outpoint;
 use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass};
@@ -45,7 +44,6 @@ pub struct Issue {
 
 impl Issue {
     fn testnet_int(
-        close_method: CloseMethod,
         issuer: SchemaIssuer<Rgb25>,
         by: &str,
         name: &str,
@@ -58,7 +56,6 @@ impl Issue {
 
         let (schema, main_iface_impl, types, scripts, features) = issuer.into_split();
         let builder = ContractBuilder::with(
-            close_method,
             Identity::from_str(by).expect("invalid issuer identity string"),
             features.iface(),
             schema,
@@ -81,31 +78,28 @@ impl Issue {
     }
 
     pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb25>>(
-        close_method: CloseMethod,
         by: &str,
         name: &str,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(close_method, C::issuer(), by, name, precision)
+        Self::testnet_int(C::issuer(), by, name, precision)
     }
 
     pub fn testnet_with(
-        close_method: CloseMethod,
         issuer: SchemaIssuer<Rgb25>,
         by: &str,
         name: &str,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        Self::testnet_int(close_method, issuer, by, name, precision)
+        Self::testnet_int(issuer, by, name, precision)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb25>>(
-        close_method: CloseMethod,
         by: &str,
         name: &str,
         precision: Precision,
     ) -> Result<Self, InvalidRString> {
-        let mut me = Self::testnet_int(close_method, C::issuer(), by, name, precision)?;
+        let mut me = Self::testnet_int(C::issuer(), by, name, precision)?;
         me.deterministic = true;
         Ok(me)
     }

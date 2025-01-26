@@ -19,7 +19,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use bp::seals::txout::CloseMethod;
 use rgbstd::interface::{
     AssignmentsFilter, ContractIface, ContractOp, FungibleAllocation, IfaceClass, IfaceId,
     IfaceWrapper, RightsAllocation,
@@ -119,25 +118,23 @@ impl<S: ContractStateRead> IfaceWrapper<S> for Rgb20Wrapper<S> {
 
 impl<S: ContractStateRead> Rgb20Wrapper<S> {
     pub fn testnet<C: IssuerWrapper<IssuingIface = Rgb20>>(
-        close_method: CloseMethod,
         issuer: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet::<C>(close_method, issuer, ticker, name, details, precision)
+        PrimaryIssue::testnet::<C>(issuer, ticker, name, details, precision)
     }
 
     pub fn testnet_det<C: IssuerWrapper<IssuingIface = Rgb20>>(
-        close_method: CloseMethod,
         issuer: &str,
         ticker: &str,
         name: &str,
         details: Option<&str>,
         precision: Precision,
     ) -> Result<PrimaryIssue, InvalidRString> {
-        PrimaryIssue::testnet_det::<C>(close_method, issuer, ticker, name, details, precision)
+        PrimaryIssue::testnet_det::<C>(issuer, ticker, name, details, precision)
     }
 
     pub fn features(&self) -> Rgb20 {
