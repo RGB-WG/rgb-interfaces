@@ -18,22 +18,25 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+use ifaces::rgb_contract_stl;
+use strict_types::parse_args;
 
-#[macro_use]
-extern crate amplify;
-#[macro_use]
-extern crate strict_encoding;
-#[cfg(feature = "serde")]
-#[macro_use]
-extern crate serde;
+fn main() {
+    let (format, dir) = parse_args();
 
-mod fungible;
-mod types;
-mod names;
-
-pub use fungible::*;
-pub use names::{AssetName, Details, Ticker};
-pub use types::{rgb_contract_stl, CommonTypes, LIB_ID_RGB_INTERFACES};
-
-pub const LIB_NAME_RGB_CONTRACT: &str = "RGBContract";
+    let lib = rgb_contract_stl();
+    lib.serialize(
+        format,
+        dir.as_ref(),
+        "0.12.0",
+        Some(
+            "
+  Collection of the standard RGB smart contract interface
+  Author: Dr Maxim Orlovsky <orlovsky@ubideco.org>
+  Copyright (C) 2019-2025 RGB Consortium members & contributors.
+                          All rights reserved.
+  License: Apache-2.0",
+        ),
+    )
+    .expect("unable to write to the file");
+}

@@ -23,6 +23,9 @@ use strict_types::{LibBuilder, SemId, SymbolicSys, SystemBuilder, TypeLib, TypeS
 
 use crate::{Amount, AssetName, Details, Precision, Ticker, LIB_NAME_RGB_CONTRACT};
 
+/// Strict types id for the library providing data types for RGB contracts.
+pub const LIB_ID_RGB_INTERFACES: &str = "stl:yHW1Q9ke-B04oMfC-~Dh1v9X-XyLur8_-bCEpUeK-y91BegY#daniel-charter-lorenzo";
+
 #[derive(Debug)]
 pub struct CommonTypes(SymbolicSys);
 
@@ -67,5 +70,16 @@ impl CommonTypes {
             .0
             .resolve(name)
             .unwrap_or_else(|| panic!("type '{name}' is absent in RGB contract common type library"))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn lib_id() {
+        let lib = rgb_contract_stl();
+        assert_eq!(lib.id().to_string(), LIB_ID_RGB_INTERFACES);
     }
 }
