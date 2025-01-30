@@ -26,7 +26,7 @@ use rgbstd::containers::ValidContract;
 use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::stl::{AssetSpec, Attachment, ContractTerms, RicardianContract};
-use rgbstd::{GenesisSeal, Identity, Layer1};
+use rgbstd::{ChainNet, GenesisSeal, Identity};
 use strict_encoding::InvalidRString;
 
 use super::Rgb20;
@@ -117,7 +117,7 @@ impl PrimaryIssue {
                 main_iface_impl,
                 types,
                 scripts,
-                Layer1::Bitcoin,
+                ChainNet::BitcoinTestnet4,
             ),
             true => ContractBuilder::deterministic(
                 Identity::from_str(by).expect("invalid issuer identity string"),
@@ -126,7 +126,7 @@ impl PrimaryIssue {
                 main_iface_impl,
                 types,
                 scripts,
-                Layer1::Bitcoin,
+                ChainNet::BitcoinTestnet4,
             ),
         };
         builder = builder

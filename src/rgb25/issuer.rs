@@ -27,7 +27,7 @@ use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::PersistedState;
 use rgbstd::stl::{Attachment, ContractTerms, Details, Name, RicardianContract};
-use rgbstd::{GenesisSeal, Identity};
+use rgbstd::{ChainNet, GenesisSeal, Identity};
 use strict_encoding::InvalidRString;
 
 use super::Rgb25;
@@ -62,7 +62,7 @@ impl Issue {
             main_iface_impl,
             types,
             scripts,
-            rgbstd::Layer1::Bitcoin,
+            ChainNet::BitcoinTestnet4,
         )
         .add_global_state("name", Name::try_from(name.to_owned())?)
         .expect("invalid RGB25 schema (name mismatch)")
