@@ -21,10 +21,11 @@
 
 use std::fmt::{self, Display, Formatter, Write};
 
+use bp::Outpoint;
 use chrono::{DateTime, Utc};
 use rgbstd::info::ContractInfo;
 use rgbstd::stl::Attachment;
-use rgbstd::{Amount, Precision, XOutpoint, XWitnessId};
+use rgbstd::{Amount, Precision, Txid};
 
 use crate::rgb20::Rgb20;
 
@@ -92,6 +93,6 @@ pub struct SupplyInfo {
 pub struct SupplyEvent {
     pub amount: Amount,
     pub timestamp: DateTime<Utc>,
-    pub seal: XOutpoint,
-    pub witness: XWitnessId,
+    pub seal: Outpoint,
+    pub witness: Txid,
 }

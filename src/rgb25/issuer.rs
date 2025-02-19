@@ -21,13 +21,13 @@
 
 use std::str::FromStr;
 
-use bp::dbc::Method;
+use bp::Outpoint;
 use rgbstd::containers::ValidContract;
-use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass, TxOutpoint};
+use rgbstd::interface::{BuilderError, ContractBuilder, IfaceClass};
 use rgbstd::invoice::{Amount, Precision};
 use rgbstd::persistence::PersistedState;
 use rgbstd::stl::{Attachment, ContractTerms, Details, Name, RicardianContract};
-use rgbstd::{AltLayer1, AssetTag, BlindingFactor, GenesisSeal, Identity};
+use rgbstd::{ChainNet, GenesisSeal, Identity};
 use strict_encoding::InvalidRString;
 
 use super::Rgb25;
@@ -62,6 +62,7 @@ impl Issue {
             main_iface_impl,
             types,
             scripts,
+            ChainNet::BitcoinTestnet4,
         )
         .add_global_state("name", Name::try_from(name.to_owned())?)
         .expect("invalid RGB25 schema (name mismatch)")
@@ -97,23 +98,10 @@ impl Issue {
         by: &str,
         name: &str,
         precision: Precision,
-        asset_tag: AssetTag,
     ) -> Result<Self, InvalidRString> {
         let mut me = Self::testnet_int(C::issuer(), by, name, precision)?;
-        me.builder = me
-            .builder
-            .add_asset_tag("assetOwner", asset_tag)
-            .expect("invalid RGB25 schema (assetOwner mismatch)");
         me.deterministic = true;
         Ok(me)
-    }
-
-    pub fn support_liquid(mut self) -> Self {
-        self.builder = self
-            .builder
-            .add_layer1(AltLayer1::Liquid)
-            .expect("only one layer1 can be added");
-        self
     }
 
     pub fn add_details(mut self, details: &str) -> Result<Self, InvalidRString> {
@@ -134,20 +122,13 @@ impl Issue {
         Ok(self)
     }
 
-    pub fn allocate<O: TxOutpoint>(
-        mut self,
-        method: Method,
-        beneficiary: O,
-        amount: Amount,
-    ) -> Result<Self, IssuerError> {
+    pub fn allocate(mut self, outpoint: Outpoint, amount: Amount) -> Result<Self, IssuerError> {
         debug_assert!(
             !self.deterministic,
             "for creating deterministic contracts please use allocate_det method"
         );
 
-        let beneficiary = beneficiary.map_to_xchain(|outpoint| {
-            GenesisSeal::new_random(method, outpoint.txid, outpoint.vout)
-        });
+        let beneficiary = GenesisSeal::new_random(outpoint.txid, outpoint.vout);
         self.issued
             .checked_add_assign(amount)
             .ok_or(IssuerError::AmountOverflow)?;
@@ -157,25 +138,22 @@ impl Issue {
         Ok(self)
     }
 
-    pub fn allocate_all<O: TxOutpoint>(
+    pub fn allocate_all(
         mut self,
-        method: Method,
-        allocations: impl IntoIterator<Item = (O, Amount)>,
+        allocations: impl IntoIterator<Item = (Outpoint, Amount)>,
     ) -> Result<Self, IssuerError> {
         for (beneficiary, amount) in allocations {
-            self = self.allocate(method, beneficiary, amount)?;
+            self = self.allocate(beneficiary, amount)?;
         }
         Ok(self)
     }
 
     /// Add asset allocation in a deterministic way.
-    pub fn allocate_det<O: TxOutpoint>(
+    pub fn allocate_det(
         mut self,
-        method: Method,
-        beneficiary: O,
+        outpoint: Outpoint,
         seal_blinding: u64,
         amount: Amount,
-        amount_blinding: BlindingFactor,
     ) -> Result<Self, IssuerError> {
         debug_assert!(
             self.deterministic,
@@ -183,30 +161,17 @@ impl Issue {
              using `*_det` constructor"
         );
 
-        let tag = self
-            .builder
-            .asset_tag("assetOwner")
-            .expect("internal library error: asset tag is unassigned");
-        let beneficiary = beneficiary.map_to_xchain(|outpoint| {
-            GenesisSeal::with_blinding(method, outpoint.txid, outpoint.vout, seal_blinding)
-        });
+        let beneficiary = GenesisSeal::with_blinding(outpoint.txid, outpoint.vout, seal_blinding);
         self.issued
             .checked_add_assign(amount)
             .ok_or(IssuerError::AmountOverflow)?;
         self.builder = self.builder.add_owned_state_det(
             "assetOwner",
             beneficiary,
-            PersistedState::Amount(amount, amount_blinding, tag),
+            PersistedState::Amount(amount),
         )?;
         Ok(self)
     }
-
-    // TODO: implement when bulletproofs are supported
-    /*
-    pub fn conceal_allocations(mut self) -> Self {
-
-    }
-     */
 
     #[allow(clippy::result_large_err)]
     pub fn issue_contract(self) -> Result<ValidContract, BuilderError> {
