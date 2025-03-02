@@ -324,7 +324,7 @@ dependencies = [
 
 [[package]]
 name = "rgb-interfaces"
-version = "0.12.0-beta.4"
+version = "0.12.0-beta.5"
 dependencies = [
  "amplify",
  "getrandom",
@@ -425,9 +425,9 @@ dependencies = [
 
 [[package]]
 name = "strict_types"
-version = "2.8.1"
+version = "2.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e208d1bd29a0f70d7ee90a91d76446b8bb7b1b8212d06e031e396d52e2fe891"
+checksum = "0930ae36d58638b14dc7d5491c1a269b13f6cebb16a55ef6d753d3325c395ca8"
 dependencies = [
  "amplify",
  "ascii-armor",
