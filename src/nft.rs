@@ -29,6 +29,7 @@ use amplify::ascii::AsciiString;
 use amplify::confinement::{Confined, NonEmptyVec, SmallBlob};
 use amplify::{ByteArray, Bytes32};
 use bc::{Outpoint, Txid};
+use commit_verify::ReservedBytes;
 use strict_encoding::stl::{AlphaSmall, AsciiPrintable};
 use strict_encoding::{
     InvalidRString, RString, RestrictedCharSet, StrictDeserialize, StrictDumb, StrictEncode, StrictSerialize,
@@ -477,7 +478,32 @@ impl Attachment {
 #[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
-pub struct NftData {
+pub struct Nft {
+    pub index: TokenIndex,
+    // We need this to align the data to the size of a field element, so `index` and `amount` get read into different
+    // registers
+    pub _reserved: ReservedBytes<26>,
+    pub amount: OwnedFraction,
+}
+
+impl StrictSerialize for Nft {}
+impl StrictDeserialize for Nft {}
+
+impl Nft {
+    pub fn new(index: impl Into<TokenIndex>, amount: impl Into<OwnedFraction>) -> Self {
+        Self {
+            index: index.into(),
+            _reserved: ReservedBytes::default(),
+            amount: amount.into(),
+        }
+    }
+}
+
+#[derive(Clone, Eq, PartialEq, Hash, Debug, Default)]
+#[derive(StrictType, StrictEncode, StrictDecode)]
+#[strict_type(lib = LIB_NAME_RGB21)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
+pub struct NftSpec {
     pub index: TokenIndex,
     pub ticker: Option<Ticker>,
     pub name: Option<AssetName>,
@@ -488,10 +514,10 @@ pub struct NftData {
     pub reserves: Option<ProofOfReserves>,
 }
 
-impl StrictSerialize for NftData {}
-impl StrictDeserialize for NftData {}
+impl StrictSerialize for NftSpec {}
+impl StrictDeserialize for NftSpec {}
 
-impl NftData {
+impl NftSpec {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
         let index = TokenIndex::from(
             value

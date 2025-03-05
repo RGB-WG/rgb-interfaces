@@ -19,11 +19,12 @@
 // the License.
 
 use bc::stl::bp_tx_stl;
+use commit_verify::stl::commit_verify_stl;
 use strict_types::stl::std_stl;
 use strict_types::{LibBuilder, SemId, SymbolicSys, SystemBuilder, TypeLib, TypeSystem};
 
 use crate::{
-    Amount, AssetName, AttachmentType, Details, NftAllocation, NftData, NftEngraving, Precision, Ticker,
+    Amount, AssetName, AttachmentType, Details, Nft, NftAllocation, NftEngraving, NftSpec, Precision, Ticker,
     LIB_NAME_RGB21, LIB_NAME_RGB_CONTRACT,
 };
 
@@ -31,7 +32,7 @@ use crate::{
 pub const LIB_ID_RGB_INTERFACES: &str = "stl:yHW1Q9ke-B04oMfC-~Dh1v9X-XyLur8_-bCEpUeK-y91BegY#daniel-charter-lorenzo";
 
 /// Strict types id for the library providing data types for RGB21.
-pub const LIB_ID_RGB21: &str = "stl:5_qIF~mp-PeGEtsv-shpE3lZ-BvCE2Na-NU6QhxV-dXi6GsQ#alert-venus-meteor";
+pub const LIB_ID_RGB21: &str = "stl:GCP1~VIv-ycTMPgE-STHRryW-6YxggFW-zvYUyk3-oyw1VMM#balsa-next-driver";
 
 pub fn rgb_contract_stl() -> TypeLib {
     LibBuilder::new(libname!(LIB_NAME_RGB_CONTRACT), tiny_bset! {
@@ -50,9 +51,11 @@ pub fn rgb21_stl() -> TypeLib {
     LibBuilder::new(libname!(LIB_NAME_RGB21), tiny_bset! {
         std_stl().to_dependency(),
         rgb_contract_stl().to_dependency(),
+        commit_verify_stl().to_dependency(),
         bp_tx_stl().to_dependency(),
     })
-    .transpile::<NftData>()
+    .transpile::<Nft>()
+    .transpile::<NftSpec>()
     .transpile::<AttachmentType>()
     .transpile::<NftAllocation>()
     .transpile::<NftEngraving>()
@@ -108,6 +111,8 @@ impl Rgb21Types {
                 .import(std_stl())
                 .unwrap()
                 .import(rgb_contract_stl())
+                .unwrap()
+                .import(commit_verify_stl())
                 .unwrap()
                 .import(bp_tx_stl())
                 .unwrap()

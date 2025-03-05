@@ -229,6 +229,7 @@ dependencies = [
  "amplify",
  "commit_encoding_derive",
  "ripemd",
+ "serde",
  "sha2",
  "strict_encoding",
  "strict_types",
@@ -475,6 +476,7 @@ version = "0.12.0-beta.5"
 dependencies = [
  "amplify",
  "bp-consensus",
+ "commit_verify",
  "getrandom",
  "rand",
  "serde",
