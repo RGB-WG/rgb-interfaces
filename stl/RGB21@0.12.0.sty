@@ -1,5 +1,5 @@
 {-
-  Id: stl:O_XJuG2r-92mykb_-Ja0MTVu-aH1fpCY-c3aLZZT-ZPoDoeM#humor-maximum-civil
+  Id: stl:5_qIF~mp-PeGEtsv-shpE3lZ-BvCE2Na-NU6QhxV-dXi6GsQ#alert-venus-meteor
   Name: RGB21
   Version: 0.12.0
   RGB21 smart contract interface
@@ -28,9 +28,6 @@ import Bitcoin#signal-color-cipher
   use Txid#shallow-light-reverse
   use Outpoint#logo-alamo-madam
 
-
-@mnemonic(blonde-slang-mobile)
-data Allocation        : TokenIndex, OwnedFraction
 
 @mnemonic(mono-bagel-falcon)
 data Attachment        : type MediaType, digest [Byte ^ 32]
@@ -67,14 +64,11 @@ data MimeChar          : excl#33 | hash#35 | dollar | amp#38
                        | z
 
 
-@mnemonic(mission-person-armor)
-data OwnedFraction     : U64
+@mnemonic(kansas-rocket-kiwi)
+data NftAllocation     : TokenIndex, OwnedFraction
 
-@mnemonic(harmony-dolby-golf)
-data ProofOfReserves   : utxo Bitcoin.Outpoint, proof [Byte]
-
-@mnemonic(mailbox-trident-cola)
-data TokenData         : index TokenIndex
+@mnemonic(canvas-magnum-flash)
+data NftData           : index TokenIndex
                        , ticker RGBContract.Ticker?
                        , name RGBContract.AssetName?
                        , details RGBContract.Details?
@@ -82,6 +76,15 @@ data TokenData         : index TokenIndex
                        , media Attachment?
                        , attachments {U8 -> ^ ..0x14 Attachment}
                        , reserves ProofOfReserves?
+
+@mnemonic(neutral-field-antenna)
+data NftEngraving      : appliedTo TokenIndex, content EmbeddedMedia
+
+@mnemonic(mission-person-armor)
+data OwnedFraction     : U64
+
+@mnemonic(harmony-dolby-golf)
+data ProofOfReserves   : utxo Bitcoin.Outpoint, proof [Byte]
 
 @mnemonic(giraffe-correct-modest)
 data TokenIndex        : U32

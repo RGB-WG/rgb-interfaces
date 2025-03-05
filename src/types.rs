@@ -23,15 +23,15 @@ use strict_types::stl::std_stl;
 use strict_types::{LibBuilder, SemId, SymbolicSys, SystemBuilder, TypeLib, TypeSystem};
 
 use crate::{
-    Allocation, Amount, AssetName, AttachmentType, Details, Precision, Ticker, TokenData, LIB_NAME_RGB21,
-    LIB_NAME_RGB_CONTRACT,
+    Amount, AssetName, AttachmentType, Details, NftAllocation, NftData, NftEngraving, Precision, Ticker,
+    LIB_NAME_RGB21, LIB_NAME_RGB_CONTRACT,
 };
 
 /// Strict types id for the library providing data types for RGB contracts.
 pub const LIB_ID_RGB_INTERFACES: &str = "stl:yHW1Q9ke-B04oMfC-~Dh1v9X-XyLur8_-bCEpUeK-y91BegY#daniel-charter-lorenzo";
 
 /// Strict types id for the library providing data types for RGB21.
-pub const LIB_ID_RGB21: &str = "stl:O_XJuG2r-92mykb_-Ja0MTVu-aH1fpCY-c3aLZZT-ZPoDoeM#humor-maximum-civil";
+pub const LIB_ID_RGB21: &str = "stl:5_qIF~mp-PeGEtsv-shpE3lZ-BvCE2Na-NU6QhxV-dXi6GsQ#alert-venus-meteor";
 
 pub fn rgb_contract_stl() -> TypeLib {
     LibBuilder::new(libname!(LIB_NAME_RGB_CONTRACT), tiny_bset! {
@@ -52,9 +52,10 @@ pub fn rgb21_stl() -> TypeLib {
         rgb_contract_stl().to_dependency(),
         bp_tx_stl().to_dependency(),
     })
-    .transpile::<TokenData>()
+    .transpile::<NftData>()
     .transpile::<AttachmentType>()
-    .transpile::<Allocation>()
+    .transpile::<NftAllocation>()
+    .transpile::<NftEngraving>()
     .compile()
     .expect("invalid common types library")
 }

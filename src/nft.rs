@@ -287,11 +287,11 @@ impl OwnedFraction {
 #[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct Allocation(TokenIndex, OwnedFraction);
+pub struct NftAllocation(TokenIndex, OwnedFraction);
 
-impl Allocation {
-    pub fn with(index: impl Into<TokenIndex>, fraction: impl Into<OwnedFraction>) -> Allocation {
-        Allocation(index.into(), fraction.into())
+impl NftAllocation {
+    pub fn with(index: impl Into<TokenIndex>, fraction: impl Into<OwnedFraction>) -> NftAllocation {
+        NftAllocation(index.into(), fraction.into())
     }
 
     pub fn token_index(self) -> TokenIndex { self.0 }
@@ -299,8 +299,8 @@ impl Allocation {
     pub fn fraction(self) -> OwnedFraction { self.1 }
 }
 
-impl StrictSerialize for Allocation {}
-impl StrictDeserialize for Allocation {}
+impl StrictSerialize for NftAllocation {}
+impl StrictDeserialize for NftAllocation {}
 
 #[derive(Clone, PartialEq, Eq, Debug, Display, Error, From)]
 #[display(inner)]
@@ -318,7 +318,7 @@ pub enum AllocationParseError {
     WrongFormat,
 }
 
-impl FromStr for Allocation {
+impl FromStr for NftAllocation {
     type Err = AllocationParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -327,7 +327,7 @@ impl FromStr for Allocation {
         }
 
         match s.split_once('@') {
-            Some((fraction, token_index)) => Ok(Allocation(
+            Some((fraction, token_index)) => Ok(NftAllocation(
                 token_index
                     .parse()
                     .map_err(|_| AllocationParseError::InvalidIndex(token_index.to_owned()))?,
@@ -344,12 +344,12 @@ impl FromStr for Allocation {
 #[derive(StrictType, StrictDumb, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
-pub struct EngravingData {
+pub struct NftEngraving {
     pub applied_to: TokenIndex,
     pub content: EmbeddedMedia,
 }
 
-impl EngravingData {
+impl NftEngraving {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
         let index = TokenIndex::from(
             value
@@ -477,7 +477,7 @@ impl Attachment {
 #[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
-pub struct TokenData {
+pub struct NftData {
     pub index: TokenIndex,
     pub ticker: Option<Ticker>,
     pub name: Option<AssetName>,
@@ -488,10 +488,10 @@ pub struct TokenData {
     pub reserves: Option<ProofOfReserves>,
 }
 
-impl StrictSerialize for TokenData {}
-impl StrictDeserialize for TokenData {}
+impl StrictSerialize for NftData {}
+impl StrictDeserialize for NftData {}
 
-impl TokenData {
+impl NftData {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
         let index = TokenIndex::from(
             value
