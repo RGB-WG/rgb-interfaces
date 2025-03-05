@@ -29,11 +29,14 @@ extern crate strict_encoding;
 extern crate serde;
 
 mod fungible;
+mod nft;
 mod types;
 mod names;
 
 pub use fungible::*;
 pub use names::{AssetName, Details, Ticker};
-pub use types::{rgb_contract_stl, CommonTypes, LIB_ID_RGB_INTERFACES};
+pub use nft::*;
+pub use types::{rgb21_stl, rgb_contract_stl, CommonTypes, Rgb21Types, LIB_ID_RGB21, LIB_ID_RGB_INTERFACES};
 
 pub const LIB_NAME_RGB_CONTRACT: &str = "RGBContract";
+pub const LIB_NAME_RGB21: &str = "RGB21";

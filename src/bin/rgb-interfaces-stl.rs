@@ -18,7 +18,7 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
-use ifaces::rgb_contract_stl;
+use ifaces::{rgb21_stl, rgb_contract_stl};
 use strict_types::parse_args;
 
 fn main() {
@@ -32,6 +32,22 @@ fn main() {
         Some(
             "
   Collection of the standard RGB smart contract interface
+  Author: Dr Maxim Orlovsky <orlovsky@ubideco.org>
+  Copyright (C) 2019-2025 RGB Consortium members & contributors.
+                          All rights reserved.
+  License: Apache-2.0",
+        ),
+    )
+    .expect("unable to write to the file");
+
+    let lib = rgb21_stl();
+    lib.serialize(
+        format,
+        dir.as_ref(),
+        "0.12.0",
+        Some(
+            "
+  RGB21 smart contract interface
   Author: Dr Maxim Orlovsky <orlovsky@ubideco.org>
   Copyright (C) 2019-2025 RGB Consortium members & contributors.
                           All rights reserved.

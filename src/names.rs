@@ -68,7 +68,7 @@ impl AssetName {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self { Self::from_str(&value.unwrap_string()).unwrap() }
 }
 
-#[derive(Wrapper, Clone, Ord, PartialOrd, PartialEq, Eq, From)]
+#[derive(Wrapper, Clone, Ord, PartialOrd, PartialEq, Eq, Hash, Debug, From)]
 #[wrapper(Deref, Display, FromStr)]
 #[derive(StrictDumb, StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB_CONTRACT)]

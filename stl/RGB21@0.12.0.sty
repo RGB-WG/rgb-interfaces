@@ -1,0 +1,89 @@
+{-
+  Id: stl:O_XJuG2r-92mykb_-Ja0MTVu-aH1fpCY-c3aLZZT-ZPoDoeM#humor-maximum-civil
+  Name: RGB21
+  Version: 0.12.0
+  RGB21 smart contract interface
+  Author: Dr Maxim Orlovsky <orlovsky@ubideco.org>
+  Copyright (C) 2019-2025 RGB Consortium members & contributors.
+                          All rights reserved.
+  License: Apache-2.0
+-}
+
+@context
+typelib RGB21
+
+import Std#delete-roman-hair
+  use AsciiPrintable#ultra-sunset-format
+  use AlphaNum#window-tractor-alamo
+  use Alpha#citizen-bicycle-stretch
+  use AlphaSmall#magnum-martin-soviet
+
+import RGBContract#daniel-charter-lorenzo
+  use AssetName#shelf-prism-civil
+  use Ticker#plasma-level-lucas
+  use Details#nikita-postage-taboo
+
+import Bitcoin#signal-color-cipher
+  use Vout#brush-gloria-heroic
+  use Txid#shallow-light-reverse
+  use Outpoint#logo-alamo-madam
+
+
+@mnemonic(blonde-slang-mobile)
+data Allocation        : TokenIndex, OwnedFraction
+
+@mnemonic(mono-bagel-falcon)
+data Attachment        : type MediaType, digest [Byte ^ 32]
+
+@mnemonic(resume-telex-tower)
+data AttachmentName    : [Std.AsciiPrintable ^ 1..0x14]
+
+@mnemonic(brave-costume-percent)
+data AttachmentType    : id U8, name AttachmentName
+
+@mnemonic(mega-mayday-diana)
+data EmbeddedMedia     : type MediaType, data [Byte]
+
+@mnemonic(taboo-pogo-exile)
+data MediaRegName      : Std.AlphaSmall, [MimeChar ^ ..0x3f]
+
+@mnemonic(brother-burma-book)
+data MediaType         : type MediaRegName
+                       , subtype MediaRegName?
+                       , charset MediaRegName?
+
+@mnemonic(amber-alarm-satire)
+data MimeChar          : excl#33 | hash#35 | dollar | amp#38
+                       | plus#43 | dash#45 | dot | zero#48
+                       | one | two | three | four
+                       | five | six | seven | eight
+                       | nine | caret#94 | lodash | a#97
+                       | b | c | d | e
+                       | f | g | h | i
+                       | j | k | l | m
+                       | n | o | p | q
+                       | r | s | t | u
+                       | v | w | x | y
+                       | z
+
+
+@mnemonic(mission-person-armor)
+data OwnedFraction     : U64
+
+@mnemonic(harmony-dolby-golf)
+data ProofOfReserves   : utxo Bitcoin.Outpoint, proof [Byte]
+
+@mnemonic(mailbox-trident-cola)
+data TokenData         : index TokenIndex
+                       , ticker RGBContract.Ticker?
+                       , name RGBContract.AssetName?
+                       , details RGBContract.Details?
+                       , preview EmbeddedMedia?
+                       , media Attachment?
+                       , attachments {U8 -> ^ ..0x14 Attachment}
+                       , reserves ProofOfReserves?
+
+@mnemonic(giraffe-correct-modest)
+data TokenIndex        : U32
+
+
