@@ -20,6 +20,7 @@
 
 use bc::stl::bp_tx_stl;
 use commit_verify::stl::commit_verify_stl;
+use commit_verify::ReservedBytes;
 use strict_types::stl::std_stl;
 use strict_types::{LibBuilder, SemId, SymbolicSys, SystemBuilder, TypeLib, TypeSystem};
 
@@ -54,6 +55,7 @@ pub fn rgb21_stl() -> TypeLib {
         commit_verify_stl().to_dependency(),
         bp_tx_stl().to_dependency(),
     })
+    .transpile::<ReservedBytes<26>>()
     .transpile::<Nft>()
     .transpile::<NftSpec>()
     .transpile::<AttachmentType>()
