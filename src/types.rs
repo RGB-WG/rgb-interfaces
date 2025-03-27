@@ -25,14 +25,14 @@ use strict_types::{LibBuilder, SemId, SymbolicSys, SystemBuilder, TypeLib, TypeS
 
 use crate::{
     Amount, AssetName, AttachmentType, Details, Fe256Align128, Fe256Align16, Fe256Align32, Fe256Align64, Fe256Align8,
-    Nft, NftAllocation, NftEngraving, NftSpec, Precision, Ticker, LIB_NAME_RGB21, LIB_NAME_RGB_CONTRACT,
+    Nft, NftEngraving, NftSpec, Precision, Ticker, LIB_NAME_RGB21, LIB_NAME_RGB_CONTRACT,
 };
 
 /// Strict types id for the library providing data types for RGB contracts.
 pub const LIB_ID_RGB_INTERFACES: &str = "stl:yHW1Q9ke-B04oMfC-~Dh1v9X-XyLur8_-bCEpUeK-y91BegY#daniel-charter-lorenzo";
 
 /// Strict types id for the library providing data types for RGB21.
-pub const LIB_ID_RGB21: &str = "stl:ls8tZQQq-SGhoNrN-iXkng0A-TwWE2Jh-JurEfDr-nDcKV_o#plasma-circle-trapeze";
+pub const LIB_ID_RGB21: &str = "stl:LimFmxJl-tGEASf_-FAgSR87-1P4fqMX-yX2Suun-b66alzM#parade-salt-escort";
 
 pub fn rgb_contract_stl() -> TypeLib {
     LibBuilder::new(libname!(LIB_NAME_RGB_CONTRACT), tiny_bset! {
@@ -57,7 +57,6 @@ pub fn rgb21_stl() -> TypeLib {
     .transpile::<Nft>()
     .transpile::<NftSpec>()
     .transpile::<AttachmentType>()
-    .transpile::<NftAllocation>()
     .transpile::<NftEngraving>()
     .transpile::<Fe256Align8>()
     .transpile::<Fe256Align16>()

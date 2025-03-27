@@ -282,64 +282,6 @@ impl OwnedFraction {
     }
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default, Display)]
-#[display("{1}@{0}")]
-#[derive(StrictType, StrictEncode, StrictDecode)]
-#[strict_type(lib = LIB_NAME_RGB21)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct NftAllocation(TokenIndex, OwnedFraction);
-
-impl NftAllocation {
-    pub fn with(index: impl Into<TokenIndex>, fraction: impl Into<OwnedFraction>) -> NftAllocation {
-        NftAllocation(index.into(), fraction.into())
-    }
-
-    pub fn token_index(self) -> TokenIndex { self.0 }
-
-    pub fn fraction(self) -> OwnedFraction { self.1 }
-}
-
-impl StrictSerialize for NftAllocation {}
-impl StrictDeserialize for NftAllocation {}
-
-#[derive(Clone, PartialEq, Eq, Debug, Display, Error, From)]
-#[display(inner)]
-pub enum AllocationParseError {
-    #[display(doc_comments)]
-    /// invalid token index {0}.
-    InvalidIndex(String),
-
-    #[display(doc_comments)]
-    /// invalid fraction {0}.
-    InvalidFraction(String),
-
-    #[display(doc_comments)]
-    /// allocation must have format <fraction>@<token_index>.
-    WrongFormat,
-}
-
-impl FromStr for NftAllocation {
-    type Err = AllocationParseError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if !s.contains('@') {
-            return Err(AllocationParseError::WrongFormat);
-        }
-
-        match s.split_once('@') {
-            Some((fraction, token_index)) => Ok(NftAllocation(
-                token_index
-                    .parse()
-                    .map_err(|_| AllocationParseError::InvalidIndex(token_index.to_owned()))?,
-                fraction
-                    .parse()
-                    .map_err(|_| AllocationParseError::InvalidFraction(fraction.to_lowercase()))?,
-            )),
-            None => Err(AllocationParseError::WrongFormat),
-        }
-    }
-}
-
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 #[derive(StrictType, StrictDumb, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
@@ -478,11 +420,12 @@ impl Attachment {
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
 pub struct Nft {
-    pub index: TokenIndex,
+    pub token_index: TokenIndex,
     // We need this to align the data to the size of a field element, so `index` and `amount` get read into different
     // registers
+    #[cfg_attr(feature = "serde", serde(skip))]
     pub _align: Fe256Align32,
-    pub amount: OwnedFraction,
+    pub fraction: OwnedFraction,
 }
 
 impl StrictSerialize for Nft {}
@@ -491,9 +434,48 @@ impl StrictDeserialize for Nft {}
 impl Nft {
     pub fn new(index: impl Into<TokenIndex>, amount: impl Into<OwnedFraction>) -> Self {
         Self {
-            index: index.into(),
+            token_index: index.into(),
             _align: Fe256Align32::default(),
-            amount: amount.into(),
+            fraction: amount.into(),
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Eq, Debug, Display, Error, From)]
+#[display(inner)]
+pub enum NftParseError {
+    #[display(doc_comments)]
+    /// invalid token index {0}.
+    InvalidIndex(String),
+
+    #[display(doc_comments)]
+    /// invalid fraction {0}.
+    InvalidFraction(String),
+
+    #[display(doc_comments)]
+    /// allocation must have format <fraction>@<token_index>.
+    WrongFormat,
+}
+
+impl FromStr for Nft {
+    type Err = NftParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if !s.contains('@') {
+            return Err(NftParseError::WrongFormat);
+        }
+
+        match s.split_once('@') {
+            Some((fraction, token_index)) => Ok(Nft {
+                token_index: token_index
+                    .parse()
+                    .map_err(|_| NftParseError::InvalidIndex(token_index.to_owned()))?,
+                _align: Fe256Align32::default(),
+                fraction: fraction
+                    .parse()
+                    .map_err(|_| NftParseError::InvalidFraction(fraction.to_lowercase()))?,
+            }),
+            None => Err(NftParseError::WrongFormat),
         }
     }
 }
