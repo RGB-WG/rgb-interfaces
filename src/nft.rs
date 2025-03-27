@@ -29,7 +29,6 @@ use amplify::ascii::AsciiString;
 use amplify::confinement::{Confined, NonEmptyVec, SmallBlob};
 use amplify::{ByteArray, Bytes32};
 use bc::{Outpoint, Txid};
-use commit_verify::ReservedBytes;
 use strict_encoding::stl::{AlphaSmall, AsciiPrintable};
 use strict_encoding::{
     InvalidRString, RString, RestrictedCharSet, StrictDeserialize, StrictDumb, StrictEncode, StrictSerialize,
@@ -37,7 +36,7 @@ use strict_encoding::{
 };
 use strict_types::StrictVal;
 
-use crate::{AssetName, Details, Ticker, LIB_NAME_RGB21};
+use crate::{AssetName, Details, Fe256Align32, Ticker, LIB_NAME_RGB21};
 
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, From)]
 #[derive(StrictType, StrictDumb, StrictEncode, StrictDecode)]
@@ -482,7 +481,7 @@ pub struct Nft {
     pub index: TokenIndex,
     // We need this to align the data to the size of a field element, so `index` and `amount` get read into different
     // registers
-    pub _reserved: ReservedBytes<26>,
+    pub _align: Fe256Align32,
     pub amount: OwnedFraction,
 }
 
@@ -493,7 +492,7 @@ impl Nft {
     pub fn new(index: impl Into<TokenIndex>, amount: impl Into<OwnedFraction>) -> Self {
         Self {
             index: index.into(),
-            _reserved: ReservedBytes::default(),
+            _align: Fe256Align32::default(),
             amount: amount.into(),
         }
     }

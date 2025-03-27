@@ -209,9 +209,8 @@ dependencies = [
 
 [[package]]
 name = "commit_encoding_derive"
-version = "0.12.0-beta.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9613582af45e1564c09d813dae82e7c7bca95678b9c42dae955a8499ecc6ae95"
+version = "0.12.0-beta.5"
+source = "git+https://github.com/LNP-BP/client_side_validation?branch=feat/reserved#0ca877884ea437aa2aa4b25e1d8a15dd35f751bc"
 dependencies = [
  "amplify",
  "amplify_syn",
@@ -223,8 +222,7 @@ dependencies = [
 [[package]]
 name = "commit_verify"
 version = "0.12.0-beta.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4de6c513328b7228446f116caf74d658a2d39b305683f5ed24b73edccc3f9cf3"
+source = "git+https://github.com/LNP-BP/client_side_validation?branch=feat/reserved#0ca877884ea437aa2aa4b25e1d8a15dd35f751bc"
 dependencies = [
  "amplify",
  "commit_encoding_derive",
