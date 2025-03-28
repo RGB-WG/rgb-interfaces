@@ -22,37 +22,47 @@ use commit_verify::ReservedBytes;
 
 use crate::LIB_NAME_RGB21;
 
+/// Type which allows to align next field following 8-bit field to the boundary of the following 256
+/// field element, assuming it contains 30 bytes usable for data serialization.
 #[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd, Hash, Debug, Display, Default)]
 #[display("alignmentBytes")]
 #[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(transparent))]
-pub struct Fe256Align8(ReservedBytes<31>);
+pub struct Fe256Align8(ReservedBytes<29>);
 
+/// Type which allows to align next field following 16-bit field to the boundary of the following
+/// 256 field element, assuming it contains 30 bytes usable for data serialization.
 #[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd, Hash, Debug, Display, Default)]
 #[display("alignmentBytes")]
 #[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(transparent))]
-pub struct Fe256Align16(ReservedBytes<30>);
+pub struct Fe256Align16(ReservedBytes<28>);
 
+/// Type which allows to align next field following 32-bit field to the boundary of the following
+/// 256 field element, assuming it contains 30 bytes usable for data serialization.
 #[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd, Hash, Debug, Display, Default)]
 #[display("alignmentBytes")]
 #[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(transparent))]
-pub struct Fe256Align32(ReservedBytes<28>);
+pub struct Fe256Align32(ReservedBytes<26>);
 
+/// Type which allows to align next field following 64-bit field to the boundary of the following
+/// 256 field element, assuming it contains 30 bytes usable for data serialization.
 #[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd, Hash, Debug, Display, Default)]
 #[display("alignmentBytes")]
 #[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(transparent))]
-pub struct Fe256Align64(ReservedBytes<24>);
+pub struct Fe256Align64(ReservedBytes<22>);
 
+/// Type which allows to align next field following 128-bit field to the boundary of the following
+/// 256 field element, assuming it contains 30 bytes usable for data serialization.
 #[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd, Hash, Debug, Display, Default)]
 #[display("alignmentBytes")]
 #[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(transparent))]
-pub struct Fe256Align128(ReservedBytes<16>);
+pub struct Fe256Align128(ReservedBytes<14>);

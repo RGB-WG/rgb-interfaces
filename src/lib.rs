@@ -32,12 +32,12 @@ mod fungible;
 mod nft;
 mod types;
 mod names;
-mod reserved;
+mod alignments;
 
+pub use alignments::{Fe256Align128, Fe256Align16, Fe256Align32, Fe256Align64, Fe256Align8};
 pub use fungible::*;
 pub use names::{AssetName, Details, Ticker};
 pub use nft::*;
-pub use reserved::{Fe256Align128, Fe256Align16, Fe256Align32, Fe256Align64, Fe256Align8};
 pub use types::{rgb21_stl, rgb_contract_stl, CommonTypes, Rgb21Types, LIB_ID_RGB21, LIB_ID_RGB_INTERFACES};
 
 pub const LIB_NAME_RGB_CONTRACT: &str = "RGBContract";
