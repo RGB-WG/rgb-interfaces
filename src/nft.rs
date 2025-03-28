@@ -29,7 +29,6 @@ use amplify::ascii::AsciiString;
 use amplify::confinement::{Confined, NonEmptyVec, SmallBlob};
 use amplify::{ByteArray, Bytes32};
 use bc::{Outpoint, Txid};
-use commit_verify::ReservedBytes;
 use strict_encoding::stl::{AlphaSmall, AsciiPrintable};
 use strict_encoding::{
     InvalidRString, RString, RestrictedCharSet, StrictDeserialize, StrictDumb, StrictEncode, StrictSerialize,
@@ -37,7 +36,7 @@ use strict_encoding::{
 };
 use strict_types::StrictVal;
 
-use crate::{AssetName, Details, Ticker, LIB_NAME_RGB21};
+use crate::{AssetName, Details, Fe256Align32, Ticker, LIB_NAME_RGB21};
 
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, From)]
 #[derive(StrictType, StrictDumb, StrictEncode, StrictDecode)]
@@ -283,64 +282,6 @@ impl OwnedFraction {
     }
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default, Display)]
-#[display("{1}@{0}")]
-#[derive(StrictType, StrictEncode, StrictDecode)]
-#[strict_type(lib = LIB_NAME_RGB21)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct NftAllocation(TokenIndex, OwnedFraction);
-
-impl NftAllocation {
-    pub fn with(index: impl Into<TokenIndex>, fraction: impl Into<OwnedFraction>) -> NftAllocation {
-        NftAllocation(index.into(), fraction.into())
-    }
-
-    pub fn token_index(self) -> TokenIndex { self.0 }
-
-    pub fn fraction(self) -> OwnedFraction { self.1 }
-}
-
-impl StrictSerialize for NftAllocation {}
-impl StrictDeserialize for NftAllocation {}
-
-#[derive(Clone, PartialEq, Eq, Debug, Display, Error, From)]
-#[display(inner)]
-pub enum AllocationParseError {
-    #[display(doc_comments)]
-    /// invalid token index {0}.
-    InvalidIndex(String),
-
-    #[display(doc_comments)]
-    /// invalid fraction {0}.
-    InvalidFraction(String),
-
-    #[display(doc_comments)]
-    /// allocation must have format <fraction>@<token_index>.
-    WrongFormat,
-}
-
-impl FromStr for NftAllocation {
-    type Err = AllocationParseError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if !s.contains('@') {
-            return Err(AllocationParseError::WrongFormat);
-        }
-
-        match s.split_once('@') {
-            Some((fraction, token_index)) => Ok(NftAllocation(
-                token_index
-                    .parse()
-                    .map_err(|_| AllocationParseError::InvalidIndex(token_index.to_owned()))?,
-                fraction
-                    .parse()
-                    .map_err(|_| AllocationParseError::InvalidFraction(fraction.to_lowercase()))?,
-            )),
-            None => Err(AllocationParseError::WrongFormat),
-        }
-    }
-}
-
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 #[derive(StrictType, StrictDumb, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
@@ -479,11 +420,12 @@ impl Attachment {
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
 pub struct Nft {
-    pub index: TokenIndex,
+    pub token_index: TokenIndex,
     // We need this to align the data to the size of a field element, so `index` and `amount` get read into different
     // registers
-    pub _reserved: ReservedBytes<26>,
-    pub amount: OwnedFraction,
+    #[cfg_attr(feature = "serde", serde(skip))]
+    pub _align: Fe256Align32,
+    pub fraction: OwnedFraction,
 }
 
 impl StrictSerialize for Nft {}
@@ -492,9 +434,48 @@ impl StrictDeserialize for Nft {}
 impl Nft {
     pub fn new(index: impl Into<TokenIndex>, amount: impl Into<OwnedFraction>) -> Self {
         Self {
-            index: index.into(),
-            _reserved: ReservedBytes::default(),
-            amount: amount.into(),
+            token_index: index.into(),
+            _align: Fe256Align32::default(),
+            fraction: amount.into(),
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Eq, Debug, Display, Error, From)]
+#[display(inner)]
+pub enum NftParseError {
+    #[display(doc_comments)]
+    /// invalid token index {0}.
+    InvalidIndex(String),
+
+    #[display(doc_comments)]
+    /// invalid fraction {0}.
+    InvalidFraction(String),
+
+    #[display(doc_comments)]
+    /// allocation must have format <fraction>@<token_index>.
+    WrongFormat,
+}
+
+impl FromStr for Nft {
+    type Err = NftParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if !s.contains('@') {
+            return Err(NftParseError::WrongFormat);
+        }
+
+        match s.split_once('@') {
+            Some((fraction, token_index)) => Ok(Nft {
+                token_index: token_index
+                    .parse()
+                    .map_err(|_| NftParseError::InvalidIndex(token_index.to_owned()))?,
+                _align: Fe256Align32::default(),
+                fraction: fraction
+                    .parse()
+                    .map_err(|_| NftParseError::InvalidFraction(fraction.to_lowercase()))?,
+            }),
+            None => Err(NftParseError::WrongFormat),
         }
     }
 }
