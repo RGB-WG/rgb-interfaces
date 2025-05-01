@@ -35,25 +35,23 @@ pub const LIB_ID_RGB_INTERFACES: &str = "stl:yHW1Q9ke-B04oMfC-~Dh1v9X-XyLur8_-bC
 pub const LIB_ID_RGB21: &str = "stl:59Qn7DH3-KUqaOzq-OPZEcqD-VgXe3~C-6s6t8l~-RVXCkd8#option-speed-telex";
 
 pub fn rgb_contract_stl() -> TypeLib {
-    LibBuilder::new(libname!(LIB_NAME_RGB_CONTRACT), tiny_bset! {
-        std_stl().to_dependency(),
-    })
-    .transpile::<Amount>()
-    .transpile::<Precision>()
-    .transpile::<Ticker>()
-    .transpile::<AssetName>()
-    .transpile::<Details>()
-    .compile()
-    .expect("invalid common types library")
+    LibBuilder::with(libname!(LIB_NAME_RGB_CONTRACT), [std_stl().to_dependency_types()])
+        .transpile::<Amount>()
+        .transpile::<Precision>()
+        .transpile::<Ticker>()
+        .transpile::<AssetName>()
+        .transpile::<Details>()
+        .compile()
+        .expect("invalid common types library")
 }
 
 pub fn rgb21_stl() -> TypeLib {
-    LibBuilder::new(libname!(LIB_NAME_RGB21), tiny_bset! {
-        std_stl().to_dependency(),
-        rgb_contract_stl().to_dependency(),
-        commit_verify_stl().to_dependency(),
-        bp_tx_stl().to_dependency(),
-    })
+    LibBuilder::with(libname!(LIB_NAME_RGB21), [
+        std_stl().to_dependency_types(),
+        rgb_contract_stl().to_dependency_types(),
+        commit_verify_stl().to_dependency_types(),
+        bp_tx_stl().to_dependency_types(),
+    ])
     .transpile::<Nft>()
     .transpile::<NftSpec>()
     .transpile::<AttachmentType>()
