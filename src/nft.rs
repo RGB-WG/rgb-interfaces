@@ -54,7 +54,7 @@ impl ProofOfReserves {
 
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
         let utxo = value.unwrap_struct("utxo");
-        let txid = Txid::from_slice_unsafe(utxo.unwrap_struct("txid").unwrap_bytes());
+        let txid = Txid::from_slice_checked(utxo.unwrap_struct("txid").unwrap_bytes());
         let vout: u32 = utxo.unwrap_struct("vout").unwrap_uint();
         let utxo = Outpoint::new(txid, vout);
 
