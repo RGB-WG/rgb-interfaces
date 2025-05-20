@@ -1,74 +1,44 @@
-// RGB interfaces by LNP/BP Standards Association
+// Collection of the standard RGB smart contract interface
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-// Written in 2023-2024 by
-//     Dr Maxim Orlovsky <orlovsky@lnp-bp.org>
+// Designed in 2019-2025 by RGB Consortium members & contributors
+// Written in 2024-2025 by Dr Maxim Orlovsky <orlovsky@lnp-bp.org>
 //
-// Copyright (C) 2023 LNP/BP Standards Association. All rights reserved.
+// Copyright (C) 2019-2025 RGB Consortium members & contributors
+// All rights under the above copyrights are reserved.
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License. You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//        http://www.apache.org/licenses/LICENSE-2.0
 //
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Unless required by applicable law or agreed to in writing, software distributed under the License
+// is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+// or implied. See the License for the specific language governing permissions and limitations under
+// the License.
 
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
 #[macro_use]
 extern crate amplify;
 #[macro_use]
-extern crate strict_types;
+extern crate strict_encoding;
 #[cfg(feature = "serde")]
 #[macro_use]
-extern crate serde_crate as serde;
+extern crate serde;
 
-mod traits;
+mod fungible;
+mod nft;
+mod types;
+mod names;
+mod alignments;
 
-pub mod rgb20;
-pub mod rgb21;
-pub mod rgb25;
+pub use alignments::{Fe256Align128, Fe256Align16, Fe256Align32, Fe256Align64, Fe256Align8};
+pub use fungible::*;
+pub use names::{AssetName, Details, Ticker};
+pub use nft::*;
+pub use types::{rgb21_stl, rgb_contract_stl, CommonTypes, Rgb21Types, LIB_ID_RGB21, LIB_ID_RGB_INTERFACES};
 
-pub use rgb20::{Rgb20, Rgb20Info, Rgb20Wrapper};
-pub use rgb21::{Rgb21, Rgb21Wrapper};
-pub use rgb25::{Rgb25, Rgb25Info, Rgb25Wrapper};
-pub use traits::{IssuerWrapper, SchemaIssuer};
-
-pub const LNPBP_IDENTITY: &str = "ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w";
-
-#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Display)]
-#[display(uppercase)]
-pub enum IfaceStandard {
-    Rgb20,
-    Rgb21,
-    Rgb25,
-}
-
-#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Display, Error)]
-#[display("unknown RGB interface standard name")]
-pub struct UnknownStandard;
-
-mod _from_str {
-    use std::str::FromStr;
-
-    use super::*;
-
-    impl FromStr for IfaceStandard {
-        type Err = UnknownStandard;
-
-        fn from_str(s: &str) -> Result<Self, Self::Err> {
-            match s.to_uppercase().as_str() {
-                "RGB20" => Ok(Self::Rgb20),
-                "RGB21" => Ok(Self::Rgb21),
-                "RGB25" => Ok(Self::Rgb25),
-                _ => Err(UnknownStandard),
-            }
-        }
-    }
-}
+pub const LIB_NAME_RGB_CONTRACT: &str = "RGBContract";
+pub const LIB_NAME_RGB21: &str = "RGB21";

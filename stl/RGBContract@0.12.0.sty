@@ -1,0 +1,41 @@
+{-
+  Id: stl:yHW1Q9ke-B04oMfC-~Dh1v9X-XyLur8_-bCEpUeK-y91BegY#daniel-charter-lorenzo
+  Name: RGBContract
+  Version: 0.12.0
+  Collection of the standard RGB smart contract interface
+  Author: Dr Maxim Orlovsky <orlovsky@ubideco.org>
+  Copyright (C) 2019-2025 RGB Consortium members & contributors.
+                          All rights reserved.
+  License: Apache-2.0
+-}
+
+@context
+typelib RGBContract
+
+import Std#delete-roman-hair
+  use AsciiPrintable#ultra-sunset-format
+  use AlphaNum#window-tractor-alamo
+  use Alpha#citizen-bicycle-stretch
+
+
+@mnemonic(monica-tornado-page)
+data Amount            : U64
+
+@mnemonic(shelf-prism-civil)
+data AssetName         : Std.AsciiPrintable, [Std.AsciiPrintable ^ ..0x27]
+
+@mnemonic(nikita-postage-taboo)
+data Details           : [Unicode ^ ..0xff]
+
+@mnemonic(vendor-anita-british)
+data Precision         : indivisible | deci | centi | milli
+                       | deciMilli | centiMilli | micro | deciMicro
+                       | centiMicro | nano | deciNano | centiNano
+                       | pico | deciPico | centiPico | femto
+                       | deciFemto | centiFemto | atto
+
+
+@mnemonic(plasma-level-lucas)
+data Ticker            : Std.Alpha, [Std.AlphaNum ^ 1..0x7]
+
+

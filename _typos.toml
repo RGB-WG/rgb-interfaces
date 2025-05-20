@@ -8,5 +8,5 @@ Atack = "Atack"
 [default]
 extend-ignore-re = [
     # Don't correct URIs
-    "([a-z]+:)*[$!0-9A-Za-z-]+",
+    "([a-z]+:)*[_~0-9A-Za-z-]+",
 ]
