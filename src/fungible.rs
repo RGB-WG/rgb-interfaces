@@ -24,9 +24,7 @@ use strict_types::{StrictDeserialize, StrictSerialize, StrictVal};
 
 use crate::LIB_NAME_RGB_CONTRACT;
 
-#[derive(
-    Wrapper, WrapperMut, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default, From
-)]
+#[derive(Wrapper, WrapperMut, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default, From)]
 #[wrapper(Add, Sub, Mul, Div, Rem, Display, FromStr)]
 #[wrapper_mut(AddAssign, SubAssign, MulAssign, DivAssign, RemAssign)]
 #[derive(StrictType, StrictEncode, StrictDecode)]
@@ -46,9 +44,7 @@ impl StrictDeserialize for Amount {}
 impl Amount {
     pub const ZERO: Self = Amount(0);
 
-    pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
-        value.unwrap_uint::<u64>().into()
-    }
+    pub fn from_strict_val_unchecked(value: &StrictVal) -> Self { value.unwrap_uint::<u64>().into() }
 
     pub fn with_precision(amount: u64, precision: impl Into<Precision>) -> Self {
         precision.into().unchecked_convert(amount)
@@ -93,16 +89,10 @@ impl Amount {
         self.0 / precision.into().multiplier()
     }
 
-    pub fn rem(&self, precision: impl Into<Precision>) -> u64 {
-        self.0 % precision.into().multiplier()
-    }
+    pub fn rem(&self, precision: impl Into<Precision>) -> u64 { self.0 % precision.into().multiplier() }
 
-    pub fn saturating_add(&self, other: impl Into<Self>) -> Self {
-        self.0.saturating_add(other.into().0).into()
-    }
-    pub fn saturating_sub(&self, other: impl Into<Self>) -> Self {
-        self.0.saturating_sub(other.into().0).into()
-    }
+    pub fn saturating_add(&self, other: impl Into<Self>) -> Self { self.0.saturating_add(other.into().0).into() }
+    pub fn saturating_sub(&self, other: impl Into<Self>) -> Self { self.0.saturating_sub(other.into().0).into() }
 
     pub fn saturating_add_assign(&mut self, other: impl Into<Self>) {
         *self = self.0.saturating_add(other.into().0).into();
@@ -112,13 +102,9 @@ impl Amount {
     }
 
     #[must_use]
-    pub fn checked_add(&self, other: impl Into<Self>) -> Option<Self> {
-        self.0.checked_add(other.into().0).map(Self)
-    }
+    pub fn checked_add(&self, other: impl Into<Self>) -> Option<Self> { self.0.checked_add(other.into().0).map(Self) }
     #[must_use]
-    pub fn checked_sub(&self, other: impl Into<Self>) -> Option<Self> {
-        self.0.checked_sub(other.into().0).map(Self)
-    }
+    pub fn checked_sub(&self, other: impl Into<Self>) -> Option<Self> { self.0.checked_sub(other.into().0).map(Self) }
 
     #[must_use]
     pub fn checked_add_assign(&mut self, other: impl Into<Self>) -> Option<()> {
@@ -133,9 +119,7 @@ impl Amount {
 }
 
 impl Sum<u64> for Amount {
-    fn sum<I: Iterator<Item = u64>>(iter: I) -> Self {
-        iter.fold(Amount::ZERO, |sum, value| sum.saturating_add(value))
-    }
+    fn sum<I: Iterator<Item = u64>>(iter: I) -> Self { iter.fold(Amount::ZERO, |sum, value| sum.saturating_add(value)) }
 }
 
 impl Sum for Amount {
@@ -202,9 +186,7 @@ impl Precision {
         }
     }
 
-    pub fn unchecked_convert(self, amount: impl Into<u64>) -> Amount {
-        (amount.into() * self.multiplier()).into()
-    }
+    pub fn unchecked_convert(self, amount: impl Into<u64>) -> Amount { (amount.into() * self.multiplier()).into() }
 
     pub fn checked_convert(self, amount: impl Into<u64>) -> Option<Amount> {
         amount
