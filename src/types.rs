@@ -126,8 +126,11 @@ impl Rgb21Types {
     }
 
     pub fn type_system(&self) -> TypeSystem {
-        let types = rgb21_stl().types;
-        let types = types.iter().map(|(tn, ty)| ty.sem_id_named(tn));
+        let types = rgb21_stl()
+            .types
+            .into_iter()
+            .chain(rgb_contract_stl().types)
+            .map(|(tn, ty)| ty.sem_id_named(&tn));
         self.0.as_types().extract(types).unwrap()
     }
 
