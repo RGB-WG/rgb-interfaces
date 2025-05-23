@@ -35,7 +35,7 @@ use strict_encoding::{
 };
 use strict_types::StrictVal;
 
-use crate::{AssetName, Fe256Align32, LIB_NAME_RGB21};
+use crate::{AssetName, LIB_NAME_RGB21};
 
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, From)]
 #[derive(StrictType, StrictDumb, StrictEncode, StrictDecode)]
@@ -445,10 +445,6 @@ impl Attachment {
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
 pub struct Nft {
     pub token_index: TokenIndex,
-    // We need this to align the data to the size of a field element, so `index` and `amount` get read into different
-    // registers
-    #[cfg_attr(feature = "serde", serde(skip))]
-    pub _align: Fe256Align32,
     pub fraction: OwnedFraction,
 }
 
@@ -457,11 +453,7 @@ impl StrictDeserialize for Nft {}
 
 impl Nft {
     pub fn new(index: impl Into<TokenIndex>, amount: impl Into<OwnedFraction>) -> Self {
-        Self {
-            token_index: index.into(),
-            _align: Fe256Align32::default(),
-            fraction: amount.into(),
-        }
+        Self { token_index: index.into(), fraction: amount.into() }
     }
 }
 
@@ -494,7 +486,6 @@ impl FromStr for Nft {
                 token_index: token_index
                     .parse()
                     .map_err(|_| NftParseError::InvalidIndex(token_index.to_owned()))?,
-                _align: Fe256Align32::default(),
                 fraction: fraction
                     .parse()
                     .map_err(|_| NftParseError::InvalidFraction(fraction.to_lowercase()))?,

@@ -1,5 +1,5 @@
 {-
-  Id: stl:jNLIfzpE-x2aDcRd-y3nV6dk-gcD2LGW-Dqrk5Jn-tppiPoI#joseph-morph-orion
+  Id: stl:iTde1Vzg-~RpdtwF-ZixgTNc-a5xeb5h-dzl5518-4OSO2kg#patron-picture-storm
   Name: RGB21
   Version: 0.12.0
   RGB21 smart contract interface
@@ -15,13 +15,6 @@ typelib RGB21
 import Std#delete-roman-hair
   use AsciiPrintable#ultra-sunset-format
   use AlphaSmall#magnum-martin-soviet
-
-import CommitVerify#biology-news-adam
-  use ReservedBytes29#france-finland-edition
-  use ReservedBytes14#prize-edison-classic
-  use ReservedBytes22#almond-airline-igor
-  use ReservedBytes28#lagoon-target-viva
-  use ReservedBytes26#mouse-america-basket
 
 import RGBContract#stadium-pony-cuba
   use AssetName#shelf-prism-civil
@@ -43,21 +36,6 @@ data AttachmentType    : id U8, name AttachmentName
 
 @mnemonic(lithium-beauty-avalon)
 data EmbeddedMedia     : mime MediaType, data [Byte]
-
-@mnemonic(amazon-citizen-druid)
-data Fe256Align128     : CommitVerify.ReservedBytes14
-
-@mnemonic(subway-garage-store)
-data Fe256Align16      : CommitVerify.ReservedBytes28
-
-@mnemonic(orca-visible-tempo)
-data Fe256Align32      : CommitVerify.ReservedBytes26
-
-@mnemonic(hair-salt-shadow)
-data Fe256Align64      : CommitVerify.ReservedBytes22
-
-@mnemonic(martin-motor-gabriel)
-data Fe256Align8       : CommitVerify.ReservedBytes29
 
 @mnemonic(taboo-pogo-exile)
 data MediaRegName      : Std.AlphaSmall, [MimeChar ^ ..0x3f]
@@ -82,10 +60,8 @@ data MimeChar          : excl#33 | hash#35 | dollar | amp#38
                        | z
 
 
-@mnemonic(consul-serial-solid)
-data Nft               : tokenIndex TokenIndex
-                       , align Fe256Align32
-                       , fraction OwnedFraction
+@mnemonic(list-acrobat-deliver)
+data Nft               : tokenIndex TokenIndex, fraction OwnedFraction
 
 @mnemonic(neutral-field-antenna)
 data NftEngraving      : appliedTo TokenIndex, content EmbeddedMedia

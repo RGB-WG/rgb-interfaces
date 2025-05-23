@@ -32,9 +32,7 @@ mod fungible;
 mod nft;
 mod types;
 mod names;
-mod alignments;
 
-pub use alignments::{Fe256Align128, Fe256Align16, Fe256Align32, Fe256Align64, Fe256Align8};
 pub use fungible::*;
 pub use names::{AssetName, Details, Ticker};
 pub use nft::*;
