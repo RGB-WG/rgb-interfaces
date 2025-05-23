@@ -1,5 +1,5 @@
 {-
-  Id: stl:59Qn7DH3-KUqaOzq-OPZEcqD-VgXe3~C-6s6t8l~-RVXCkd8#option-speed-telex
+  Id: stl:DE7uqCWQ-DVTm1Ci-cMI9_zY-56cu7zn-PWREoYb-HTWrNtQ#drum-sherman-horse
   Name: RGB21
   Version: 0.12.0
   RGB21 smart contract interface
@@ -14,8 +14,6 @@ typelib RGB21
 
 import Std#delete-roman-hair
   use AsciiPrintable#ultra-sunset-format
-  use AlphaNum#window-tractor-alamo
-  use Alpha#citizen-bicycle-stretch
   use AlphaSmall#magnum-martin-soviet
 
 import CommitVerify#biology-news-adam
@@ -27,8 +25,6 @@ import CommitVerify#biology-news-adam
 
 import RGBContract#daniel-charter-lorenzo
   use AssetName#shelf-prism-civil
-  use Ticker#plasma-level-lucas
-  use Details#nikita-postage-taboo
 
 import Bitcoin#signal-color-cipher
   use Vout#brush-gloria-heroic
@@ -94,14 +90,10 @@ data Nft               : tokenIndex TokenIndex
 @mnemonic(neutral-field-antenna)
 data NftEngraving      : appliedTo TokenIndex, content EmbeddedMedia
 
-@mnemonic(vega-cave-unique)
-data NftSpec           : index TokenIndex
-                       , ticker RGBContract.Ticker?
-                       , name RGBContract.AssetName?
-                       , details RGBContract.Details?
-                       , preview EmbeddedMedia?
-                       , media Attachment?
-                       , attachments {U8 -> ^ ..0x14 Attachment}
+@mnemonic(burma-august-choice)
+data NftSpec           : name RGBContract.AssetName?
+                       , embedded EmbeddedMedia?
+                       , external Attachment?
                        , reserves ProofOfReserves?
 
 @mnemonic(mission-person-armor)

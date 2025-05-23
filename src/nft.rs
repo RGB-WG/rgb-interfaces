@@ -20,7 +20,6 @@
 
 #![allow(unused_braces)]
 
-use std::collections::BTreeMap;
 use std::fmt;
 use std::fmt::{Debug, Formatter};
 use std::str::FromStr;
@@ -36,7 +35,7 @@ use strict_encoding::{
 };
 use strict_types::StrictVal;
 
-use crate::{AssetName, Details, Fe256Align32, Ticker, LIB_NAME_RGB21};
+use crate::{AssetName, Fe256Align32, LIB_NAME_RGB21};
 
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, From)]
 #[derive(StrictType, StrictDumb, StrictEncode, StrictDecode)]
@@ -485,13 +484,9 @@ impl FromStr for Nft {
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
 pub struct NftSpec {
-    pub index: TokenIndex,
-    pub ticker: Option<Ticker>,
     pub name: Option<AssetName>,
-    pub details: Option<Details>,
-    pub preview: Option<EmbeddedMedia>,
-    pub media: Option<Attachment>,
-    pub attachments: Confined<BTreeMap<u8, Attachment>, 0, 20>,
+    pub embedded: Option<EmbeddedMedia>,
+    pub external: Option<Attachment>,
     pub reserves: Option<ProofOfReserves>,
 }
 
@@ -500,59 +495,27 @@ impl StrictDeserialize for NftSpec {}
 
 impl NftSpec {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
-        let index = TokenIndex::from(
-            value
-                .unwrap_struct("index")
-                .unwrap_num()
-                .unwrap_uint::<u32>(),
-        );
-        let ticker = value
-            .unwrap_struct("ticker")
-            .unwrap_option()
-            .map(|x| Ticker::from_str(&x.unwrap_string()).expect("invalid uda ticker"));
-
         let name = value
             .unwrap_struct("name")
             .unwrap_option()
             .map(|x| AssetName::from_str(&x.unwrap_string()).expect("invalid uda name"));
 
-        let details = value
-            .unwrap_struct("details")
-            .unwrap_option()
-            .map(|x| Details::from_str(&x.unwrap_string()).expect("invalid uda details"));
-
-        let preview = value
+        let embedded = value
             .unwrap_struct("preview")
             .unwrap_option()
             .map(EmbeddedMedia::from_strict_val_unchecked);
-        let media = value
+
+        let external = value
             .unwrap_struct("media")
             .unwrap_option()
             .map(Attachment::from_strict_val_unchecked);
-
-        let attachments = if let StrictVal::Map(list) = value.unwrap_struct("attachments") {
-            Confined::from_iter_checked(
-                list.iter()
-                    .map(|(k, v)| (k.unwrap_uint(), Attachment::from_strict_val_unchecked(v))),
-            )
-        } else {
-            Confined::default()
-        };
 
         let reserves = value
             .unwrap_struct("reserves")
             .unwrap_option()
             .map(ProofOfReserves::from_strict_val_unchecked);
-        Self {
-            index,
-            ticker,
-            name,
-            details,
-            preview,
-            media,
-            attachments,
-            reserves,
-        }
+
+        Self { name, embedded, external, reserves }
     }
 }
 
