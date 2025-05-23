@@ -66,10 +66,8 @@ impl ProofOfReserves {
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash)]
 #[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct MediaType {
     #[strict_type(rename = "type")]
-    #[cfg_attr(feature = "serde", serde(rename = "type"))]
     pub ty: MediaRegName,
     pub subtype: Option<MediaRegName>,
     pub charset: Option<MediaRegName>,
@@ -111,6 +109,35 @@ impl fmt::Display for MediaType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}/{}", self.ty, if let Some(subty) = &self.subtype { subty.to_string() } else { s!("*") })
     }
+}
+
+impl FromStr for MediaType {
+    type Err = ParseMediaTypeError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (ty, subty) = s
+            .split_once('/')
+            .ok_or(ParseMediaTypeError::InvalidStructure)?;
+        let ty = MediaRegName::from_str(ty).map_err(ParseMediaTypeError::TypeName)?;
+        let subty = if subty == "*" {
+            None
+        } else {
+            Some(MediaRegName::from_str(subty).map_err(ParseMediaTypeError::SubtypeName)?)
+        };
+        // TODO: Parse charset
+        Ok(Self { ty, subtype: subty, charset: None })
+    }
+}
+
+#[derive(Clone, Eq, PartialEq, Hash, Debug, Display, Error, From)]
+#[display(doc_comments)]
+pub enum ParseMediaTypeError {
+    /// media type (MIME) must consist of two parts separated by a slash.
+    InvalidStructure,
+    /// invalid media (MIME) type component; {0}
+    TypeName(InvalidRString),
+    /// invalid media (MIME) subtype component; {0}
+    SubtypeName(InvalidRString),
 }
 
 #[derive(Wrapper, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, From)]
@@ -309,18 +336,17 @@ impl NftEngraving {
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
 pub struct EmbeddedMedia {
-    #[strict_type(rename = "type")]
-    #[cfg_attr(feature = "serde", serde(rename = "type"))]
-    pub ty: MediaType,
+    #[cfg_attr(feature = "serde", serde(with = "serde_with::rust::display_fromstr"))]
+    pub mime: MediaType,
     pub data: SmallBlob,
 }
 
 impl EmbeddedMedia {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
-        let ty = MediaType::from_strict_val_unchecked(value.unwrap_struct("type"));
+        let mime = MediaType::from_strict_val_unchecked(value.unwrap_struct("mime"));
         let data = SmallBlob::from_iter_checked(value.unwrap_struct("data").unwrap_bytes().iter().copied());
 
-        Self { ty, data }
+        Self { mime, data }
     }
 }
 
@@ -394,9 +420,8 @@ impl Debug for AttachmentName {
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
 pub struct Attachment {
-    #[strict_type(rename = "type")]
-    #[cfg_attr(feature = "serde", serde(rename = "type"))]
-    pub ty: MediaType,
+    #[cfg_attr(feature = "serde", serde(with = "serde_with::rust::display_fromstr"))]
+    pub mime: MediaType,
     pub digest: Bytes32,
 }
 impl StrictSerialize for Attachment {}
@@ -404,13 +429,13 @@ impl StrictDeserialize for Attachment {}
 
 impl Attachment {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
-        let ty = MediaType::from_strict_val_unchecked(value.unwrap_struct("type"));
+        let mime = MediaType::from_strict_val_unchecked(value.unwrap_struct("mime"));
         let digest = value
             .unwrap_struct("digest")
             .unwrap_bytes()
             .try_into()
             .expect("invalid digest");
-        Self { ty, digest }
+        Self { mime, digest }
     }
 }
 
@@ -479,13 +504,13 @@ impl FromStr for Nft {
     }
 }
 
-#[derive(Clone, Eq, PartialEq, Hash, Debug, Default)]
-#[derive(StrictType, StrictEncode, StrictDecode)]
+#[derive(Clone, Eq, PartialEq, Hash, Debug)]
+#[derive(StrictType, StrictDumb, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
 pub struct NftSpec {
     pub name: Option<AssetName>,
-    pub embedded: Option<EmbeddedMedia>,
+    pub embedded: EmbeddedMedia,
     pub external: Option<Attachment>,
     pub reserves: Option<ProofOfReserves>,
 }
@@ -500,13 +525,10 @@ impl NftSpec {
             .unwrap_option()
             .map(|x| AssetName::from_str(&x.unwrap_string()).expect("invalid uda name"));
 
-        let embedded = value
-            .unwrap_struct("preview")
-            .unwrap_option()
-            .map(EmbeddedMedia::from_strict_val_unchecked);
+        let embedded = EmbeddedMedia::from_strict_val_unchecked(value.unwrap_struct("embedded"));
 
         let external = value
-            .unwrap_struct("media")
+            .unwrap_struct("external")
             .unwrap_option()
             .map(Attachment::from_strict_val_unchecked);
 
