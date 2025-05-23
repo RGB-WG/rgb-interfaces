@@ -29,10 +29,10 @@ use crate::{
 };
 
 /// Strict types id for the library providing data types for RGB contracts.
-pub const LIB_ID_RGB_INTERFACES: &str = "stl:yHW1Q9ke-B04oMfC-~Dh1v9X-XyLur8_-bCEpUeK-y91BegY#daniel-charter-lorenzo";
+pub const LIB_ID_RGB_INTERFACES: &str = "stl:2aAz0_BS-YAv7Mri-NUPnT31-VUDkbH7-CpQ~aQW-7OZn4n8#stadium-pony-cuba";
 
 /// Strict types id for the library providing data types for RGB21.
-pub const LIB_ID_RGB21: &str = "stl:DE7uqCWQ-DVTm1Ci-cMI9_zY-56cu7zn-PWREoYb-HTWrNtQ#drum-sherman-horse";
+pub const LIB_ID_RGB21: &str = "stl:4rgMe2Z3-1sbnfw5-_1DGhwq-hS1yoE4-Ry2Y_TA-0Ir5OI8#slang-size-xray";
 
 pub fn rgb_contract_stl() -> TypeLib {
     LibBuilder::with(libname!(LIB_NAME_RGB_CONTRACT), [std_stl().to_dependency_types()])

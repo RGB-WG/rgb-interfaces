@@ -21,7 +21,6 @@
 use std::hash::{Hash, Hasher};
 use std::str::FromStr;
 
-use amplify::confinement::TinyString;
 use strict_encoding::stl::{Alpha, AlphaNum, AsciiPrintable};
 use strict_encoding::RString;
 use strict_types::StrictVal;
@@ -73,4 +72,4 @@ impl AssetName {
 #[derive(StrictDumb, StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB_CONTRACT)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(transparent))]
-pub struct Details(TinyString);
+pub struct Details(RString<AsciiPrintable, AsciiPrintable, 1, 0xFF>);
