@@ -32,7 +32,7 @@ use crate::{
 pub const LIB_ID_RGB_INTERFACES: &str = "stl:SwzsMZmH-_Bp~u1Y-sYRyzR9-sj3ZgR7-JNCrNuP-PudeT5c#viva-comrade-bernard";
 
 /// Strict types id for the library providing data types for RGB21.
-pub const LIB_ID_RGB21: &str = "stl:CgtkBy8P-83z8FeD-W2a~cur-pI2ItFd-CKEqN3K-QJm1RKY#percent-pepper-eternal";
+pub const LIB_ID_RGB21: &str = "stl:3_g9mu6K-wLUJpQK-hDbbmPg-vXoYVKh-Z~AciV9-yY8lUbo#sonar-diploma-gorilla";
 
 pub fn rgb_contract_stl() -> TypeLib {
     LibBuilder::with(libname!(LIB_NAME_RGB_CONTRACT), [

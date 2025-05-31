@@ -237,7 +237,7 @@ impl RestrictedCharSet for MimeChar {}
 #[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(transparent))]
-pub struct TokenIndex(u32);
+pub struct TokenNo(u32);
 
 #[derive(Wrapper, WrapperMut, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default, From)]
 #[wrapper(Display, FromStr, Add, Sub, Mul, Div, Rem)]
@@ -245,10 +245,10 @@ pub struct TokenIndex(u32);
 #[derive(StrictType, StrictEncode, StrictDecode)]
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(transparent))]
-pub struct OwnedFraction(u64);
+pub struct TokenFractions(u64);
 
-impl OwnedFraction {
-    pub const ZERO: Self = OwnedFraction(0);
+impl TokenFractions {
+    pub const ZERO: Self = TokenFractions(0);
 
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self { value.unwrap_uint::<u64>().into() }
 
@@ -286,13 +286,13 @@ impl OwnedFraction {
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
 pub struct NftEngraving {
-    pub applied_to: TokenIndex,
+    pub applied_to: TokenNo,
     pub content: EmbeddedMedia,
 }
 
 impl NftEngraving {
     pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
-        let index = TokenIndex::from(
+        let index = TokenNo::from(
             value
                 .unwrap_struct("index")
                 .unwrap_num()
@@ -417,16 +417,16 @@ impl Attachment {
 #[strict_type(lib = LIB_NAME_RGB21)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
 pub struct Nft {
-    pub token_index: TokenIndex,
-    pub fraction: OwnedFraction,
+    pub token_no: TokenNo,
+    pub fractions: TokenFractions,
 }
 
 impl StrictSerialize for Nft {}
 impl StrictDeserialize for Nft {}
 
 impl Nft {
-    pub fn new(index: impl Into<TokenIndex>, amount: impl Into<OwnedFraction>) -> Self {
-        Self { token_index: index.into(), fraction: amount.into() }
+    pub fn new(no: impl Into<TokenNo>, fractions: impl Into<TokenFractions>) -> Self {
+        Self { token_no: no.into(), fractions: fractions.into() }
     }
 }
 
@@ -456,10 +456,10 @@ impl FromStr for Nft {
 
         match s.split_once('@') {
             Some((fraction, token_index)) => Ok(Nft {
-                token_index: token_index
+                token_no: token_index
                     .parse()
                     .map_err(|_| NftParseError::InvalidIndex(token_index.to_owned()))?,
-                fraction: fraction
+                fractions: fraction
                     .parse()
                     .map_err(|_| NftParseError::InvalidFraction(fraction.to_lowercase()))?,
             }),
@@ -513,9 +513,9 @@ mod test {
 
     #[test]
     fn owned_fraction_from_str() {
-        let owned_fraction = match OwnedFraction::from_str("1") {
+        let owned_fraction = match TokenFractions::from_str("1") {
             Ok(value) => value,
-            Err(_) => OwnedFraction::ZERO,
+            Err(_) => TokenFractions::ZERO,
         };
 
         assert_eq!(owned_fraction.value(), 1);
@@ -525,7 +525,7 @@ mod test {
     #[test]
     fn owned_fraction_from_strict_val() {
         // note that the strict number is u128 but not u64
-        let owned_fraction = OwnedFraction::from_strict_val_unchecked(&StrictVal::Number(StrictNum::Uint(1)));
+        let owned_fraction = TokenFractions::from_strict_val_unchecked(&StrictVal::Number(StrictNum::Uint(1)));
 
         assert_eq!(owned_fraction.value(), 1);
         assert_eq!(format!("{owned_fraction}"), "1");
@@ -533,26 +533,26 @@ mod test {
 
     #[test]
     fn owned_fraction_add_assign() {
-        let mut owned_fraction = match OwnedFraction::from_str("1") {
+        let mut owned_fraction = match TokenFractions::from_str("1") {
             Ok(value) => value,
-            Err(_) => OwnedFraction::ZERO,
+            Err(_) => TokenFractions::ZERO,
         };
 
-        let _ = owned_fraction.checked_add_assign(OwnedFraction::ZERO);
+        let _ = owned_fraction.checked_add_assign(TokenFractions::ZERO);
         assert_eq!(owned_fraction.value(), 1);
         assert_eq!(format!("{owned_fraction}"), "1");
     }
 
     #[test]
     fn owned_fraction_add() {
-        let owned_fraction = match OwnedFraction::from_str("1") {
+        let owned_fraction = match TokenFractions::from_str("1") {
             Ok(value) => value,
-            Err(_) => OwnedFraction::ZERO,
+            Err(_) => TokenFractions::ZERO,
         };
 
-        let owned = match owned_fraction.checked_add(OwnedFraction::ZERO) {
+        let owned = match owned_fraction.checked_add(TokenFractions::ZERO) {
             Some(value) => value,
-            None => OwnedFraction::ZERO,
+            None => TokenFractions::ZERO,
         };
         assert_eq!(owned.value(), 1);
         assert_eq!(format!("{owned}"), "1");
@@ -560,19 +560,19 @@ mod test {
 
     #[test]
     fn owned_fraction_sub() {
-        let owned_fraction = match OwnedFraction::from_str("1") {
+        let owned_fraction = match TokenFractions::from_str("1") {
             Ok(value) => value,
-            Err(_) => OwnedFraction::ZERO,
+            Err(_) => TokenFractions::ZERO,
         };
 
-        let other_fraction = match OwnedFraction::from_str("1") {
+        let other_fraction = match TokenFractions::from_str("1") {
             Ok(value) => value,
-            Err(_) => OwnedFraction::ZERO,
+            Err(_) => TokenFractions::ZERO,
         };
 
         let owned = match owned_fraction.checked_sub(other_fraction) {
             Some(value) => value,
-            None => OwnedFraction::ZERO,
+            None => TokenFractions::ZERO,
         };
         assert_eq!(owned.value(), 0);
         assert_eq!(format!("{owned}"), "0");
@@ -580,14 +580,14 @@ mod test {
 
     #[test]
     fn owned_fraction_sub_assign() {
-        let mut owned_fraction = match OwnedFraction::from_str("1") {
+        let mut owned_fraction = match TokenFractions::from_str("1") {
             Ok(value) => value,
-            Err(_) => OwnedFraction::ZERO,
+            Err(_) => TokenFractions::ZERO,
         };
 
-        let other_fraction = match OwnedFraction::from_str("1") {
+        let other_fraction = match TokenFractions::from_str("1") {
             Ok(value) => value,
-            Err(_) => OwnedFraction::ZERO,
+            Err(_) => TokenFractions::ZERO,
         };
 
         let _ = owned_fraction.checked_sub_assign(other_fraction);
