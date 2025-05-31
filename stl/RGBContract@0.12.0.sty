@@ -1,5 +1,5 @@
 {-
-  Id: stl:2aAz0_BS-YAv7Mri-NUPnT31-VUDkbH7-CpQ~aQW-7OZn4n8#stadium-pony-cuba
+  Id: stl:SwzsMZmH-_Bp~u1Y-sYRyzR9-sj3ZgR7-JNCrNuP-PudeT5c#viva-comrade-bernard
   Name: RGBContract
   Version: 0.12.0
   Collection of the standard RGB smart contract interface
@@ -16,6 +16,11 @@ import Std#delete-roman-hair
   use AsciiPrintable#ultra-sunset-format
   use AlphaNum#window-tractor-alamo
   use Alpha#citizen-bicycle-stretch
+
+import Bitcoin#signal-color-cipher
+  use Vout#brush-gloria-heroic
+  use Txid#shallow-light-reverse
+  use Outpoint#logo-alamo-madam
 
 
 @mnemonic(monica-tornado-page)
@@ -34,6 +39,9 @@ data Precision         : indivisible | deci | centi | milli
                        | pico | deciPico | centiPico | femto
                        | deciFemto | centiFemto | atto
 
+
+@mnemonic(harmony-dolby-golf)
+data ProofOfReserves   : utxo Bitcoin.Outpoint, proof [Byte]
 
 @mnemonic(plasma-level-lucas)
 data Ticker            : Std.Alpha, [Std.AlphaNum ^ 1..0x7]

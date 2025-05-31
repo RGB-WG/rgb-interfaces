@@ -26,8 +26,7 @@ use std::str::FromStr;
 
 use amplify::ascii::AsciiString;
 use amplify::confinement::{Confined, NonEmptyVec, SmallBlob};
-use amplify::{ByteArray, Bytes32};
-use bc::{Outpoint, Txid};
+use amplify::Bytes32;
 use strict_encoding::stl::{AlphaSmall, AsciiPrintable};
 use strict_encoding::{
     InvalidRString, RString, RestrictedCharSet, StrictDeserialize, StrictDumb, StrictEncode, StrictSerialize,
@@ -35,33 +34,7 @@ use strict_encoding::{
 };
 use strict_types::StrictVal;
 
-use crate::{AssetName, LIB_NAME_RGB21};
-
-#[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, From)]
-#[derive(StrictType, StrictDumb, StrictEncode, StrictDecode)]
-#[strict_type(lib = LIB_NAME_RGB21, dumb = ProofOfReserves::new(strict_dumb!(), strict_dumb!()))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct ProofOfReserves {
-    pub utxo: Outpoint,
-    pub proof: SmallBlob,
-}
-impl StrictSerialize for ProofOfReserves {}
-impl StrictDeserialize for ProofOfReserves {}
-
-impl ProofOfReserves {
-    pub fn new(utxo: Outpoint, proof: SmallBlob) -> ProofOfReserves { ProofOfReserves { utxo, proof } }
-
-    pub fn from_strict_val_unchecked(value: &StrictVal) -> Self {
-        let utxo = value.unwrap_struct("utxo");
-        let txid = Txid::from_slice_checked(utxo.unwrap_struct("txid").unwrap_bytes());
-        let vout: u32 = utxo.unwrap_struct("vout").unwrap_uint();
-        let utxo = Outpoint::new(txid, vout);
-
-        let proof = SmallBlob::from_checked(value.unwrap_struct("proof").unwrap_bytes().into());
-
-        Self { utxo, proof }
-    }
-}
+use crate::{AssetName, ProofOfReserves, LIB_NAME_RGB21};
 
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash)]
 #[derive(StrictType, StrictEncode, StrictDecode)]

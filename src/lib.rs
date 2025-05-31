@@ -32,10 +32,12 @@ mod fungible;
 mod nft;
 mod types;
 mod names;
+mod por;
 
 pub use fungible::*;
 pub use names::{AssetName, Details, Ticker};
 pub use nft::*;
+pub use por::*;
 pub use types::{rgb21_stl, rgb_contract_stl, CommonTypes, Rgb21Types, LIB_ID_RGB21, LIB_ID_RGB_INTERFACES};
 
 pub const LIB_NAME_RGB_CONTRACT: &str = "RGBContract";

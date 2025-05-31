@@ -24,25 +24,29 @@ use strict_types::stl::std_stl;
 use strict_types::{LibBuilder, SemId, SymbolicSys, SystemBuilder, TypeLib, TypeSystem};
 
 use crate::{
-    Amount, AssetName, AttachmentType, Details, Nft, NftEngraving, NftSpec, Precision, Ticker, LIB_NAME_RGB21,
-    LIB_NAME_RGB_CONTRACT,
+    Amount, AssetName, AttachmentType, Details, Nft, NftEngraving, NftSpec, Precision, ProofOfReserves, Ticker,
+    LIB_NAME_RGB21, LIB_NAME_RGB_CONTRACT,
 };
 
 /// Strict types id for the library providing data types for RGB contracts.
-pub const LIB_ID_RGB_INTERFACES: &str = "stl:2aAz0_BS-YAv7Mri-NUPnT31-VUDkbH7-CpQ~aQW-7OZn4n8#stadium-pony-cuba";
+pub const LIB_ID_RGB_INTERFACES: &str = "stl:SwzsMZmH-_Bp~u1Y-sYRyzR9-sj3ZgR7-JNCrNuP-PudeT5c#viva-comrade-bernard";
 
 /// Strict types id for the library providing data types for RGB21.
-pub const LIB_ID_RGB21: &str = "stl:iTde1Vzg-~RpdtwF-ZixgTNc-a5xeb5h-dzl5518-4OSO2kg#patron-picture-storm";
+pub const LIB_ID_RGB21: &str = "stl:CgtkBy8P-83z8FeD-W2a~cur-pI2ItFd-CKEqN3K-QJm1RKY#percent-pepper-eternal";
 
 pub fn rgb_contract_stl() -> TypeLib {
-    LibBuilder::with(libname!(LIB_NAME_RGB_CONTRACT), [std_stl().to_dependency_types()])
-        .transpile::<Amount>()
-        .transpile::<Precision>()
-        .transpile::<Ticker>()
-        .transpile::<AssetName>()
-        .transpile::<Details>()
-        .compile()
-        .expect("invalid common types library")
+    LibBuilder::with(libname!(LIB_NAME_RGB_CONTRACT), [
+        std_stl().to_dependency_types(),
+        bp_tx_stl().to_dependency_types(),
+    ])
+    .transpile::<Amount>()
+    .transpile::<Precision>()
+    .transpile::<Ticker>()
+    .transpile::<AssetName>()
+    .transpile::<Details>()
+    .transpile::<ProofOfReserves>()
+    .compile()
+    .expect("invalid common types library")
 }
 
 pub fn rgb21_stl() -> TypeLib {
@@ -72,6 +76,8 @@ impl CommonTypes {
         Self(
             SystemBuilder::new()
                 .import(std_stl())
+                .unwrap()
+                .import(bp_tx_stl())
                 .unwrap()
                 .import(rgb_contract_stl())
                 .unwrap()
