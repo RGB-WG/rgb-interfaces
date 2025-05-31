@@ -1,5 +1,5 @@
 {-
-  Id: stl:3_g9mu6K-wLUJpQK-hDbbmPg-vXoYVKh-Z~AciV9-yY8lUbo#sonar-diploma-gorilla
+  Id: stl:hS_TcpfI-JCz36Es-E8NtlsS-bG0A68X-Te6ouRs-7_FNDhE#prelude-chicago-filter
   Name: RGB21
   Version: 0.12.0
   RGB21 smart contract interface
@@ -28,12 +28,6 @@ import Bitcoin#signal-color-cipher
 
 @mnemonic(cyclone-polo-fruit)
 data Attachment        : mime MediaType, digest [Byte ^ 32]
-
-@mnemonic(resume-telex-tower)
-data AttachmentName    : [Std.AsciiPrintable ^ 1..0x14]
-
-@mnemonic(brave-costume-percent)
-data AttachmentType    : id U8, name AttachmentName
 
 @mnemonic(lithium-beauty-avalon)
 data EmbeddedMedia     : mime MediaType, data [Byte]
@@ -64,14 +58,14 @@ data MimeChar          : excl#33 | hash#35 | dollar | amp#38
 @mnemonic(vatican-outside-daniel)
 data Nft               : tokenNo TokenNo, fractions TokenFractions
 
-@mnemonic(sparta-temple-camel)
-data NftEngraving      : appliedTo TokenNo, content EmbeddedMedia
-
 @mnemonic(hippie-sabine-aurora)
 data NftSpec           : name RGBContract.AssetName?
                        , embedded EmbeddedMedia
                        , external Attachment?
                        , reserves RGBContract.ProofOfReserves?
+
+@mnemonic(chamber-south-factor)
+data OwnedNft          : tokenNo TokenNo, fractions TokenFractions
 
 @mnemonic(tropic-police-fortune)
 data TokenFractions    : U64

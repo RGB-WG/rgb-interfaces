@@ -24,7 +24,7 @@ use strict_types::stl::std_stl;
 use strict_types::{LibBuilder, SemId, SymbolicSys, SystemBuilder, TypeLib, TypeSystem};
 
 use crate::{
-    Amount, AssetName, AttachmentType, Details, Nft, NftEngraving, NftSpec, Precision, ProofOfReserves, Ticker,
+    Amount, AssetName, Details, EmbeddedMedia, Nft, NftSpec, OwnedNft, Precision, ProofOfReserves, Ticker,
     LIB_NAME_RGB21, LIB_NAME_RGB_CONTRACT,
 };
 
@@ -32,7 +32,7 @@ use crate::{
 pub const LIB_ID_RGB_INTERFACES: &str = "stl:SwzsMZmH-_Bp~u1Y-sYRyzR9-sj3ZgR7-JNCrNuP-PudeT5c#viva-comrade-bernard";
 
 /// Strict types id for the library providing data types for RGB21.
-pub const LIB_ID_RGB21: &str = "stl:3_g9mu6K-wLUJpQK-hDbbmPg-vXoYVKh-Z~AciV9-yY8lUbo#sonar-diploma-gorilla";
+pub const LIB_ID_RGB21: &str = "stl:hS_TcpfI-JCz36Es-E8NtlsS-bG0A68X-Te6ouRs-7_FNDhE#prelude-chicago-filter";
 
 pub fn rgb_contract_stl() -> TypeLib {
     LibBuilder::with(libname!(LIB_NAME_RGB_CONTRACT), [
@@ -57,9 +57,9 @@ pub fn rgb21_stl() -> TypeLib {
         bp_tx_stl().to_dependency_types(),
     ])
     .transpile::<Nft>()
+    .transpile::<OwnedNft>()
     .transpile::<NftSpec>()
-    .transpile::<AttachmentType>()
-    .transpile::<NftEngraving>()
+    .transpile::<EmbeddedMedia>()
     .compile()
     .expect("invalid common types library")
 }
