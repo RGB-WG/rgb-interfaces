@@ -1,5 +1,5 @@
 {-
-  Id: stl:yHW1Q9ke-B04oMfC-~Dh1v9X-XyLur8_-bCEpUeK-y91BegY#daniel-charter-lorenzo
+  Id: stl:SwzsMZmH-_Bp~u1Y-sYRyzR9-sj3ZgR7-JNCrNuP-PudeT5c#viva-comrade-bernard
   Name: RGBContract
   Version: 0.12.0
   Collection of the standard RGB smart contract interface
@@ -17,6 +17,11 @@ import Std#delete-roman-hair
   use AlphaNum#window-tractor-alamo
   use Alpha#citizen-bicycle-stretch
 
+import Bitcoin#signal-color-cipher
+  use Vout#brush-gloria-heroic
+  use Txid#shallow-light-reverse
+  use Outpoint#logo-alamo-madam
+
 
 @mnemonic(monica-tornado-page)
 data Amount            : U64
@@ -24,8 +29,8 @@ data Amount            : U64
 @mnemonic(shelf-prism-civil)
 data AssetName         : Std.AsciiPrintable, [Std.AsciiPrintable ^ ..0x27]
 
-@mnemonic(nikita-postage-taboo)
-data Details           : [Unicode ^ ..0xff]
+@mnemonic(gustav-kilo-info)
+data Details           : Std.AsciiPrintable, [Std.AsciiPrintable ^ ..0xfe]
 
 @mnemonic(vendor-anita-british)
 data Precision         : indivisible | deci | centi | milli
@@ -34,6 +39,9 @@ data Precision         : indivisible | deci | centi | milli
                        | pico | deciPico | centiPico | femto
                        | deciFemto | centiFemto | atto
 
+
+@mnemonic(harmony-dolby-golf)
+data ProofOfReserves   : utxo Bitcoin.Outpoint, proof [Byte]
 
 @mnemonic(plasma-level-lucas)
 data Ticker            : Std.Alpha, [Std.AlphaNum ^ 1..0x7]

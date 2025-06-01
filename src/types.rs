@@ -24,25 +24,29 @@ use strict_types::stl::std_stl;
 use strict_types::{LibBuilder, SemId, SymbolicSys, SystemBuilder, TypeLib, TypeSystem};
 
 use crate::{
-    Amount, AssetName, AttachmentType, Details, Fe256Align128, Fe256Align16, Fe256Align32, Fe256Align64, Fe256Align8,
-    Nft, NftEngraving, NftSpec, Precision, Ticker, LIB_NAME_RGB21, LIB_NAME_RGB_CONTRACT,
+    Amount, AssetName, Details, EmbeddedMedia, Nft, NftSpec, OwnedNft, Precision, ProofOfReserves, Ticker,
+    LIB_NAME_RGB21, LIB_NAME_RGB_CONTRACT,
 };
 
 /// Strict types id for the library providing data types for RGB contracts.
-pub const LIB_ID_RGB_INTERFACES: &str = "stl:yHW1Q9ke-B04oMfC-~Dh1v9X-XyLur8_-bCEpUeK-y91BegY#daniel-charter-lorenzo";
+pub const LIB_ID_RGB_INTERFACES: &str = "stl:SwzsMZmH-_Bp~u1Y-sYRyzR9-sj3ZgR7-JNCrNuP-PudeT5c#viva-comrade-bernard";
 
 /// Strict types id for the library providing data types for RGB21.
-pub const LIB_ID_RGB21: &str = "stl:59Qn7DH3-KUqaOzq-OPZEcqD-VgXe3~C-6s6t8l~-RVXCkd8#option-speed-telex";
+pub const LIB_ID_RGB21: &str = "stl:hS_TcpfI-JCz36Es-E8NtlsS-bG0A68X-Te6ouRs-7_FNDhE#prelude-chicago-filter";
 
 pub fn rgb_contract_stl() -> TypeLib {
-    LibBuilder::with(libname!(LIB_NAME_RGB_CONTRACT), [std_stl().to_dependency_types()])
-        .transpile::<Amount>()
-        .transpile::<Precision>()
-        .transpile::<Ticker>()
-        .transpile::<AssetName>()
-        .transpile::<Details>()
-        .compile()
-        .expect("invalid common types library")
+    LibBuilder::with(libname!(LIB_NAME_RGB_CONTRACT), [
+        std_stl().to_dependency_types(),
+        bp_tx_stl().to_dependency_types(),
+    ])
+    .transpile::<Amount>()
+    .transpile::<Precision>()
+    .transpile::<Ticker>()
+    .transpile::<AssetName>()
+    .transpile::<Details>()
+    .transpile::<ProofOfReserves>()
+    .compile()
+    .expect("invalid common types library")
 }
 
 pub fn rgb21_stl() -> TypeLib {
@@ -53,14 +57,9 @@ pub fn rgb21_stl() -> TypeLib {
         bp_tx_stl().to_dependency_types(),
     ])
     .transpile::<Nft>()
+    .transpile::<OwnedNft>()
     .transpile::<NftSpec>()
-    .transpile::<AttachmentType>()
-    .transpile::<NftEngraving>()
-    .transpile::<Fe256Align8>()
-    .transpile::<Fe256Align16>()
-    .transpile::<Fe256Align32>()
-    .transpile::<Fe256Align64>()
-    .transpile::<Fe256Align128>()
+    .transpile::<EmbeddedMedia>()
     .compile()
     .expect("invalid common types library")
 }
@@ -77,6 +76,8 @@ impl CommonTypes {
         Self(
             SystemBuilder::new()
                 .import(std_stl())
+                .unwrap()
+                .import(bp_tx_stl())
                 .unwrap()
                 .import(rgb_contract_stl())
                 .unwrap()
@@ -126,8 +127,11 @@ impl Rgb21Types {
     }
 
     pub fn type_system(&self) -> TypeSystem {
-        let types = rgb21_stl().types;
-        let types = types.iter().map(|(tn, ty)| ty.sem_id_named(tn));
+        let types = rgb21_stl()
+            .types
+            .into_iter()
+            .chain(rgb_contract_stl().types)
+            .map(|(tn, ty)| ty.sem_id_named(&tn));
         self.0.as_types().extract(types).unwrap()
     }
 
