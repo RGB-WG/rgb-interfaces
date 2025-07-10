@@ -161,9 +161,9 @@ dependencies = [
 
 [[package]]
 name = "bp-consensus"
-version = "0.12.0-rc.2"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "810f5e6361430adfcd6be36151c84409e9c05f3fb8a7455c8d4aa583fd89f043"
+checksum = "22bbb56809c40565d6085b4211ee2d25a7b5e84848960678ff748e0a8707552f"
 dependencies = [
  "amplify",
  "chrono",
@@ -214,9 +214,9 @@ dependencies = [
 
 [[package]]
 name = "commit_encoding_derive"
-version = "0.12.0-rc.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "783e42e09ad9dbc48d01532fc59fd1f1c64c98c09f523abeb6a069756651c9c3"
+checksum = "b577a039996f22af5e626601afb6ccd71e000b9f97ee698ed516a08c128cad9c"
 dependencies = [
  "amplify",
  "amplify_syn",
@@ -227,9 +227,9 @@ dependencies = [
 
 [[package]]
 name = "commit_verify"
-version = "0.12.0-rc.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c91d4e2c820279c133f8cb1c7c7544caba346c8049d6a7749dca1031d7acb68"
+checksum = "16ec7a0805fc4a38e40dfb4906a83d84d74bcbf16f24e05219f1c46473ed6a95"
 dependencies = [
  "amplify",
  "commit_encoding_derive",
@@ -577,7 +577,7 @@ dependencies = [
 
 [[package]]
 name = "rgb-interfaces"
-version = "0.12.0-rc.2"
+version = "0.12.0"
 dependencies = [
  "amplify",
  "bp-consensus",
